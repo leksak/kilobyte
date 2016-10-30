@@ -25,16 +25,26 @@ import io.atlassian.fugue.Either;
 public class Instruction {
   static Instruction unsafeFrom(String symbolicRepresentation)
         throws NoSuchInstructionException {
-    throw new NoSuchInstructionException(
-          "Couldn't instantiate Instruction from \"%s\"",
-          symbolicRepresentation);
+    return unsafeFrom(new MnemonicRepresentation(symbolicRepresentation));
   }
 
   static Either<Instruction, PartiallyValidInstruction>
   from(String symbolicRepresentation) throws NoSuchInstructionException {
+    return from(new MnemonicRepresentation(symbolicRepresentation));
+  }
+
+  static Instruction unsafeFrom(MnemonicRepresentation m)
+        throws NoSuchInstructionException {
     throw new NoSuchInstructionException(
           "Couldn't instantiate Instruction from \"%s\"",
-          symbolicRepresentation);
+          m);
+  }
+
+  static Either<Instruction, PartiallyValidInstruction>
+  from(MnemonicRepresentation m) throws NoSuchInstructionException {
+    throw new NoSuchInstructionException(
+          "Couldn't instantiate Instruction from \"%s\"",
+          m);
   }
 
   static Instruction unsafeFrom(int i) throws NoSuchInstructionException {

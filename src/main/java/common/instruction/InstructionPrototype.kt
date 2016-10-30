@@ -1,5 +1,7 @@
 package common.instruction
 
+import common.instruction.Instruction.*
+
 /**
  * This is a set of Instructions containing an {@code Instruction}
  * instance of each of the supported operations. These are templates
@@ -57,8 +59,7 @@ package common.instruction
  * @property funct Like the @rt property but for the funct field.
  * @property conditions If applicable: A set of conditions that need to
  *                   apply for a numeric representation of the instruction
- *                   to be valid. The functions shall return "null"
- *                   when the condition is violated.
+ *                   to be valid.
  */
 class InstructionPrototype constructor(
       val iname: String,
@@ -72,18 +73,12 @@ class InstructionPrototype constructor(
       var rt: Int? = null,
       var funct: Int? = null,
       vararg var conditions: Condition = emptyArray()) {
+  var example: InstructionExample
+
   init {
     // The "init" block is executed each time an InstructionPrototype
     // is initialized.
-    println("hej")
-  }
-
-  fun from(symbolicRepresentation: String): Instruction {
-    throw UnsupportedOperationException()
-  }
-
-  fun from(numericRepresentation: Int): Instruction {
-    throw UnsupportedOperationException()
+    this.example = InstructionExample(mnemonicExample, numericExample)
   }
 }
 
