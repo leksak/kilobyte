@@ -1,14 +1,33 @@
 package common.instruction
 
+import io.atlassian.fugue.Either
 import java.util.*
-import java.util.Optional.*
 
 /**
- * An InstructionPrototype can serve as a template for another instruction,
- * i.e. we can spawn actual instances of the "add" {@code Instruction}
- * class using {@code InstructionPrototype.ADD} as a template.
+ * The {@code Instruction} class provides a unified interface for
+ * instantiating {@code Instruction} instances through user-supplied
+ * and intermediary representations of an Instruction.
+ *
+ * For example the interface accepts bare Strings, as well as the String
+ * wrapper class {@code MnemonicRepresentation} that has verified that the
+ * String is well-formed. This rich interface is provided for brevity,
+ * especially with respect to testing and ease-of-use.
+ *
+ * It is the responsibility of the caller to supply valid representations
+ * of the primitive representations (String & int) to the factory methods
+ * that this interface supplies <i>but</i> all the methods perform a
+ * best-effort attempt to instantiate a suitable {@code Instruction}.
+ *
+ * This means that most of the times the methods prefixed with
+ * unsafe should be avoided whenever possible and the functions with
+ * the monadic return-value of the
+ * {@link io.atlassian.fugue.Either} class.
  * 
- * This is a novel take on the Prototype design pattern:
+ * An Instruction may serve as a template for another instruction,
+ * i.e. we can spawn actual instances of the "add" {@code Instruction}
+ * class using {@code Instruction.ADD} as a template.
+ * 
+ * Prototype design pattern:
  * http://gameprogrammingpatterns.com/prototype.html
  *
  * Developers Note:
@@ -63,7 +82,7 @@ import java.util.Optional.*
  *                   apply for a numeric representation of the instruction
  *                   to be valid.
  */
-class InstructionPrototype constructor(
+class Instruction private constructor(
       val iname: String,
       val opcode: Int,
       val mnemonicExample: String,
@@ -76,10 +95,7 @@ class InstructionPrototype constructor(
       var funct: Int? = null,
       vararg var conditions: Condition = emptyArray()) {
   val example = InstructionExample(mnemonicExample, numericExample)
-  val mnemonic = MnemonicRepresentation(mnemonicExample)
 
-  fun asInstruction() = Instruction(iname, numericExample, mnemonic, this)
-  
   companion object InstructionSet {
     val shamt_is_zero: Condition = Condition(
           {it -> if (it.shamt() == 0) {
@@ -89,7 +105,7 @@ class InstructionPrototype constructor(
           }}
     )
 
-    @JvmField val ADD = InstructionPrototype(
+    @JvmField val ADD = Instruction(
           iname = "add",
           opcode = 0,
           mnemonicExample = "add \$t1, \$t2, \$t3",
@@ -102,24 +118,30 @@ class InstructionPrototype constructor(
           funct = 0x20,
           conditions = shamt_is_zero)
 
-    val prototypeSet: Array<InstructionPrototype> =
-          arrayOf(ADD)
+    val prototypeSet: Array<Instruction> = arrayOf(
+          ADD
+    )
 
     // Lookup table
-    // You can take the name of an InstructionPrototype and create
+    // You can take the name of an Instruction and create
     // an Instruction of the same sort, i.e. 
     // inameToPrototype["add"] yields a reference
-    // to InstructionPrototype.ADD, from which other "add" instructions can
+    // to Instruction.ADD, from which other "add" instructions can
     // be derived provided you have a symbolic representation to
     // represent it.
-    val inameToPrototype: HashMap<String, InstructionPrototype> = HashMap()
-    val opcodeEquals0x00IdentifiedByFunct: Array<InstructionPrototype?>
+    val inameToPrototype: HashMap<String, Instruction> = HashMap()
+
+    /*
+     * The arrays are all size 64 as there are at most 64 different
+     * values to take into account.
+     */
+    val opcodeEquals0x00IdentifiedByFunct: Array<Instruction?>
           = Array(64, { null })
-    val opcodeEquals0x01IdentifiedByRt: Array<InstructionPrototype?>
+    val opcodeEquals0x01IdentifiedByRt: Array<Instruction?>
           = Array(64, { null })
-    val opcodeEquals0x1cIdentifiedByFunct: Array<InstructionPrototype?>
+    val opcodeEquals0x1cIdentifiedByFunct: Array<Instruction?>
           = Array(64, { null })
-    val identifiedByTheirOpcodeAlone: Array<InstructionPrototype?>
+    val identifiedByTheirOpcodeAlone: Array<Instruction?>
           = Array(64, { null })
 
     init {
@@ -154,11 +176,14 @@ class InstructionPrototype constructor(
       }
     }
 
-    @JvmStatic fun get(iname: String) = ofNullable(unsafeGet(iname))
-    @JvmStatic fun get(machineCode: Int) = ofNullable(unsafeGet(machineCode))
-    @JvmStatic fun unsafeGet(iname: String) = inameToPrototype[iname]
+    @JvmStatic fun getPrototype(iname: String): Instruction {
+      // Use a "unsafe" cast, if there is no Instruction with
+      // the requested name an exception is thrown.
+      // https://kotlinlang.org/docs/reference/typecasts.html#unsafe-cast-operator
+      return inameToPrototype[iname] as Instruction
+    }
 
-    @JvmStatic fun unsafeGet(machineCode: Int): InstructionPrototype? {
+    private fun getPrototype(machineCode: Int): Instruction? {
       val opcode = machineCode.opcode()
 
       // Check if the entire number is 0s, then we have a nop instruction
@@ -195,6 +220,39 @@ class InstructionPrototype constructor(
       for (prototype in prototypeSet) {
         println(prototype.iname)
       }
+    }
+
+    @Throws(NoSuchInstructionException::class)
+    @JvmStatic fun from(symbolicRepresentation: String):
+          Either<Instruction, PartiallyValidInstruction> {
+      return from(MnemonicRepresentation(symbolicRepresentation))
+    }
+
+    @Throws(NoSuchInstructionException::class)
+    @JvmStatic fun unsafeFrom(m: MnemonicRepresentation): Instruction {
+      throw NoSuchInstructionException(
+            "Couldn't instantiate Instruction from \"%s\"",
+            m)
+    }
+
+    @Throws(NoSuchInstructionException::class)
+    @JvmStatic fun unsafeFrom(symbolicRepresentation: String): Instruction {
+      return unsafeFrom(MnemonicRepresentation(symbolicRepresentation))
+    }
+
+    @Throws(NoSuchInstructionException::class)
+    @JvmStatic fun from(m: MnemonicRepresentation):
+          Either<Instruction, PartiallyValidInstruction> {
+      throw NoSuchInstructionException(
+            "Couldn't instantiate Instruction from \"%s\"",
+            m)
+    }
+
+    @Throws(NoSuchInstructionException::class)
+    @JvmStatic fun from(i: Int):
+          Either<Instruction, PartiallyValidInstruction> {
+      throw NoSuchInstructionException(
+            "Couldn't instantiate Instruction from \"%d\"", i)
     }
   }
 }

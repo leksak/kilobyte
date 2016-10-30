@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class InstructionConstructorTests {
   @Test
   void addPrototype() {
-    InstructionPrototype actual = InstructionPrototype.unsafeGet("add");
-    assertEquals(actual, InstructionPrototype.ADD);
+    Instruction actual = Instruction.getPrototype("add");
+    assertEquals(actual, Instruction.ADD);
   }
 
   @Test
