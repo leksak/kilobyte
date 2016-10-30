@@ -156,7 +156,6 @@ public class MnemonicRepresentation {
     return true;
   }
 
-
   @Override
   public int hashCode() {
     int result = mnemonic.hashCode();

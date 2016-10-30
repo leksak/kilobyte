@@ -1,13 +1,15 @@
 package common.instruction
 
-import common.instruction.Instruction.*
+import java.util.*
+import java.util.Optional.*
 
 /**
- * This is a set of Instructions containing an {@code Instruction}
- * instance of each of the supported operations. These are templates
- * from which we can spawn actual instances of the {@code Instruction}
- * class, i.e. it is from {@code InstructionPrototype.Add} that we
- * create all instances of the "Add" {@code Instruction}.
+ * An InstructionPrototype can serve as a template for another instruction,
+ * i.e. we can spawn actual instances of the "add" {@code Instruction}
+ * class using {@code InstructionPrototype.ADD} as a template.
+ * 
+ * This is a novel take on the Prototype design pattern:
+ * http://gameprogrammingpatterns.com/prototype.html
  *
  * Developers Note:
  *
@@ -73,12 +75,127 @@ class InstructionPrototype constructor(
       var rt: Int? = null,
       var funct: Int? = null,
       vararg var conditions: Condition = emptyArray()) {
-  var example: InstructionExample
+  val example = InstructionExample(mnemonicExample, numericExample)
+  val mnemonic = MnemonicRepresentation(mnemonicExample)
 
-  init {
-    // The "init" block is executed each time an InstructionPrototype
-    // is initialized.
-    this.example = InstructionExample(mnemonicExample, numericExample)
+  fun asInstruction() = Instruction(iname, numericExample, mnemonic, this)
+  
+  companion object InstructionSet {
+    val shamt_is_zero: Condition = Condition(
+          {it -> if (it.shamt() == 0) {
+            ConditionResult.Success()
+          } else {
+            ConditionResult.Failure("Shamt has to be zero. Got: " + it)
+          }}
+    )
+
+    @JvmField val ADD = InstructionPrototype(
+          iname = "add",
+          opcode = 0,
+          mnemonicExample = "add \$t1, \$t2, \$t3",
+          numericExample = 0x014b4820,
+          description = "Addition with overflow,. Put the" +
+                " sum of registers rs and rt into register" +
+                " rd. Is only valid if shamt is 0.",
+          format = Format.R,
+          pattern = Pattern.INAME_RD_RS_RT,
+          funct = 0x20,
+          conditions = shamt_is_zero)
+
+    val prototypeSet: Array<InstructionPrototype> =
+          arrayOf(ADD)
+
+    // Lookup table
+    // You can take the name of an InstructionPrototype and create
+    // an Instruction of the same sort, i.e. 
+    // inameToPrototype["add"] yields a reference
+    // to InstructionPrototype.ADD, from which other "add" instructions can
+    // be derived provided you have a symbolic representation to
+    // represent it.
+    val inameToPrototype: HashMap<String, InstructionPrototype> = HashMap()
+    val opcodeEquals0x00IdentifiedByFunct: Array<InstructionPrototype?>
+          = Array(64, { null })
+    val opcodeEquals0x01IdentifiedByRt: Array<InstructionPrototype?>
+          = Array(64, { null })
+    val opcodeEquals0x1cIdentifiedByFunct: Array<InstructionPrototype?>
+          = Array(64, { null })
+    val identifiedByTheirOpcodeAlone: Array<InstructionPrototype?>
+          = Array(64, { null })
+
+    init {
+      for (prototype in prototypeSet) {
+        val iname = prototype.iname
+        inameToPrototype.put(iname, prototype)
+
+        // Nop is all zeroes and clashes with sll which has opcode=0x00
+        // and funct=0x00. We treat nop as a special case.
+        if (iname == "nop") {
+          continue
+        }
+
+        if (prototype.opcode == 0) {
+          // Throws an IllegalStateException if the funct field has not
+          // been set, that seems appropriate as that would be a programmer
+          // error by _us_. If it is set (not null) we get its value.
+          //
+          // Any following lines of code "knows" that funct is guaranteed
+          // to be not-null.
+          val funct = checkNotNull(prototype.funct)
+          opcodeEquals0x00IdentifiedByFunct[funct] = prototype
+        } else if (prototype.opcode == 0x1c) {
+          val funct = checkNotNull(prototype.funct)
+          opcodeEquals0x1cIdentifiedByFunct[funct] = prototype
+        } else if (prototype.opcode == 0x01) {
+          val rt = checkNotNull(prototype.rt)
+          opcodeEquals0x01IdentifiedByRt[rt] = prototype
+        } else {
+          identifiedByTheirOpcodeAlone[prototype.opcode] = prototype
+        }
+      }
+    }
+
+    @JvmStatic fun get(iname: String) = ofNullable(unsafeGet(iname))
+    @JvmStatic fun get(machineCode: Int) = ofNullable(unsafeGet(machineCode))
+    @JvmStatic fun unsafeGet(iname: String) = inameToPrototype[iname]
+
+    @JvmStatic fun unsafeGet(machineCode: Int): InstructionPrototype? {
+      val opcode = machineCode.opcode()
+
+      // Check if the entire number is 0s, then we have a nop instruction
+      // Once again, nop and sll clashes on the (opcode, funct) tuple so
+      // we have to treat one of them as a special-case. Nop seemed easiest
+      // to handle as a special case.
+      if (machineCode == 0x00) {
+        return inameToPrototype["nop"]
+      }
+
+      if (opcode == 0) {
+        return opcodeEquals0x00IdentifiedByFunct[machineCode.funct()]
+      } else if (opcode == 0x1c) {
+        return opcodeEquals0x1cIdentifiedByFunct[machineCode.funct()]
+      } else if (opcode == 0x01) {
+        return opcodeEquals0x01IdentifiedByRt[machineCode.rt()]
+      } else {
+        return identifiedByTheirOpcodeAlone[opcode]
+      }  
+    }
+
+    @JvmStatic fun allExamples(): Iterable<InstructionExample> {
+      return prototypeSet.map { it.example }
+    }
+
+    /**
+     * Prints the names of all the instructions contained in this set.
+     * Useful for technical documentation.
+     *
+     * @param onlyExecutables Set to true to only print the functions
+     *                        which are executable. (not yet supported)
+     */
+    @JvmStatic fun printInstructionSet(onlyExecutables: Boolean = false) {
+      for (prototype in prototypeSet) {
+        println(prototype.iname)
+      }
+    }
   }
 }
 

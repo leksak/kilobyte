@@ -2,7 +2,6 @@ package decompiler;
 
 import common.instruction.Format;
 import common.instruction.Instruction;
-import common.instruction.InstructionPrototype;
 
 import java.io.File;
 import java.util.Set;
@@ -21,8 +20,5 @@ public class Decompiler {
   }
 
   public static void main(String[] args) {
-    new InstructionPrototype("Hej", 0, "hej", 0, "hej", Format.R, null, null, null, null);
-
-    new InstructionPrototype("Hej", 0, "hej", 0, "hej", Format.R, null, null, null, null);
   }
 }
