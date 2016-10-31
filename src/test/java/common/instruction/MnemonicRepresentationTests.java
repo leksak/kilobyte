@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.expectThrows;
 
 public class MnemonicRepresentationTests {
   static final String ANSI_GREEN = "\u001B[32m";
-  public static final String ANSI_RESET = "\u001B[0m";
+  static final String ANSI_RESET = "\u001B[0m";
+  static final String ANSI_YELLOW = "\u001B[33m";
   static<T> void success(T arg) {
-    System.out.println(ANSI_GREEN + "[SUCCESS] " + ANSI_RESET + arg);
+    System.out.println(ANSI_GREEN + "[SUCCESS] " + ANSI_YELLOW +
+          "Exception was thrown as excepted: " + ANSI_RESET + arg);
   }
   
   @Test
@@ -16,7 +18,7 @@ public class MnemonicRepresentationTests {
     String faultyNopRepresentation = "nop foo";
     Throwable e = expectThrows(IllegalArgumentException.class, () ->
           new MnemonicRepresentation(faultyNopRepresentation));
-    success("Exception was thrown as expected: " + e.getMessage());
+    success(e.getMessage());
   }
 
   @Test
@@ -24,7 +26,7 @@ public class MnemonicRepresentationTests {
     String faultyNopRepresentation = "nop,";
     Throwable e = expectThrows(IllegalArgumentException.class, () ->
           new MnemonicRepresentation(faultyNopRepresentation));
-    success("Exception was thrown as expected: " + e.getMessage());
+    success(e.getMessage());
   }
 
   @Test
@@ -32,7 +34,7 @@ public class MnemonicRepresentationTests {
     String faultyAddRepresentation = "add $t1, $t2, $t3, $t1";
     Throwable e = expectThrows(IllegalArgumentException.class, () ->
           new MnemonicRepresentation(faultyAddRepresentation));
-    success("Exception was thrown as expected: " + e.getMessage());
+    success(e.getMessage());
   }
 
   @Test
@@ -44,7 +46,7 @@ public class MnemonicRepresentationTests {
   void testThatExceptionIsThrownWhenThereAreIllegalCharacters() throws Exception {
     Throwable e = expectThrows(IllegalArgumentException.class, () ->
           new MnemonicRepresentation("add $t1, $t2, $t3!#($sp)"));
-    success("Exception was thrown as expected: " + e.getMessage());
+    success(e.getMessage());
   }
 
   @Test
@@ -52,7 +54,7 @@ public class MnemonicRepresentationTests {
     String faultyAddRepresentation = "add $t1, $t2";
     Throwable e = expectThrows(IllegalArgumentException.class, () ->
           new MnemonicRepresentation(faultyAddRepresentation));
-    success("Exception was thrown as expected: " + e.getMessage());
+    success(e.getMessage());
   }
 
   @Test
@@ -60,7 +62,7 @@ public class MnemonicRepresentationTests {
     String faultyAddRepresentation = "add $t1, $t2,, $t3";
     Throwable e = expectThrows(IllegalArgumentException.class, () ->
           new MnemonicRepresentation(faultyAddRepresentation));
-    success("Exception was thrown as expected: " + e.getMessage());
+    success(e.getMessage());
   }
 
   @Test
@@ -68,6 +70,6 @@ public class MnemonicRepresentationTests {
     String faultyAddRepresentation = "add $t1, $t2 $t3";
     Throwable e = expectThrows(IllegalArgumentException.class, () ->
           new MnemonicRepresentation(faultyAddRepresentation));
-    success("Exception was thrown as expected: " + e.getMessage());
+    success(e.getMessage());
   }
 }
