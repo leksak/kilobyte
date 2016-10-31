@@ -102,6 +102,17 @@ class Instruction private constructor(
   val examples = InstructionExample.examplesFrom(mnemonicExamples, numericExamples)
 
   init {
+    /*
+     * Using the primordial flag we can create all of our primordials
+     * and rest assured that the primordialSet is populated as opposed
+     * to having to repeat ourselves by first declaring them and then
+     * constructing the container, e.g. doing arrayOf(ADD, NOP, SW, ...)
+     *
+     * Its curious to set the default value of this flag to "true"
+     * as most of the time it will be false but it turns out to be
+     * the clean with respect to how the rest of the
+     * code-base is affected.
+     */
     if (primordial) {
       primordialSet.add(this)
     }
@@ -111,7 +122,7 @@ class Instruction private constructor(
         iname: String,
         opcode: Int,
         mnemonicExample: String,
-        numericExample: Long, // Has to be Long to deal with overflow
+        numericExample: Long, // Has to be "Long" to deal with overflow
         description: String,
         primordial: Boolean = true,
         format: Format,
@@ -150,13 +161,6 @@ class Instruction private constructor(
             ConditionResult.Failure("Shamt has to be zero. Got: " + it)
           }}
     )
-    val nop = Condition(
-      {it -> if (it == 0) {
-        ConditionResult.Success()
-      } else {
-        ConditionResult.Failure("The entire number needs to be zero. Got: " + it)
-      }}
-    )
 
     @JvmField val ADD = Instruction(
           iname = "add",
@@ -179,8 +183,7 @@ class Instruction private constructor(
           description = "Null operation; do nothing. " +
                 "Machine code is all zeroes.",
           format = Format.R,
-          pattern = ::NOP_PATTERN,
-          conditions = nop)
+          pattern = ::NOP_PATTERN)
     /*@JvmField val SW = Instruction(
           iname = "sw",
           opcode = 0x2b, // 43
@@ -255,7 +258,7 @@ class Instruction private constructor(
       if (inameToPrototype.containsKey(iname)) {
        return inameToPrototype[iname]!!.pattern
       }
-      throw NoSuchInstructionException("There is no instruction named: ", iname)
+      throw NoSuchInstructionException(iname)
     }
 
     @JvmStatic fun getPrototype(iname: String): Instruction {

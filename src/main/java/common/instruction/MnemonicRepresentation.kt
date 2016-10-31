@@ -77,7 +77,8 @@ fun throwIfIncorrectNumberOfCommas(expectedNumberOfCommas: Int, standardizedMnem
 }
 
 fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : String) {
-  val actualArgc = standardizedMnemonic.split(" ").size
+  // - 1 for the instruction name
+  val actualArgc = standardizedMnemonic.split(" ").size - 1
 
   if (expectedArgc == actualArgc) { return }
 
@@ -90,19 +91,20 @@ fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : Strin
  * We need to be able to create mnemonics out of strings
  */
 fun INAME_RD_RS_RT(mnemonic: String): MnemonicRepresentation {
-  val standardizedMnemonic = standardizeMnemonic(mnemonic)
-  throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
-
-  // This pattern shouldn't contain any parens
-  throwExceptionIfContainsParentheses(standardizedMnemonic)
-
   val argc = 3
 
   // There should be as many commas as there are arguments - 1,
   // For an example "add $t1, $t2, $t3" has 3 arguments ($t1, $t2, $t3)
   // so there should be two commas.
-  throwIfIncorrectNumberOfCommas(argc - 1, standardizedMnemonic)
+  throwIfIncorrectNumberOfCommas(argc - 1, mnemonic)
+
+  val standardizedMnemonic = standardizeMnemonic(mnemonic)
+  throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
+
+  // This pattern shouldn't contain any parens
+  throwExceptionIfContainsParentheses(standardizedMnemonic)
   throwIfIncorrectNumberOfArgs(argc, standardizedMnemonic)
+
   return MnemonicRepresentation(standardizedMnemonic)
 }
 
@@ -134,18 +136,22 @@ class MnemonicRepresentation {
   val standardizedMnemonic: String
   val iname: String
 
-  private constructor(mnemonic: String) {
+  constructor(mnemonic: String) {
+    iname = mnemonic.split(' ')[0]
+    Instruction.getPattern(iname).invoke(mnemonic)
     standardizedMnemonic = standardizeMnemonic(mnemonic)
-    iname = standardizedMnemonic.split(' ')[0]
-    val pattern = Instruction.getPattern(iname)
   }
 
-  constructor(iname: String,
-              vararg args: String) {
+
+  internal constructor(iname: String,
+                       vararg args: String) {
     // TODO: Will also probably have to capture the numeric rep here
     val sj = StringJoiner(", ")
     args.map { sj.add(it) }
     this.standardizedMnemonic = "%s %s".format(iname, sj.toString())
     this.iname = iname
+    println(iname)
+    println(args)
+    Instruction.getPattern(iname).invoke(standardizedMnemonic)
   }
 }

@@ -22,9 +22,10 @@ public class MnemonicRepresentationTests {
   }
 
   @Test
-  void testThatNopCannotBeInstantiatedWithTooManyCommas() {
+  void testThatNopCannotBeInstantiatedWithTrailingCharacters() {
     String faultyNopRepresentation = "nop,";
-    Throwable e = expectThrows(IllegalArgumentException.class, () ->
+    // There is no instruction named "nop,"
+    Throwable e = expectThrows(NoSuchInstructionException.class, () ->
           new MnemonicRepresentation(faultyNopRepresentation));
     success(e.getMessage());
   }
