@@ -1,6 +1,5 @@
 package common.instruction
 
-import common.instruction.Instruction.InstructionSet.prototypeSet
 import io.atlassian.fugue.Either
 import java.util.*
 
@@ -100,7 +99,13 @@ class Instruction private constructor(
       vararg var conditions: Condition = emptyArray()) {
   val example = InstructionExample(mnemonicExample, numericExample)
 
+  init {
+    prototypeSet.add(this)
+  }
+
   companion object InstructionSet {
+    val prototypeSet = mutableListOf<Instruction>()
+
     val shamt_is_zero = Condition(
           {it -> if (it.shamt() == 0) {
             ConditionResult.Success()
@@ -138,8 +143,6 @@ class Instruction private constructor(
           pattern = Pattern.INAME_RD_RS_RT,
           funct = 0x20,
           conditions = nop)
-
-    val prototypeSet = arrayOf(ADD, NOP)
 
     // Lookup table
     // You can take the name of an Instruction and create
