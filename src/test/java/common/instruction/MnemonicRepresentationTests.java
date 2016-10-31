@@ -30,6 +30,18 @@ public class MnemonicRepresentationTests {
   }
 
   @Test
+  void testThatWhiteSpaceBetweenArgumentsDoNotMatter() throws Exception {
+    new MnemonicRepresentation("add $t1,$t2,$t3");
+  }
+
+  @Test
+  void testThatExceptionIsThrownWhenThereAreIllegalCharacters() throws Exception {
+    Throwable e = expectThrows(IllegalArgumentException.class, () ->
+          new MnemonicRepresentation("add $t1, $t2, $t3!#($sp)"));
+    System.out.println(e.getMessage());
+  }
+
+  @Test
   void testThatAddCannotBeInstantiatedWithTooFewArguments() {
     String faultyAddRepresentation = "add $t1, $t2";
     Throwable e = expectThrows(IllegalArgumentException.class, () ->

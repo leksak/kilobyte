@@ -91,8 +91,9 @@ class Instruction private constructor(
       val mnemonicExample: String,
       val numericExample: Int,
       val description: String,
+      val primordial: Boolean = true,
       val format: Format,
-      val pattern: Pattern,
+      val pattern: MnemonicPattern,
       var type: Type? = null,
       var rt: Int? = null,
       var funct: Int? = null,
@@ -100,7 +101,9 @@ class Instruction private constructor(
   val example = InstructionExample(mnemonicExample, numericExample)
 
   init {
-    prototypeSet.add(this)
+    if (primordial) {
+      prototypeSet.add(this)
+    }
   }
 
   companion object InstructionSet {
@@ -130,7 +133,7 @@ class Instruction private constructor(
                 " sum of registers rs and rt into register" +
                 " rd. Is only valid if shamt is 0.",
           format = Format.R,
-          pattern = Pattern.INAME_RD_RS_RT,
+          pattern = MnemonicPattern.INAME_RD_RS_RT,
           funct = 0x20,
           conditions = shamt_is_zero)
     @JvmField val NOP = Instruction(
@@ -140,7 +143,7 @@ class Instruction private constructor(
           numericExample = 0,
           description = "Null operation : machine code is all zeroes",
           format = Format.R,
-          pattern = Pattern.NOP,
+          pattern = MnemonicPattern.NOP,
           funct = 0x20,
           conditions = nop)
 
@@ -204,7 +207,7 @@ class Instruction private constructor(
      * the instruction that it s.
      */
     @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun getPattern(iname: String): Pattern {
+    @JvmStatic fun getPattern(iname: String): MnemonicPattern {
       if (inameToPrototype.containsKey(iname)) {
        return inameToPrototype[iname]!!.pattern
       }

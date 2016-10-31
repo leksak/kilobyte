@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MnemonicRepresentation {
   private static String standardizeMnemonic(String mnemonic) {
@@ -60,13 +62,41 @@ public class MnemonicRepresentation {
     this.args = args;
   }
 
-  public MnemonicRepresentation(String mnemonic)
-        throws NoSuchInstructionException {
-    // Check for illegal characters
+  private void throwExceptionIfContainsNewLineCharacter(String mnemonic) {
     String newline = System.getProperty("line.separator");
     if (mnemonic.contains(newline)) {
-      throw new IllegalArgumentException(); // TODO: Document
+      val s = "Illegal character(s) encountered: '<newline>'";
+      throw new IllegalArgumentException(s + " in \"" + mnemonic + "\"");
     }
+  }
+
+  private void throwExceptionIfContainsIllegalCharacters(String mnemonic) {
+    throwExceptionIfContainsNewLineCharacter(mnemonic);
+
+    // Check for other illegal characters:
+    // goo.gl/Q8EiLb
+    String regex = "[A-Za-z, \\\\(\\\\)\\\\$0-9]";
+    Pattern p = Pattern.compile(regex);
+    Matcher m = p.matcher(mnemonic);
+
+    String mask = m.replaceAll("+").replaceAll("[^+]", "-");
+
+    if (mask.contains("-")) {
+      // At least one illegal character was detected,
+      val illegalCharacters = new StringJoiner("', '", "['", "']");
+      for (int i = 0; i < mnemonic.length(); i++) {
+        if (mask.charAt(i) == '-') {
+          illegalCharacters.add(String.valueOf(mnemonic.charAt(i)));
+        }
+      }
+      val s = "Illegal character(s) encountered: " + illegalCharacters.toString();
+      throw new IllegalArgumentException(s + " in \"" + mnemonic + "\"");
+    }
+  }
+
+  public MnemonicRepresentation(String mnemonic)
+        throws NoSuchInstructionException {
+    throwExceptionIfContainsIllegalCharacters(mnemonic);
 
     String standardized = standardizeMnemonic(mnemonic);
     String[] tokens = standardized.split(" ");
@@ -74,7 +104,7 @@ public class MnemonicRepresentation {
     int expectedNumberOfCommas;
 
     if (tokens.length > 1) { // Not "nop", "exit", etc.
-      Pattern p = Instruction.getPattern(iname);
+      MnemonicPattern p = Instruction.getPattern(iname);
 
       args = Arrays.copyOfRange(tokens,
             1, // Ignore the iname
