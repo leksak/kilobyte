@@ -6,11 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InstructionConstructorTests {
   @Test
-  void gettingTheAddPrototype() {
+  void accessingTheAddPrototype() {
     Instruction actual = Instruction.getPrototype("add");
     assertEquals(Instruction.ADD, actual);
-    //A a = new A("Hi");
-    //a.printAllStatics();
   }
 
   @Test
