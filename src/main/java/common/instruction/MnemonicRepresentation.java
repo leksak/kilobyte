@@ -1,6 +1,7 @@
 package common.instruction;
 
 import common.hardware.Register;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -32,7 +33,6 @@ public class MnemonicRepresentation {
   public String iname() {
     return iname;
   }
-
   public String[] args() {
     return args;
   }
@@ -60,7 +60,8 @@ public class MnemonicRepresentation {
     this.args = args;
   }
 
-  public MnemonicRepresentation(String mnemonic) {
+  public MnemonicRepresentation(String mnemonic)
+        throws NoSuchInstructionException {
     // Check for illegal characters
     String newline = System.getProperty("line.separator");
     if (mnemonic.contains(newline)) {
@@ -70,28 +71,44 @@ public class MnemonicRepresentation {
     String standardized = standardizeMnemonic(mnemonic);
     String[] tokens = standardized.split(" ");
     iname = tokens[0];
+    int expectedNumberOfCommas;
 
     if (tokens.length > 1) { // Not "nop", "exit", etc.
-      // Count the number of arguments
-      int argc = tokens.length - 1; // -1 for the iname
-
-      // There should be as many commas as there are arguments - 1,
-      // For an example "add $t1 $t2 $t3" has 3 arguments ($t1, $t2, $t3)
-      // and there should be 2 commas. For "jr $t1" there is one
-      // argument, so there should be zero commas.
-      int numberOfCommas = StringUtils.countMatches(mnemonic, ",");
-
-      if (numberOfCommas != argc - 1) {
-        // TODO: Document missing commas, or possibly too many
-        // TODO: i.e. "jr $t1," should not have a trailing comma
-        throw new IllegalArgumentException();
-      }
+      Pattern p = Instruction.getPattern(iname);
 
       args = Arrays.copyOfRange(tokens,
             1, // Ignore the iname
             tokens.length);
+
+      // Count the number of arguments
+      int argc = args.length;
+      expectedNumberOfCommas = argc - 1;
+
+      if (!p.correctNumberOfArguments(argc)) {
+        // There was too many arguments
+        val err = String.format("\"%s\": Expected %d arguments. Got: %d",
+              mnemonic, p.expectedNumberOfArguments, argc);
+        throw new IllegalArgumentException("Wrong number of arguments: " + err);
+      }
     } else {
       args = new String[0];
+      expectedNumberOfCommas = 0;
+    }
+
+    // There should be as many commas as there are arguments - 1,
+    // For an example "add $t1 $t2 $t3" has 3 arguments ($t1, $t2, $t3)
+    // and there should be 2 commas. For "jr $t1" there is one
+    // argument, so there should be zero commas.
+    val actualNumberOfCommas = StringUtils.countMatches(mnemonic, ",");
+
+    if (actualNumberOfCommas != expectedNumberOfCommas) {
+      // TODO: Document missing commas, or possibly too many
+      // TODO: i.e. "jr $t1," should not have a trailing comma
+      val actual = actualNumberOfCommas;
+      val expected = expectedNumberOfCommas;
+      String err = String.format("\"%s\". Expected: %d. Got: %d",
+            mnemonic, expected, actual);
+      throw new IllegalArgumentException("Wrong number of commas: " + err);
     }
 
     StringJoiner sj = new StringJoiner(", ");

@@ -140,7 +140,7 @@ class Instruction private constructor(
           numericExample = 0,
           description = "Null operation : machine code is all zeroes",
           format = Format.R,
-          pattern = Pattern.INAME_RD_RS_RT,
+          pattern = Pattern.NOP,
           funct = 0x20,
           conditions = nop)
 
@@ -196,6 +196,19 @@ class Instruction private constructor(
           identifiedByTheirOpcodeAlone[prototype.opcode] = prototype
         }
       }
+    }
+
+    /**
+     * Needed for MnemonicRepresentation to validate whether or not
+     * a symbolic representation is well formed with respect to
+     * the instruction that it s.
+     */
+    @Throws(NoSuchInstructionException::class)
+    @JvmStatic fun getPattern(iname: String): Pattern {
+      if (inameToPrototype.containsKey(iname)) {
+       return inameToPrototype[iname]!!.pattern
+      }
+      throw NoSuchInstructionException("There is no instruction named: ", iname)
     }
 
     @JvmStatic fun getPrototype(iname: String): Instruction {
