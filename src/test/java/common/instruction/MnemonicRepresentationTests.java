@@ -38,6 +38,14 @@ public class MnemonicRepresentationTests {
   }
 
   @Test
+  void testThatAddCannotContainParentheses() {
+    String faultyAddRepresentation = "add $t1, $t2, $t3()";
+    Throwable e = expectThrows(IllegalArgumentException.class, () ->
+          new MnemonicRepresentation(faultyAddRepresentation));
+    success(e.getMessage());
+  }
+
+  @Test
   void testThatWhiteSpaceBetweenArgumentsDoNotMatter() throws Exception {
     new MnemonicRepresentation("add $t1,$t2,$t3");
   }

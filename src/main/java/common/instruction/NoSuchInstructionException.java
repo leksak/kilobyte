@@ -5,6 +5,11 @@ public class NoSuchInstructionException extends Exception {
     super(s);
   }
 
+  public NoSuchInstructionException(int machineCode) {
+    super(String.valueOf(machineCode));
+  }
+
+
   public NoSuchInstructionException(String formatString, Object... args) {
     this(String.format(formatString, args));
   }

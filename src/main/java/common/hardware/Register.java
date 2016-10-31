@@ -50,7 +50,8 @@ public enum Register {
   $sp("Stack pointer"),
   $fp("Frame pointer"),
 
-  $ra("Return address (used by function call)"),;
+  $ra("Return address (used by function call)"),
+  ;
   public int value;
   private final String description;
 
@@ -66,6 +67,10 @@ public enum Register {
 
   public static String toString(int index) {
     return fromIndex(index).toString();
+  }
+
+  public static Register fromInt(int machineCode) {
+    return fromIndex(machineCode);
   }
 
   public static Register fromIndex(int index) {

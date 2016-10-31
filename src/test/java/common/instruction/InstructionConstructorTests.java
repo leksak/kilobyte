@@ -15,6 +15,7 @@ class InstructionConstructorTests {
   void gettingTheNOPInstructionFromAllZeroes() throws NoSuchInstructionException {
     Instruction actual = Instruction.unsafeFrom(0);
     assertEquals(Instruction.NOP, actual);
+    int x = 0xafbf0004;
   }
 
   @Test

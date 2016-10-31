@@ -68,7 +68,8 @@ import java.util.*
  *                       instruction instance as the mnemonicExample property
  * @property description A description of the semantics of the instruction
  * @property primordial A boolean flag set to true if the Instruction is
- *                  the first of its kind. Exists solely to simplify
+ *                  the first of its kind, existing from the beginning
+ *                  of the run-time; exists solely to simplify
  *                  the internal static initialization of the class.
  * @property format The format of the instruction
  * @property pattern The pattern that the symbolic representation of the
@@ -88,29 +89,46 @@ import java.util.*
 class Instruction private constructor(
       val iname: String,
       val opcode: Int,
-      val mnemonicExample: String,
-      val numericExample: Int,
+      val mnemonicExamples: Array<String>,
+      val numericExamples: Array<Long>, // Has to be Long to deal with overflow
       val description: String,
       val primordial: Boolean = true,
       val format: Format,
-      val pattern: MnemonicPattern,
+      val pattern: (s: String) -> MnemonicRepresentation,
       var type: Type? = null,
       var rt: Int? = null,
       var funct: Int? = null,
       vararg var conditions: Condition = emptyArray()) {
-  val example = InstructionExample(mnemonicExample, numericExample)
+  val examples = InstructionExample.examplesFrom(mnemonicExamples, numericExamples)
 
   init {
     if (primordial) {
-      prototypeSet.add(this)
+      primordialSet.add(this)
     }
   }
+
+  constructor(
+        iname: String,
+        opcode: Int,
+        mnemonicExample: String,
+        numericExample: Long, // Has to be Long to deal with overflow
+        description: String,
+        primordial: Boolean = true,
+        format: Format,
+        pattern: (s: String) -> MnemonicRepresentation,
+        type: Type? = null,
+        rt: Int? = null,
+        funct: Int? = null,
+        vararg conditions: Condition = emptyArray()): this (
+        iname, opcode, arrayOf(mnemonicExample), arrayOf(numericExample),
+        description, primordial, format, pattern, type, rt, funct, *conditions
+  )
   
   constructor(inst: Instruction): this(
         inst.iname,
         inst.opcode,
-        inst.mnemonicExample,
-        inst.numericExample,
+        inst.mnemonicExamples,
+        inst.numericExamples,
         inst.description,
         false,
         inst.format,
@@ -119,11 +137,11 @@ class Instruction private constructor(
         inst.rt,
         inst.funct,
         *inst.conditions) { // The star is the "spread" operator. Google it
-    
+
   }
 
   companion object InstructionSet {
-    val prototypeSet = mutableListOf<Instruction>()
+    val primordialSet = mutableListOf<Instruction>()
 
     val shamt_is_zero = Condition(
           {it -> if (it.shamt() == 0) {
@@ -143,25 +161,35 @@ class Instruction private constructor(
     @JvmField val ADD = Instruction(
           iname = "add",
           opcode = 0,
+          funct = 0x20,
           mnemonicExample = "add \$t1, \$t2, \$t3",
           numericExample = 0x014b4820,
           description = "Addition with overflow,. Put the" +
                 " sum of registers rs and rt into register" +
                 " rd. Is only valid if shamt is 0.",
           format = Format.R,
-          pattern = MnemonicPattern.INAME_RD_RS_RT,
-          funct = 0x20,
+          pattern = ::INAME_RD_RS_RT,
           conditions = shamt_is_zero)
     @JvmField val NOP = Instruction(
           iname = "nop",
           opcode = 0,
+          funct = 0,
           mnemonicExample = "nop",
           numericExample = 0,
-          description = "Null operation : machine code is all zeroes",
+          description = "Null operation; do nothing. " +
+                "Machine code is all zeroes.",
           format = Format.R,
-          pattern = MnemonicPattern.NOP,
-          funct = 0x20,
+          pattern = ::NOP_PATTERN,
           conditions = nop)
+    /*@JvmField val SW = Instruction(
+          iname = "sw",
+          opcode = 0x2b, // 43
+          mnemonicExamples = arrayOf("sw \$ra, 4(\$sp)", "sw \$a0, 0(\$sp)"),
+          numericExamples = arrayOf(0xafbf0004, 0xafa40000),
+          description = "Store the word from register rt at address.",
+          format = Format.I,
+          pattern = ::INAME_RT_RS_ADDR
+    )*/
 
     // Lookup table
     // You can take the name of an Instruction and create
@@ -186,7 +214,7 @@ class Instruction private constructor(
           = Array(64, { null })
 
     init {
-      for (prototype in prototypeSet) {
+      for (prototype in primordialSet) {
         val iname = prototype.iname
         inameToPrototype.put(iname, prototype)
 
@@ -223,7 +251,7 @@ class Instruction private constructor(
      * the instruction that it s.
      */
     @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun getPattern(iname: String): MnemonicPattern {
+    @JvmStatic fun getPattern(iname: String): (s: String) -> MnemonicRepresentation {
       if (inameToPrototype.containsKey(iname)) {
        return inameToPrototype[iname]!!.pattern
       }
@@ -237,7 +265,13 @@ class Instruction private constructor(
       return inameToPrototype[iname] as Instruction
     }
 
-    private fun getPrototype(machineCode: Int): Instruction? {
+    @Throws(NoSuchInstructionException::class)
+    @JvmStatic fun getIname(machineCode: Int): String {
+      return getPrototype(machineCode).iname
+    }
+
+    @Throws(NoSuchInstructionException::class)
+    private fun getPrototype(machineCode: Int): Instruction {
       val opcode = machineCode.opcode()
 
       // Check if the entire number is 0s, then we have a nop instruction
@@ -245,22 +279,28 @@ class Instruction private constructor(
       // we have to treat one of them as a special-case. Nop seemed easiest
       // to handle as a special case.
       if (machineCode == 0x00) {
-        return inameToPrototype["nop"]
+        return getPrototype("nop")
       }
 
+      val inst: Instruction?
       if (opcode == 0) {
-        return opcodeEquals0x00IdentifiedByFunct[machineCode.funct()]
+        inst = opcodeEquals0x00IdentifiedByFunct[machineCode.funct()]
       } else if (opcode == 0x1c) {
-        return opcodeEquals0x1cIdentifiedByFunct[machineCode.funct()]
+        inst = opcodeEquals0x1cIdentifiedByFunct[machineCode.funct()]
       } else if (opcode == 0x01) {
-        return opcodeEquals0x01IdentifiedByRt[machineCode.rt()]
+        inst = opcodeEquals0x01IdentifiedByRt[machineCode.rt()]
       } else {
-        return identifiedByTheirOpcodeAlone[opcode]
+        inst = identifiedByTheirOpcodeAlone[opcode]
       }
+
+      if (inst == null) {
+        throw NoSuchInstructionException(machineCode)
+      }
+      return inst
     }
 
-    @JvmStatic fun allExamples(): Iterable<InstructionExample> {
-      return prototypeSet.map { it.example }
+    @JvmStatic fun allExamples(): Iterable<Array<InstructionExample>> {
+      return primordialSet.map { it.examples }
     }
 
     /**
@@ -271,7 +311,7 @@ class Instruction private constructor(
      *                        which are executable. (not yet supported)
      */
     @JvmStatic fun printInstructionSet(onlyExecutables: Boolean = false) {
-      for (prototype in prototypeSet) {
+      for (prototype in primordialSet) {
         println(prototype.iname)
       }
     }
