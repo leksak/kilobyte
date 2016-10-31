@@ -1,5 +1,6 @@
 package common.instruction
 
+import common.instruction.Instruction.InstructionSet.prototypeSet
 import io.atlassian.fugue.Either
 import java.util.*
 
@@ -67,6 +68,9 @@ import java.util.*
  * @property numericExample A numeric representation of <i>the same</i>
  *                       instruction instance as the mnemonicExample property
  * @property description A description of the semantics of the instruction
+ * @property primordial A boolean flag set to true if the Instruction is
+ *                  the first of its kind. Exists solely to simplify
+ *                  the internal static initialization of the class.
  * @property format The format of the instruction
  * @property pattern The pattern that the symbolic representation of the
  *                instruction adheres to. For an example, the "add"
@@ -97,12 +101,19 @@ class Instruction private constructor(
   val example = InstructionExample(mnemonicExample, numericExample)
 
   companion object InstructionSet {
-    val shamt_is_zero: Condition = Condition(
+    val shamt_is_zero = Condition(
           {it -> if (it.shamt() == 0) {
             ConditionResult.Success()
           } else {
             ConditionResult.Failure("Shamt has to be zero. Got: " + it)
           }}
+    )
+    val nop = Condition(
+      {it -> if (it == 0) {
+        ConditionResult.Success()
+      } else {
+        ConditionResult.Failure("The entire number needs to be zero. Got: " + it)
+      }}
     )
 
     @JvmField val ADD = Instruction(
@@ -117,14 +128,22 @@ class Instruction private constructor(
           pattern = Pattern.INAME_RD_RS_RT,
           funct = 0x20,
           conditions = shamt_is_zero)
+    @JvmField val NOP = Instruction(
+          iname = "nop",
+          opcode = 0,
+          mnemonicExample = "nop",
+          numericExample = 0,
+          description = "Null operation : machine code is all zeroes",
+          format = Format.R,
+          pattern = Pattern.INAME_RD_RS_RT,
+          funct = 0x20,
+          conditions = nop)
 
-    val prototypeSet: Array<Instruction> = arrayOf(
-          ADD
-    )
+    val prototypeSet = arrayOf(ADD, NOP)
 
     // Lookup table
     // You can take the name of an Instruction and create
-    // an Instruction of the same sort, i.e. 
+    // an Instruction of the same sort, i.e.
     // inameToPrototype["add"] yields a reference
     // to Instruction.ADD, from which other "add" instructions can
     // be derived provided you have a symbolic representation to
@@ -202,7 +221,7 @@ class Instruction private constructor(
         return opcodeEquals0x01IdentifiedByRt[machineCode.rt()]
       } else {
         return identifiedByTheirOpcodeAlone[opcode]
-      }  
+      }
     }
 
     @JvmStatic fun allExamples(): Iterable<InstructionExample> {
@@ -254,6 +273,10 @@ class Instruction private constructor(
       throw NoSuchInstructionException(
             "Couldn't instantiate Instruction from \"%d\"", i)
     }
+
+    @Throws(NoSuchInstructionException::class)
+    @JvmStatic fun unsafeFrom(i: Int) = getPrototype(i)
   }
 }
+
 
