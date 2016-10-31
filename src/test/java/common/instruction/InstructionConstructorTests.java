@@ -18,7 +18,7 @@ class InstructionConstructorTests {
   }
 
   @Test
-  void checkThatAllPrototypesCreateEqualInstancesFromTheirExamples() throws Exception {
+  void checkThatAllPrototypesCreateEqualInstancesFromTheirRespectiveExamples() throws Exception {
     /*for (InstructionExample p : InstructionSet.allExamples()) {
       String mnemonic = p.getMnemonicExample();
       int numeric = p.getNumericExample();

@@ -105,6 +105,22 @@ class Instruction private constructor(
       prototypeSet.add(this)
     }
   }
+  
+  constructor(inst: Instruction): this(
+        inst.iname,
+        inst.opcode,
+        inst.mnemonicExample,
+        inst.numericExample,
+        inst.description,
+        false,
+        inst.format,
+        inst.pattern,
+        inst.type,
+        inst.rt,
+        inst.funct,
+        *inst.conditions) { // The star is the "spread" operator. Google it
+    
+  }
 
   companion object InstructionSet {
     val prototypeSet = mutableListOf<Instruction>()
