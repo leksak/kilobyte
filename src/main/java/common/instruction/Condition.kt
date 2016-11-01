@@ -38,6 +38,39 @@ sealed class ConditionResult {
 }
 
 /**
+ * One could argue that this class is superfluous and it is, the conditions
+ * can be derived from the parametrized mnemonic representation pattern
+ * at the expense of type-checking and the quality of the error messages.
+ *
+ * For an example, R-format instructions expressed on the form
+ *
+ * iname rd, rs, rt (such as add)
+ *
+ * require that the shamt field be zero.
+ *
+ * Instructions on the form,
+ *
+ * iname rd, rs (such as clo)
+ *
+ * require that rt and shamt is zero
+ *
+ * Instructions on the form
+ *
+ * iname rs, rt (such as msub)
+ *
+ * require that rd and shamt is zero
+ *
+ * Instructions on the form
+ *
+ * iname rt, imm (such as lui)
+ *
+ * require that rd is zero
+ *
+ * Instructions on the form
+ *
+ * iname rd (such as mfhi)
+ *
+ * demands that rs, rt, and shamt are all zero.
  *
  */
 class Condition(val f: (n: Int) -> ConditionResult, val mask: Int = 0) {
