@@ -1,9 +1,7 @@
 package common.instruction
 
-import common.instruction.mnemonic.INAME_RD_RS_RT
 import common.instruction.mnemonic.MnemonicPattern
 import common.instruction.mnemonic.MnemonicRepresentation
-import common.instruction.mnemonic.NOP_PATTERN
 import io.atlassian.fugue.Either
 import java.util.*
 
@@ -130,7 +128,7 @@ class Instruction private constructor(
         description: String,
         primordial: Boolean = true,
         format: Format,
-        pattern: (s: String) -> MnemonicRepresentation,
+        pattern: MnemonicPattern,
         type: Type? = null,
         rt: Int? = null,
         funct: Int? = null,
@@ -258,7 +256,7 @@ class Instruction private constructor(
      * the instruction that it s.
      */
     @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun getPattern(iname: String): (s: String) -> MnemonicRepresentation {
+    @JvmStatic fun getPattern(iname: String): MnemonicPattern {
       if (inameToPrototype.containsKey(iname)) {
        return inameToPrototype[iname]!!.pattern
       }

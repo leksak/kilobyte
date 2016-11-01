@@ -6,7 +6,7 @@ import common.instruction.rs
 import org.apache.commons.lang3.StringUtils
 import java.util.regex.Pattern
 
-private fun standardizeMnemonic(mnemonic: String): String {
+fun standardizeMnemonic(mnemonic: String): String {
   // Begin by replacing all commas with a space,
   // thereby transforming:
   //
@@ -145,6 +145,9 @@ class MnemonicPattern(
       val fromStringToMnemonic: (String) -> MnemonicRepresentation,
       val fromMachineCodeToMnemonic: (Int) -> MnemonicRepresentation
 ) {
+  fun invoke(mnemonic: String) = fromStringToMnemonic.invoke(mnemonic)
+  fun invoke(machineCode : Int) = fromMachineCodeToMnemonic.invoke(machineCode)
+
   companion object Factory {
     @JvmField val NOP_PATTERN = MnemonicPattern(
           ::nopFromString,
