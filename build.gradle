@@ -9,17 +9,24 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M2'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'findbugs'
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+}
+
+compileTestJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 }
 
 dependencies {
@@ -28,7 +35,8 @@ dependencies {
     // Used to perform analysis on input arguments and the like
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 
-    // Primarily used for functional monads such as Either
+    // Primarily used for functional "monads" such as Either. Java
+    // doesn't have real monads.
     compile 'io.atlassian.fugue:fugue:4.3.0'
 
     // Used to remove a lot of Java boilerplate
@@ -43,5 +51,5 @@ dependencies {
     // Used for checking Preconditions mostly
     compile 'com.google.guava:guava:19.0'
 
-    testCompile 'org.junit.jupiter.junit-jupiter-api:5.0.0-M2'
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.0.0-M2")
 }

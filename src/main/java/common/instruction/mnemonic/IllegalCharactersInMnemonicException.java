@@ -1,4 +1,4 @@
-package common.instruction;
+package common.instruction.mnemonic;
 
 import lombok.val;
 

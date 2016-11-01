@@ -1,5 +1,8 @@
 package common.instruction
 
+import common.instruction.mnemonic.INAME_RD_RS_RT
+import common.instruction.mnemonic.MnemonicRepresentation
+import common.instruction.mnemonic.NOP_PATTERN
 import io.atlassian.fugue.Either
 import java.util.*
 

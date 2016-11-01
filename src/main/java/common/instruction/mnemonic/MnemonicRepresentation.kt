@@ -1,10 +1,12 @@
-package common.instruction;
+package common.instruction.mnemonic
 
-import common.hardware.Register
+import common.instruction.Instruction
+import common.instruction.rd
+import common.instruction.rs
+import common.instruction.rt
 import org.apache.commons.lang3.StringUtils
-
-import java.util.StringJoiner
 import java.util.regex.Pattern
+
 
 private fun standardizeMnemonic(mnemonic: String): String {
   // Begin by replacing all commas with a space,
@@ -14,17 +16,19 @@ private fun standardizeMnemonic(mnemonic: String): String {
   //
   // so we get
   //
-  // add $t1 $t2  $t3 (double space before $t3)
+  // add $t1, $t2,   $t3 (triple space before $t3)
   //
   // Then, replace all white-space characters (\\s+) with a single
   // space and remove any leading or trailing spaces (trim).
   //
   // This would standardize both "add $t1, $t2, $t3" and
   // "    add $t1,$t2,  $t3  " to the same string, namely
-  // "add $t1 $t2 $t3". This sequence of operations also standardizes
+  // "add $t1, $t2, $t3". 
+  // 
+  // This sequence of operations also standardizes
   // "jr $t1" to "jr $t1" (identity transformation).
-  return mnemonic.replace(",", " ")
-        .replace("\\s+", " ")
+  return mnemonic.replace(",", ", ")
+        .replace(Regex("\\s+"), " ")
         .trim()
 }
 
@@ -47,15 +51,15 @@ fun throwExceptionIfContainsIllegalCharacters(standardizedMnemonic: String) {
   // Check for other illegal characters:
   // goo.gl/Q8EiLb
   val regex = "[A-Za-z, ()0-9]"
-  val p = Pattern.compile(regex);
+  val p = Pattern.compile(regex)
   val matcher = p.matcher(standardizedMnemonic)
 
   // Get rid of any pre-existing plus signs ?
-  val mask = matcher.replaceAll("+").replace("[^+]", "-");
+  val mask = matcher.replaceAll("+").replace("[^+]", "-")
 
   if (mask.contains("-")) {
     // At least one illegal character was detected,
-    val illegalCharacters = StringJoiner("', '", "['", "']")
+    val illegalCharacters = java.util.StringJoiner("', '", "['", "']")
     for (i in 0..standardizedMnemonic.length) {
       if (mask[i] == '-') {
         illegalCharacters.add(standardizedMnemonic[i].toString())
@@ -77,8 +81,9 @@ fun throwIfIncorrectNumberOfCommas(expectedNumberOfCommas: Int, standardizedMnem
 }
 
 fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : String) {
-  // - 1 for the instruction name
-  val actualArgc = standardizedMnemonic.split(" ").size - 1
+  // -1 for the instruction name
+  val withoutCommas = standardizedMnemonic.replace(",", "")
+  val actualArgc = withoutCommas.split(" ").size - 1
 
   if (expectedArgc == actualArgc) { return }
 
@@ -93,10 +98,10 @@ fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : Strin
 fun INAME_RD_RS_RT(mnemonic: String): MnemonicRepresentation {
   val argc = 3
 
-  // There should be as many commas as there are arguments - 1,
+  // There should be as many commas as there are (expected) arguments - 1,
   // For an example "add $t1, $t2, $t3" has 3 arguments ($t1, $t2, $t3)
   // so there should be two commas.
-  throwIfIncorrectNumberOfCommas(argc - 1, mnemonic)
+  throwIfIncorrectNumberOfCommas(2, mnemonic)
 
   val standardizedMnemonic = standardizeMnemonic(mnemonic)
   throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
@@ -113,20 +118,19 @@ fun INAME_RD_RS_RT(mnemonic: String): MnemonicRepresentation {
  */
 fun INAME_RD_RS_RT(machineCode: Int): MnemonicRepresentation {
   // TODO: Don't forget to apply all the condition masks
-  val iname = Instruction.getIname(machineCode)
-  val rd = Register.fromInt(machineCode.rd()).toString()
-  val rs = Register.fromInt(machineCode.rs()).toString()
-  val rt = Register.fromInt(machineCode.rt()).toString()
+  val iname = common.instruction.Instruction.InstructionSet.getIname(machineCode)
+  val rd = common.hardware.Register.fromInt(machineCode.rd()).toString()
+  val rs = common.hardware.Register.fromInt(machineCode.rs()).toString()
+  val rt = common.hardware.Register.fromInt(machineCode.rt()).toString()
   return MnemonicRepresentation(iname, rd, rs, rt)
 }
 
 fun NOP_PATTERN(mnemonic: String): MnemonicRepresentation {
-  val standardizedMnemonic = standardizeMnemonic(mnemonic)
-  throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
+  throwExceptionIfContainsIllegalCharacters(mnemonic)
 
   // This pattern shouldn't contain any parens
-  throwExceptionIfContainsParentheses(standardizedMnemonic)
-  throwIfIncorrectNumberOfArgs(0, standardizedMnemonic)
+  throwExceptionIfContainsParentheses(mnemonic)
+  throwIfIncorrectNumberOfArgs(0, mnemonic)
 
   return MnemonicRepresentation("nop")
 }
@@ -136,22 +140,25 @@ class MnemonicRepresentation {
   val standardizedMnemonic: String
   val iname: String
 
-  constructor(mnemonic: String) {
-    iname = mnemonic.split(' ')[0]
-    Instruction.getPattern(iname).invoke(mnemonic)
-    standardizedMnemonic = standardizeMnemonic(mnemonic)
+  internal constructor(standardizedMnemonic: String) {
+    this.standardizedMnemonic = standardizedMnemonic
+    iname = standardizedMnemonic.split(" ")[0]
   }
-
-
+  
   internal constructor(iname: String,
                        vararg args: String) {
     // TODO: Will also probably have to capture the numeric rep here
-    val sj = StringJoiner(", ")
+    val sj = java.util.StringJoiner(", ")
     args.map { sj.add(it) }
     this.standardizedMnemonic = "%s %s".format(iname, sj.toString())
     this.iname = iname
-    println(iname)
-    println(args)
-    Instruction.getPattern(iname).invoke(standardizedMnemonic)
+  }
+
+  companion object Factory {
+    @JvmStatic fun fromString(mnemonic: String): MnemonicRepresentation {
+      val standardizedMnemonic = standardizeMnemonic(mnemonic)
+      val iname = standardizedMnemonic.split(" ")[0]
+      return Instruction.getPattern(iname).invoke(standardizedMnemonic)
+    }
   }
 }
