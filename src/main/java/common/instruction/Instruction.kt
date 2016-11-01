@@ -1,6 +1,7 @@
 package common.instruction
 
 import common.instruction.mnemonic.INAME_RD_RS_RT
+import common.instruction.mnemonic.MnemonicPattern
 import common.instruction.mnemonic.MnemonicRepresentation
 import common.instruction.mnemonic.NOP_PATTERN
 import io.atlassian.fugue.Either
@@ -97,7 +98,7 @@ class Instruction private constructor(
       val description: String,
       val primordial: Boolean = true,
       val format: Format,
-      val pattern: (s: String) -> MnemonicRepresentation,
+      val pattern: MnemonicPattern,
       var type: Type? = null,
       var rt: Int? = null,
       var funct: Int? = null,
@@ -175,7 +176,7 @@ class Instruction private constructor(
                 " sum of registers rs and rt into register" +
                 " rd. Is only valid if shamt is 0.",
           format = Format.R,
-          pattern = ::INAME_RD_RS_RT,
+          pattern = MnemonicPattern.INAME_RD_RS_RT,
           conditions = shamt_is_zero)
     @JvmField val NOP = Instruction(
           iname = "nop",
@@ -186,7 +187,7 @@ class Instruction private constructor(
           description = "Null operation; do nothing. " +
                 "Machine code is all zeroes.",
           format = Format.R,
-          pattern = ::NOP_PATTERN)
+          pattern = MnemonicPattern.NOP_PATTERN)
     /*@JvmField val SW = Instruction(
           iname = "sw",
           opcode = 0x2b, // 43
