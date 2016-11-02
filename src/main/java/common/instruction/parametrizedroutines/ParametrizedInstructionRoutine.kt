@@ -1,9 +1,11 @@
-package common.instruction
+package common.instruction.parametrizedroutines
 
 import io.atlassian.fugue.Either
 
 import com.google.common.base.Preconditions.checkArgument
 import common.hardware.Register
+import common.instruction.*
+import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import java.util.*
 import java.util.regex.Pattern
 
@@ -64,10 +66,9 @@ interface ParametrizedInstructionRoutine {
   }
 }
 
-
 // For use with add, etc. but not sw, etc.
 fun throwExceptionIfContainsParentheses(standardizedMnemonic: String) {
-  if (standardizedMnemonic.matches(Regex(".*[()].*"))) {
+  if (standardizedMnemonic.containsParentheses()) {
     throw IllegalCharactersInMnemonicException(
           standardizedMnemonic, "<parentheses>")
   }
@@ -75,8 +76,7 @@ fun throwExceptionIfContainsParentheses(standardizedMnemonic: String) {
 
 fun throwExceptionIfContainsIllegalCharacters(standardizedMnemonic: String) {
   // Throw an exception if the passed string contains a new line character
-  val newline = System.getProperty("line.separator");
-  if (standardizedMnemonic.contains(newline)) {
+  if (standardizedMnemonic.containsNewlineCharacter()) {
     throw
     IllegalCharactersInMnemonicException(standardizedMnemonic, "<newline>")
   }
@@ -126,11 +126,11 @@ fun standardizeMnemonic(mnemonic: String): String {
   // Then, replace all white-space characters (\\s+) with a single
   // space and remove any leading or trailing spaces (trim).
   //
-  // This would standardize both "add $t1, $t2, $t3" and
+  // This would normalise both "add $t1, $t2, $t3" and
   // "    add $t1,$t2,  $t3  " to the same string, namely
   // "add $t1, $t2, $t3".
   //
-  // This sequence of operations also standardizes
+  // This sequence of operations also normalises
   // "jr $t1" to "jr $t1" (identity transformation).
   return mnemonic.replace(",", ", ")
         .replace(Regex("\\s+"), " ")

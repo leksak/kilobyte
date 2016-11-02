@@ -1,5 +1,7 @@
 package common.hardware;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 public enum Register {
   // Registers 0 through 3
   $zero("Constant 0"),
@@ -65,6 +67,10 @@ public enum Register {
     this.value = initialValue;
   }
 
+  public static boolean equals(String s1, String s2) {
+    return Register.fromString(s1) == Register.fromString(s2);
+  }
+
   public static String toString(int index) {
     return fromIndex(index).toString();
   }
@@ -78,6 +84,8 @@ public enum Register {
   }
 
   public static Register fromString(String mnemonic) {
+    checkArgument(mnemonic.startsWith("$"), "Registers has to start with a \"$\"");
+
     String sansDollarSign = mnemonic.replace("$", "");
     if (sansDollarSign.matches("[0-9]+")) {
       // A non-symbolic name was passed, such as "$8" as opposed

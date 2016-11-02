@@ -12,6 +12,14 @@ class InstructionConstructorTests {
     assertEquals(Instruction.ADD, actual);
   }
 
+  @Test
+  void nonSymbolicNamesAreHandledAsWell() throws Exception {
+    Instruction actual = Instruction.from("add $9, $10, $11");
+    Instruction expected = Instruction.from("add $t1, $t2, $t3");
+
+    assertEquals(expected, actual);
+  }
+
   /*
   @Test
   void gettingTheNOPInstructionFromAllZeroes() throws NoSuchInstructionException {

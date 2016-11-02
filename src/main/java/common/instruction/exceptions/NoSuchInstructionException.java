@@ -1,4 +1,4 @@
-package common.instruction;
+package common.instruction.exceptions;
 
 public class NoSuchInstructionException extends Exception {
   public NoSuchInstructionException(String iname) {

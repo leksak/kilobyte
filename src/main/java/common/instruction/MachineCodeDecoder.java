@@ -5,12 +5,12 @@ import javax.annotation.Nonnull;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class MachineCodeDecoder {
-  public static boolean equals(String s1, String s2) {
+public interface MachineCodeDecoder {
+  static boolean equals(String s1, String s2) {
     return decode(s1) == decode(s2);
   }
 
-  public static int decode(@Nonnull String s) {
+  static int decode(@Nonnull String s) {
     checkNotNull(s);
     checkArgument(s.length() >= 1,
           "Expected input argument to have non-zero length");

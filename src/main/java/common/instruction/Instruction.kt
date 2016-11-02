@@ -1,5 +1,9 @@
 package common.instruction
 
+import common.instruction.exceptions.NoSuchInstructionException
+import common.instruction.parametrizedroutines.ParametrizedInstructionRoutine
+import common.instruction.parametrizedroutines.iname
+import common.instruction.parametrizedroutines.mnemonicEquals
 import io.atlassian.fugue.Either
 import java.util.*
 
@@ -84,17 +88,17 @@ import java.util.*
  * @property funct Like the @rt property but for the funct field.
  */
 data class Instruction private constructor(
-        val iname: String,
-        val opcode: Int,
-        val mnemonicRepresentation: String,
-        val numericRepresentation: Long, // Long because of overflow
-        val description: String,
-        val format: Format,
-        val pattern: ParametrizedInstructionRoutine,
-        val primordial: Boolean = true,
-        var type: Type? = null,
-        var rt: Int? = null,
-        var funct: Int? = null) {
+      val iname: String,
+      val opcode: Int,
+      val mnemonicRepresentation: String,
+      val numericRepresentation: Long, // Long because of overflow
+      val description: String,
+      val format: Format,
+      val pattern: ParametrizedInstructionRoutine,
+      val primordial: Boolean = true,
+      var type: Type? = null,
+      var rt: Int? = null,
+      var funct: Int? = null) {
   val example = Example(mnemonicRepresentation, numericRepresentation)
 
   override fun equals(other: Any?): Boolean {
@@ -105,7 +109,7 @@ data class Instruction private constructor(
         return (iname == other.iname)
               && (opcode == other.opcode)
               // TODO: We should probably treat $8 the same as $t1($t0??)...
-              && (mnemonicRepresentation == other.mnemonicRepresentation)
+              && (mnemonicEquals(mnemonicRepresentation,other.mnemonicRepresentation))
               && (numericRepresentation == other.numericRepresentation)
               && (format == other.format)
       }

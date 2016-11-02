@@ -1,4 +1,4 @@
-package common.instruction;
+package common.instruction.exceptions;
 
 import lombok.val;
 
