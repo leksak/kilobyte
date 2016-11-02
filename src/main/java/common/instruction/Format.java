@@ -5,8 +5,10 @@ public enum Format {
   I(6, 5, 5, 16),
   J(6, 26);
 
-  Format(int... decomposition) {
+  public final int[] lengths;
 
+  Format(int... lengths) {
+    this.lengths = lengths;
   }
 
   public static long fieldsToMachineCode(int opcode, int rs, int rt, int rd, int shamt, int funct) {

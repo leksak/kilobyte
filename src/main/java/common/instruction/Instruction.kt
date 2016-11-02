@@ -1,5 +1,6 @@
 package common.instruction
 
+import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.NoSuchInstructionException
 import common.instruction.parametrizedroutines.ParametrizedInstructionRoutine
 import common.instruction.parametrizedroutines.iname
@@ -100,6 +101,7 @@ data class Instruction private constructor(
       var rt: Int? = null,
       var funct: Int? = null) {
   val example = Example(mnemonicRepresentation, numericRepresentation)
+  val decomposed = DecomposedRepresentation.fromNumber(numericRepresentation, *format.lengths)
 
   override fun equals(other: Any?): Boolean {
     if (other == null) return false
@@ -108,7 +110,6 @@ data class Instruction private constructor(
       is Instruction -> {
         return (iname == other.iname)
               && (opcode == other.opcode)
-              // TODO: We should probably treat $8 the same as $t1($t0??)...
               && (mnemonicEquals(mnemonicRepresentation,other.mnemonicRepresentation))
               && (numericRepresentation == other.numericRepresentation)
               && (format == other.format)
