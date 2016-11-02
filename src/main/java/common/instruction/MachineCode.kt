@@ -2,15 +2,29 @@ package common.instruction
 
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 
+/* Kotlin affords us the ability to extend primitive, and other,
+ * classes - which let's us perform operations on them without
+ * polluting our code with "StringUtil", "IntegerUtil", ... classes
+ * populated with static methods. In Kotlin we can then write,
+ *
+ * 2.bits(4, 3)
+ *
+ * for an example (see the below "bits" function). But this does not
+ * translate to Java so be wary.
+ *
+ * Read more here: goo.gl/8BVUYb
+ *
+ * Note: This shouldn't be a "Javadoc" comment. Kotlin uses KDoc
+ * https://kotlinlang.org/docs/reference/kotlin-doc.html
+ */
+
 /* Convenience functions */
-fun Long.opcode() = this.toInt().opcode()
+fun Long.opcode() = this shr 26
 fun Long.rs() = this.toInt().rs()
 fun Long.rt() = this.toInt().rt()
 fun Long.rd() = this.toInt().rd()
 fun Long.shamt() = this.toInt().shamt()
 fun Long.funct() = this.toInt().funct()
-
-
 
 /* Convenience functions */
 fun Int.opcode() = this shr 26

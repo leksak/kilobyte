@@ -2,6 +2,7 @@ package common.instruction.parametrizedroutines
 
 import common.hardware.Register
 import org.apache.commons.lang3.StringUtils
+import java.util.*
 
 fun String.containsParentheses() = this.matches(Regex(".*[()].*"))
 fun String.countCommas(): Int = StringUtils.countMatches(this, ",")
@@ -10,12 +11,12 @@ fun String.containsNewlineCharacter(): Boolean = {
 }.invoke()
 
 fun String.tokenize(includeIname: Boolean = true): Array<String> = {
-  val a = this.trim().replace(",", " ").replace(Regex("\\s+"), " ").split(" ")
-  if (includeIname) {
-    a.toTypedArray()
-  } else {
-    a.slice(1..a.size - 1).toTypedArray()
+  var a = this.trim().replace(",", " ").replace(Regex("\\s+"), " ").split(" ").toTypedArray()
+  if (!includeIname) {
+    // Remove the name
+    a = Arrays.copyOfRange(a, 1, a.size)
   }
+  a
 }.invoke()
 
 fun String.iname(): String = this.tokenize()[0]
