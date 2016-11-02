@@ -18,6 +18,15 @@ import com.google.common.base.Preconditions.checkArgument
  * https://kotlinlang.org/docs/reference/kotlin-doc.html
  */
 
+/* Convenience functions */
+fun Long.opcode() = this.toInt().opcode()
+fun Long.rs() = this.toInt().rs()
+fun Long.rt() = this.toInt().rt()
+fun Long.rd() = this.toInt().rd()
+fun Long.shamt() = this.toInt().shamt()
+fun Long.funct() = this.toInt().funct()
+
+/* Convenience functions */
 fun Int.opcode() = this shr 26
 fun Int.rs() = this.bits(25, 21)
 fun Int.rt() = this.bits(20, 16)

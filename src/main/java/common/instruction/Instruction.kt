@@ -1,6 +1,5 @@
 package common.instruction
 
-import common.instruction.mnemonic.MnemonicPattern
 import io.atlassian.fugue.Either
 import java.util.*
 
@@ -88,20 +87,45 @@ data class Instruction private constructor(
         val iname: String,
         val opcode: Int,
         val mnemonicRepresentation: String,
-        val numericRepresentation: Long, // Long because of overflowz
+        val numericRepresentation: Long, // Long because of overflow
         val description: String,
         val format: Format,
-        val pattern: MnemonicPattern,
+        val pattern: ParametrizedInstructionRoutine,
         val primordial: Boolean = true,
         var type: Type? = null,
         var rt: Int? = null,
         var funct: Int? = null) {
   val example = Example(mnemonicRepresentation, numericRepresentation)
 
+  override fun equals(other: Any?): Boolean {
+    if (other == null) return false
+
+    when (other) {
+      is Instruction -> {
+        return (iname == other.iname)
+              && (opcode == other.opcode)
+              // TODO: We should probably treat $8 the same as $t1($t0??)...
+              && (mnemonicRepresentation == other.mnemonicRepresentation)
+              && (numericRepresentation == other.numericRepresentation)
+              && (format == other.format)
+      }
+      else -> return false
+    }
+  }
+
   operator fun invoke(mnemonicRepresentation: String, numericRepresentation: Long): Instruction {
     return this.copy(primordial=false,
           mnemonicRepresentation=mnemonicRepresentation,
           numericRepresentation=numericRepresentation)
+  }
+
+  operator fun invoke(mnemonicRepresentation : String): Instruction {
+    // Need to get at the numeric representation.
+    return this.pattern.invoke(this, mnemonicRepresentation)
+  }
+
+  operator fun invoke(machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
+    return this.pattern.invoke(this, machineCode)
   }
 
   init {
@@ -123,8 +147,8 @@ data class Instruction private constructor(
                 " sum of registers rs and rt into register" +
                 " rd. Is only valid if shamt is 0.",
           format = Format.R,
-          pattern = MnemonicPattern.INAME_RD_RS_RT)
-    @JvmField val NOP = Instruction(
+          pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+    /*@JvmField val NOP = Instruction(
           iname = "nop",
           opcode = 0,
           funct = 0,
@@ -133,7 +157,7 @@ data class Instruction private constructor(
           description = "Null operation; do nothing. " +
                 "Machine code is all zeroes.",
           format = Format.R,
-          pattern = MnemonicPattern.NOP_PATTERN)
+          pattern = MnemonicPattern.NOP_PATTERN)*/
     /*@JvmField val SW = Instruction(
           iname = "sw",
           opcode = 0x2b, // 43
@@ -198,29 +222,22 @@ data class Instruction private constructor(
       }
     }
 
-    @JvmStatic fun getPrototype(iname: String): Instruction {
-      // Use a "unsafe" cast, if there is no Instruction with
-      // the requested name an exception is thrown.
-      // https://kotlinlang.org/docs/reference/typecasts.html#unsafe-cast-operator
-      return inameToPrototype[iname] as Instruction
+    @Throws(NoSuchInstructionException::class)
+    @JvmStatic fun from(symbolicRepresentation: String): Instruction {
+      return inameToPrototype.get(symbolicRepresentation.iname())!!(symbolicRepresentation)
     }
 
     @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun getIname(machineCode: Int): String {
-      return "boo" // getPrototype(machineCode)
-    }
-
-    @Throws(NoSuchInstructionException::class)
-    private fun getPrototype(machineCode: Int): Instruction {
+    fun from(machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
       val opcode = machineCode.opcode()
 
       // Check if the entire number is 0s, then we have a nop instruction
       // Once again, nop and sll clashes on the (opcode, funct) tuple so
       // we have to treat one of them as a special-case. Nop seemed easiest
       // to handle as a special case.
-      if (machineCode == 0x00) {
-        return getPrototype("nop")
-      }
+      /*if (machineCode.equals(0)) {
+        return Either.left(NOP)
+      }*/
 
       val inst: Instruction?
       if (opcode == 0) {
@@ -236,7 +253,8 @@ data class Instruction private constructor(
       if (inst == null) {
         throw NoSuchInstructionException(machineCode)
       }
-      return inst
+
+      return Either.left(inst)
     }
 
     @JvmStatic fun allExamples(): Iterable<Example> {
@@ -255,27 +273,6 @@ data class Instruction private constructor(
         println(prototype.iname)
       }
     }
-
-    @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun from(symbolicRepresentation: String):
-          Either<Instruction, PartiallyValidInstruction> {
-      return null // from(symbolicRepresentation)
-    }
-
-    @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun unsafeFrom(symbolicRepresentation: String): Instruction {
-      return null // unsafeFrom(MnemonicRepresentation(symbolicRepresentation))
-    }
-
-    @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun from(i: Int):
-          Either<Instruction, PartiallyValidInstruction> {
-      throw NoSuchInstructionException(
-            "Couldn't instantiate Instruction from \"%d\"", i)
-    }
-
-    @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun unsafeFrom(i: Int) = getPrototype(i)
   }
 }
 

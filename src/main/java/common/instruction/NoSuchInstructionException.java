@@ -5,7 +5,7 @@ public class NoSuchInstructionException extends Exception {
     super(String.format("There is no instruction named: \"%s\"", iname));
   }
 
-  public NoSuchInstructionException(int machineCode) {
+  public NoSuchInstructionException(long machineCode) {
     super(String.valueOf(machineCode));
   }
 

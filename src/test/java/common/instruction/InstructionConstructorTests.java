@@ -6,17 +6,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InstructionConstructorTests {
   @Test
-  void accessingTheAddPrototype() {
-    Instruction actual = Instruction.getPrototype("add");
+  void accessingTheAddPrototype() throws Exception {
+    Instruction actual = Instruction.from("add $t1, $t2, $t3");
+
     assertEquals(Instruction.ADD, actual);
   }
 
+  /*
   @Test
   void gettingTheNOPInstructionFromAllZeroes() throws NoSuchInstructionException {
     Instruction actual = Instruction.unsafeFrom(0);
     assertEquals(Instruction.NOP, actual);
   }
-
+*/
   @Test
   void checkThatAllPrototypesCreateEqualInstancesFromTheirRespectiveExamples() throws Exception {
     /*for (InstructionExample p : InstructionSet.allExamples()) {

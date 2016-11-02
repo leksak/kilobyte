@@ -1,4 +1,4 @@
-package common.instruction.mnemonic
+package common.instruction
 
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -9,7 +9,7 @@ fun String.containsNewline(): () -> Boolean = {
   this.contains(System.getProperty("line.separator"))
 }
 fun String.tokenize(): Array<String> = {
-  this.trim().replace(Regex("\\s+"), " ").split(" ").toTypedArray()
+  this.trim().replace(",", " ").replace(Regex("\\s+"), " ").split(" ").toTypedArray()
 }.invoke()
 
 fun String.iname(): String = this.tokenize()[0]
