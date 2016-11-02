@@ -1,7 +1,6 @@
 package common.instruction
 
 import common.instruction.mnemonic.MnemonicPattern
-import common.instruction.mnemonic.MnemonicRepresentation
 import io.atlassian.fugue.Either
 import java.util.*
 
@@ -24,11 +23,11 @@ import java.util.*
  * unsafe should be avoided whenever possible and the functions with
  * the monadic return-value of the
  * {@link io.atlassian.fugue.Either} class.
- * 
+ *
  * An Instruction may serve as a template for another instruction,
  * i.e. we can spawn actual instances of the "add" {@code Instruction}
  * class using {@code Instruction.ADD} as a template.
- * 
+ *
  * Prototype design pattern:
  * http://gameprogrammingpatterns.com/prototype.html
  *
@@ -84,104 +83,53 @@ import java.util.*
  *                opcode and the value of the rt field then identRt
  *                should be set to the the same value.
  * @property funct Like the @rt property but for the funct field.
- * @property conditions If applicable: A set of conditions that need to
- *                   apply for a numeric representation of the instruction
- *                   to be valid.
  */
-class Instruction private constructor(
-      val iname: String,
-      val opcode: Int,
-      val mnemonicExamples: Array<String>,
-      val numericExamples: Array<Long>, // Has to be Long to deal with overflow
-      val description: String,
-      val primordial: Boolean = true,
-      val format: Format,
-      val pattern: MnemonicPattern,
-      var type: Type? = null,
-      var rt: Int? = null,
-      var funct: Int? = null,
-      vararg var conditions: Condition = emptyArray()) {
-  val examples = InstructionExample.examplesFrom(mnemonicExamples, numericExamples)
+data class Instruction private constructor(
+        val iname: String,
+        val opcode: Int,
+        val mnemonicRepresentation: String,
+        val numericRepresentation: Long, // Long because of overflowz
+        val description: String,
+        val format: Format,
+        val pattern: MnemonicPattern,
+        val primordial: Boolean = true,
+        var type: Type? = null,
+        var rt: Int? = null,
+        var funct: Int? = null) {
+  val example = Example(mnemonicRepresentation, numericRepresentation)
+
+  operator fun invoke(mnemonicRepresentation: String, numericRepresentation: Long): Instruction {
+    return this.copy(primordial=false,
+          mnemonicRepresentation=mnemonicRepresentation,
+          numericRepresentation=numericRepresentation)
+  }
 
   init {
-    /*
-     * Using the primordial flag we can create all of our primordials
-     * and rest assured that the primordialSet is populated as opposed
-     * to having to repeat ourselves by first declaring them and then
-     * constructing the container, e.g. doing arrayOf(ADD, NOP, SW, ...)
-     *
-     * Its curious to set the default value of this flag to "true"
-     * as most of the time it will be false but it turns out to be
-     * the clean with respect to how the rest of the
-     * code-base is affected.
-     */
     if (primordial) {
       primordialSet.add(this)
     }
   }
 
-  constructor(
-        iname: String,
-        opcode: Int,
-        mnemonicExample: String,
-        numericExample: Long, // Has to be "Long" to deal with overflow
-        description: String,
-        primordial: Boolean = true,
-        format: Format,
-        pattern: MnemonicPattern,
-        type: Type? = null,
-        rt: Int? = null,
-        funct: Int? = null,
-        vararg conditions: Condition = emptyArray()): this (
-        iname, opcode, arrayOf(mnemonicExample), arrayOf(numericExample),
-        description, primordial, format, pattern, type, rt, funct, *conditions
-  )
-  
-  constructor(inst: Instruction): this(
-        inst.iname,
-        inst.opcode,
-        inst.mnemonicExamples,
-        inst.numericExamples,
-        inst.description,
-        false,
-        inst.format,
-        inst.pattern,
-        inst.type,
-        inst.rt,
-        inst.funct,
-        *inst.conditions) { // The star is the "spread" operator. Google it
-
-  }
-
   companion object InstructionSet {
     val primordialSet = mutableListOf<Instruction>()
-
-    val shamt_is_zero = Condition(
-          {it -> if (it.shamt() == 0) {
-            ConditionResult.Success()
-          } else {
-            ConditionResult.Failure("Shamt has to be zero. Got: " + it)
-          }}
-    )
 
     @JvmField val ADD = Instruction(
           iname = "add",
           opcode = 0,
           funct = 0x20,
-          mnemonicExample = "add \$t1, \$t2, \$t3",
-          numericExample = 0x014b4820,
+          mnemonicRepresentation = "add \$t1, \$t2, \$t3",
+          numericRepresentation = 0x014b4820,
           description = "Addition with overflow,. Put the" +
                 " sum of registers rs and rt into register" +
                 " rd. Is only valid if shamt is 0.",
           format = Format.R,
-          pattern = MnemonicPattern.INAME_RD_RS_RT,
-          conditions = shamt_is_zero)
+          pattern = MnemonicPattern.INAME_RD_RS_RT)
     @JvmField val NOP = Instruction(
           iname = "nop",
           opcode = 0,
           funct = 0,
-          mnemonicExample = "nop",
-          numericExample = 0,
+          mnemonicRepresentation = "nop",
+          numericRepresentation = 0,
           description = "Null operation; do nothing. " +
                 "Machine code is all zeroes.",
           format = Format.R,
@@ -250,19 +198,6 @@ class Instruction private constructor(
       }
     }
 
-    /**
-     * Needed for MnemonicRepresentation to validate whether or not
-     * a symbolic representation is well formed with respect to
-     * the instruction that it s.
-     */
-    @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun getPattern(iname: String): MnemonicPattern {
-      if (inameToPrototype.containsKey(iname)) {
-       return inameToPrototype[iname]!!.pattern
-      }
-      throw NoSuchInstructionException(iname)
-    }
-
     @JvmStatic fun getPrototype(iname: String): Instruction {
       // Use a "unsafe" cast, if there is no Instruction with
       // the requested name an exception is thrown.
@@ -272,7 +207,7 @@ class Instruction private constructor(
 
     @Throws(NoSuchInstructionException::class)
     @JvmStatic fun getIname(machineCode: Int): String {
-      return getPrototype(machineCode).iname
+      return "boo" // getPrototype(machineCode)
     }
 
     @Throws(NoSuchInstructionException::class)
@@ -304,8 +239,8 @@ class Instruction private constructor(
       return inst
     }
 
-    @JvmStatic fun allExamples(): Iterable<Array<InstructionExample>> {
-      return primordialSet.map { it.examples }
+    @JvmStatic fun allExamples(): Iterable<Example> {
+      return primordialSet.map { it.example }
     }
 
     /**
@@ -324,27 +259,12 @@ class Instruction private constructor(
     @Throws(NoSuchInstructionException::class)
     @JvmStatic fun from(symbolicRepresentation: String):
           Either<Instruction, PartiallyValidInstruction> {
-      return from(MnemonicRepresentation(symbolicRepresentation))
-    }
-
-    @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun unsafeFrom(m: MnemonicRepresentation): Instruction {
-      throw NoSuchInstructionException(
-            "Couldn't instantiate Instruction from \"%s\"",
-            m)
+      return null // from(symbolicRepresentation)
     }
 
     @Throws(NoSuchInstructionException::class)
     @JvmStatic fun unsafeFrom(symbolicRepresentation: String): Instruction {
-      return unsafeFrom(MnemonicRepresentation(symbolicRepresentation))
-    }
-
-    @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun from(m: MnemonicRepresentation):
-          Either<Instruction, PartiallyValidInstruction> {
-      throw NoSuchInstructionException(
-            "Couldn't instantiate Instruction from \"%s\"",
-            m)
+      return null // unsafeFrom(MnemonicRepresentation(symbolicRepresentation))
     }
 
     @Throws(NoSuchInstructionException::class)
