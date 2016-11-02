@@ -229,12 +229,16 @@ data class Instruction private constructor(
 
     @Throws(NoSuchInstructionException::class)
     @JvmStatic fun from(symbolicRepresentation: String): Instruction {
+      val iname = symbolicRepresentation.iname()
+      if (!inameToPrototype.containsKey(iname)) {
+        throw NoSuchInstructionException(iname)
+      }
       return inameToPrototype.get(symbolicRepresentation.iname())!!(symbolicRepresentation)
     }
 
     @Throws(NoSuchInstructionException::class)
     fun from(machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
-      val opcode = machineCode.opcode()
+      val opcode: Int = machineCode.opcode().toInt()
 
       // Check if the entire number is 0s, then we have a nop instruction
       // Once again, nop and sll clashes on the (opcode, funct) tuple so
