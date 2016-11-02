@@ -5,6 +5,7 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.StringJoiner;
 
 import static org.junit.jupiter.api.Assertions.expectThrows;
 
@@ -12,7 +13,9 @@ public class TestExceptionsOnInvalidInput {
   static final String ANSI_GREEN = "\u001B[32m";
   static final String ANSI_RESET = "\u001B[0m";
   static final String ANSI_YELLOW = "\u001B[33m";
-  public static final String ANSI_BLUE = "\u001B[34m";
+  static final String ANSI_BLUE = "\u001B[34m";
+  static final String LBR = "\u001B[1;34m[" + ANSI_RESET;
+  static final String RBR = "\u001B[1;34m]" + ANSI_RESET;
 
   static final String SUCCESS = ANSI_GREEN + "[SUCCESS]" + ANSI_RESET;
 
@@ -23,8 +26,17 @@ public class TestExceptionsOnInvalidInput {
     return ANSI_BLUE + s + ANSI_RESET;
   }
 
+  static String format(String... args) {
+    StringJoiner sj = new StringJoiner(" ");
+    for (String arg : args) {
+      sj.add(arg);
+    }
+    return sj.toString();
+  }
+
   static void success(String message, String what, String it) {
-    String s = String.format("%s %s %s\"%s\"", SUCCESS, yellow(message), blue(what), it);
+    String s = format(
+          SUCCESS, yellow(message), blue(what) + LBR + it + RBR);
     System.out.println(s);
   }
 
@@ -73,7 +85,7 @@ public class TestExceptionsOnInvalidInput {
   void testThatWhiteSpaceBetweenArgumentsDoNotMatter() throws Exception {
     val mnemonicWithoutWhitespace = "add $t1,$t2,$t3";
     Instruction.from(mnemonicWithoutWhitespace);
-    success("No exception was caused by a lack of whitespace: ", mnemonicWithoutWhitespace);
+    success("No exception was caused by a lack of whitespace:", mnemonicWithoutWhitespace);
   }
 
   @Test
