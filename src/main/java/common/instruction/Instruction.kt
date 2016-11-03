@@ -237,6 +237,11 @@ data class Instruction private constructor(
     }
 
     @Throws(NoSuchInstructionException::class)
+    @JvmStatic fun unsafeFrom(machineCode: Long): Instruction {
+      return from(machineCode).left().get()
+    }
+
+    @Throws(NoSuchInstructionException::class)
     fun from(machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
       val opcode: Int = machineCode.opcode().toInt()
 
@@ -244,7 +249,7 @@ data class Instruction private constructor(
       // Once again, nop and sll clashes on the (opcode, funct) tuple so
       // we have to treat one of them as a special-case. Nop seemed easiest
       // to handle as a special case.
-      if (machineCode.equals(0)) {
+      if (machineCode == Integer.toUnsignedLong(0)) {
         return Either.left(NOP)
       }
 

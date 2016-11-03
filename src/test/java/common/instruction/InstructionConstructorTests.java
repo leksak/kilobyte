@@ -29,13 +29,13 @@ class InstructionConstructorTests {
 */
   @Test
   void checkThatAllPrototypesCreateEqualInstancesFromTheirRespectiveExamples() throws Exception {
-    /*for (InstructionExample p : InstructionSet.allExamples()) {
-      String mnemonic = p.getMnemonicExample();
-      int numeric = p.getNumericExample();
-      InstructionPrototype fromMnemonic = InstructionPrototype.unsafeFrom(mnemonic);
-      InstructionPrototype fromNumeric = InstructionPrototype.unsafeFrom(numeric);
+    for (Example e : Instruction.allExamples()) {
+      String mnemonic = e.getMnemonicExample();
+      long numeric = e.getNumericExample();
+      Instruction fromMnemonic = Instruction.from(mnemonic);
+      Instruction fromNumeric = Instruction.unsafeFrom(numeric);
       assertEquals(fromMnemonic, fromNumeric);
-    }*/
+    }
 
   }
 }
