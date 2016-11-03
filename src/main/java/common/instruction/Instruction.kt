@@ -153,7 +153,7 @@ data class Instruction private constructor(
                 " rd. Is only valid if shamt is 0.",
           format = Format.R,
           pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
-    /*@JvmField val NOP = Instruction(
+    @JvmField val NOP = Instruction(
           iname = "nop",
           opcode = 0,
           funct = 0,
@@ -162,7 +162,7 @@ data class Instruction private constructor(
           description = "Null operation; do nothing. " +
                 "Machine code is all zeroes.",
           format = Format.R,
-          pattern = MnemonicPattern.NOP_PATTERN)*/
+          pattern = ParametrizedInstructionRoutine.NOP)
     /*@JvmField val SW = Instruction(
           iname = "sw",
           opcode = 0x2b, // 43
@@ -244,9 +244,9 @@ data class Instruction private constructor(
       // Once again, nop and sll clashes on the (opcode, funct) tuple so
       // we have to treat one of them as a special-case. Nop seemed easiest
       // to handle as a special case.
-      /*if (machineCode.equals(0)) {
+      if (machineCode.equals(0)) {
         return Either.left(NOP)
-      }*/
+      }
 
       val inst: Instruction?
       if (opcode == 0) {

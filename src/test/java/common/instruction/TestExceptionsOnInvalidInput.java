@@ -60,8 +60,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatNopCannotBeInstantiatedWithTrailingCharacters() {
     String faultyNopRepresentation = "nop,";
-    // There is no instruction named "nop,"
-    Throwable e = expectThrows(NoSuchInstructionException.class, () ->
+    Throwable e = expectThrows(IllegalArgumentException.class, () ->
           Instruction.from(faultyNopRepresentation));
     success(e);
   }
@@ -83,17 +82,18 @@ public class TestExceptionsOnInvalidInput {
   }
 
   @Test
-  void testThatWhiteSpaceBetweenArgumentsDoNotMatter() throws Exception {
-    val mnemonicWithoutWhitespace = "add $t1,$t2,$t3";
-    Instruction.from(mnemonicWithoutWhitespace);
-    success("No exception was caused by a lack of whitespace:", mnemonicWithoutWhitespace);
-  }
-
-  @Test
   void testThatExceptionIsThrownWhenThereAreIllegalCharacters() throws Exception {
     Throwable e = expectThrows(IllegalCharactersInMnemonicException.class, () ->
           Instruction.from("add $t1, $t2, $t3!#$sp"));
     success(e);
+  }
+
+  @Test
+  void testThatWhiteSpaceBetweenArgumentsDoNotMatter() throws Exception {
+    val mnemonicWithoutWhitespace = "add $t1,$t2,$t3";
+    Instruction.from(mnemonicWithoutWhitespace);
+    success("No exception was caused by a lack of whitespace:",
+          mnemonicWithoutWhitespace);
   }
 
   @Test

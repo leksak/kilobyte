@@ -15,6 +15,30 @@ interface ParametrizedInstructionRoutine {
         Either<Instruction, PartiallyValidInstruction>
   fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction
 
+  object NOP: ParametrizedInstructionRoutine {
+    override fun invoke(prototype: Instruction, machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
+      if (machineCode.equals(0)) {
+        return Either.left(Instruction.NOP);
+      }
+      throw IllegalArgumentException("Cannot instantiate \"nop\" from: $machineCode")
+    }
+
+    override fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction {
+      checkArgument(prototype.iname == mnemonicRepresentation.iname())
+      throwIfIncorrectNumberOfCommas(0, mnemonicRepresentation)
+
+      val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
+      throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
+
+      // This pattern shouldn't contain any parens
+      throwExceptionIfContainsParentheses(standardizedMnemonic)
+
+      // Should have zero arguments
+      throwIfIncorrectNumberOfArgs(0, standardizedMnemonic)
+      return Instruction.NOP
+    }
+  }
+
   /*
    * For an example, R-format instructions expressed on the form
    *
@@ -22,7 +46,7 @@ interface ParametrizedInstructionRoutine {
    *
    * require that the shamt field be zero.
    */
-  companion object INAME_RD_RS_RT: ParametrizedInstructionRoutine {
+  object INAME_RD_RS_RT: ParametrizedInstructionRoutine {
     override fun invoke(prototype: Instruction, machineCode: Long):
           Either<Instruction, PartiallyValidInstruction> {
       val iname = prototype.iname
@@ -34,7 +58,7 @@ interface ParametrizedInstructionRoutine {
       val inst = prototype(mnemonic, machineCode)
       if (machineCode.shamt() != 0) {
         //val err = "Expected shamt to be zero. Got ${machineCode.shamt()}"
-        //return Either.right(PartiallyValidInstruction(inst, "hej"))
+        return Either.right(PartiallyValidInstruction(inst, "hej"))
       }
 
       // Create a new copy using these values
