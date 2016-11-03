@@ -1,5 +1,6 @@
 package common.instruction;
 
+import common.instruction.exceptions.IllegalCharactersInMnemonicException;
 import common.instruction.exceptions.NoSuchInstructionException;
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -90,8 +91,8 @@ public class TestExceptionsOnInvalidInput {
 
   @Test
   void testThatExceptionIsThrownWhenThereAreIllegalCharacters() throws Exception {
-    Throwable e = expectThrows(IllegalArgumentException.class, () ->
-          Instruction.from("add $t1, $t2, $t3!#($sp)"));
+    Throwable e = expectThrows(IllegalCharactersInMnemonicException.class, () ->
+          Instruction.from("add $t1, $t2, $t3!#$sp"));
     success(e);
   }
 
