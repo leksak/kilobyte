@@ -1,0 +1,13 @@
+\begin{tikzpicture}[auto,
+    every node/.style={rectangle, minimum height=2.5em, text centered, text width=6em, text height=1.5ex, text depth=.25ex},
+    field/.style={draw}]
+\matrix (m) [ampersand replacement=\&, column sep=-\pgflinewidth, row sep=-\pgflinewidth]
+{
+\node [field] {$\textrm{B}_{31\textrm{-}26}$}; \&
+\node [field, text width=32.5 em] {$\textrm{B}_{25\textrm{-}0}$}; \&
+\\
+\node [field] {opcode}; \&
+\node [field, text width=32.5 em] {target}; \&
+\\
+};
+\end{tikzpicture}
