@@ -1,0 +1,21 @@
+\begin{tikzpicture}[node distance=1em]
+\matrix (decomposed-representation) [
+  matrix of nodes,
+  row sep=0.2em,
+  column sep=-\pgflinewidth,
+  row 1/.style={
+    nodes={
+      rectangle, 
+      draw, 
+      text centered,
+          text width=10mm,
+      anchor=base,
+      text height=.8em,text depth=.2em,minimum size=7mm
+    }
+  }
+] {
+0x1c & rs & rt & rd & 0 & 2 \\
+6 & 5 & 5 & 5 & 5 & 6 \\
+};
+\node [left=of decomposed-representation] (mnemonic-representation) {\texttt{mul \$rd, \$rs, \$rt}};
+\end{tikzpicture}

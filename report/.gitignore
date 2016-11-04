@@ -1,0 +1,7 @@
+*_minted-simulator-report
+*.xml
+*-blx.bib
+*.out
+*.log
+*.pdf
+*.aux
