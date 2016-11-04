@@ -1,0 +1,33 @@
+\subsubsection{MIPS Register Naming and Usage Convention}
+
+Within the MIPS32 architecture there are 32 general-purpose registers,
+see \autoref{table:mips-register-naming-and-usage-convention}. The
+registers when written out, are preceded by a ``\tt{\$}''.  We use
+two formats for addressing a particular register, e.g. \tt{\$0}
+through \tt{\$31}. Or, using their equivalent mnemonic
+representations, for instance \tt{\$t1}. Both formats may be used
+interchangeably in the assembly language.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+Mnemonic & Register Number & Usage                                                     \\
+\midrule
+\tt{\$zero}                & 0       & constant 0                                      \\
+\tt{\$at}                  & 1       & reserved for assembler                          \\
+\tt{\$v0} - \tt{\$v1}      & 2 - 3   & expression evaluation and results of a function \\
+\tt{\$a0} - \tt{\$a3}      & 4 - 7   & argument 1 through 4                            \\
+\tt{\$t0} - \tt{\$t7}      & 8 - 15  & temporary (not preserved across call)           \\
+\tt{\$s0} - \tt{\$s7}      & 16 - 23 & saved temporary (preserved across call          \\
+\tt{\$t8} - \tt{\$t9}      & 24 - 25 & temporary (not preserved across call)           \\
+\tt{\$k0} - \tt{\$k1}      & 26 - 27 & reserved for OS kernel                          \\
+\tt{\$gp}                  & 28      & pointer to global area                          \\
+\tt{\$sp}                  & 29      & stack pointer                                   \\
+\tt{\$fp}                  & 30      & frame pointer                                   \\
+\tt{\$ra}                  & 31      & return address (used by function call)          \\
+\bottomrule
+\end{tabular}
+\caption{MIPS register naming and usage convention}
+\label{table:mips-register-naming-and-usage-convention}
+\end{table}

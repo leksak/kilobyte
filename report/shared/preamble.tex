@@ -1,0 +1,179 @@
+% The declaration of the document class:
+
+% The second line here, i.e.
+%
+% \documentclass[a4paper]{article}  
+%
+% is a standard LaTeX document class declaration: 
+% we say what kind of document we are making in curly brackets, 
+% and specify any options in square brackets.
+\documentclass[a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+% The following package allows us to define our own macros
+% through "\LetLtxMacro\ourName\originalName"
+\usepackage{letltxmacro}
+\usepackage{csquotes}
+
+% Adds vertical space between paragraphs, i.e. a clean linebreak
+\usepackage{parskip} 
+
+% Used for typesetting ordinary math
+\usepackage{amsmath}
+
+% These packages enables other useful math commands
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+
+\usepackage{letltxmacro}
+\LetLtxMacro\tt\texttt
+
+\usepackage{graphicx}
+
+% Allows us to use syntax highlighting on included files an
+% in an inline fashion.
+\usepackage{minted}
+
+% Ignore syntax errors - the minted lexer is not perfect (MATLAB only)
+\makeatletter
+\expandafter\def\csname PYGdefault@tok@err\endcsname{\def\PYGdefault@bc##1{{\strut ##1}}}
+\makeatother
+
+% The package offers the command \DeclareFloatingEnvironment, which
+% the user may use to define new floating environments which behave
+% like the LaTeX standard foating environments figure and table.
+\usepackage{newfloat}
+
+% Improves the interface for defining floating objects such as figures
+% and tables. You can define your own floats and improve the
+% behaviour of the old ones.  
+% 
+% The package also provides the "H" float modifier option, which
+% puts figures exactly where they are included as opposed to being
+% placed where LaTeX deems as the most appropriate position
+\usepackage{float} 
+\floatplacement{figure}{H} % Set the H option globally
+
+% Creates the Listing environment whereby you may specify fontsizes
+% et al. when using \lstlisting
+\usepackage{listings}
+\usepackage{mips} % Load in the MIPS keywords
+
+% Teach autoref how to reference listings
+\providecommand*{\listingautorefname}{Listing} 
+
+% Disallow the placement of the listing environment to be moved by LaTeX
+\floatplacement{listing}{H}
+
+\usepackage{xcolor}
+
+\definecolor{keyword}{HTML}{A71D5D}
+\definecolor{ident}{HTML}{333333}
+\definecolor{background}{HTML}{F7F7F7}
+\definecolor{registers}{HTML}{0086B3}
+
+\lstset{
+  aboveskip=20pt,                     % Vertical space above the listing
+  belowskip=10pt,                     % Vertical space below the listing
+  breaklines=true,                    % sets automatic line breaking
+  basicstyle=\ttfamily,
+  extendedchars=true,
+  tabsize=2,
+  columns=fixed,
+  showstringspaces=false,
+  captionpos=b,                       % sets the caption-position to bottom
+  %
+  % Insert a red arrow to highlight line-continuations
+  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
+}
+
+\lstdefinestyle{mips_lst}{
+  frame=trbl,
+  language={[mips]Assembler},
+  framesep=4pt,
+  keywordstyle=\color{keyword},       % Keyword coloring
+  identifierstyle=\lst@ifdisplaystyle\color{registers}\fi,
+  backgroundcolor=\color{background},
+}{}
+
+\lstdefinestyle{semantics_lst}{
+  aboveskip=2\medskipamount,
+  belowskip=\medskipamount,
+  mathescape=true, 
+}{}
+
+\usepackage[flushmargin]{footmisc} % Footnote position
+
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks = true, % Colours links instead of ugly boxes
+  urlcolor = blue, % Colour for external hyperlinks
+  linkcolor = blue, % Colour of internal links
+  citecolor = red % Colour of citations
+}
+
+% Used to get the last page of the document, used in our document headers
+\usepackage{lastpage}
+
+% Specify date format
+\usepackage[yyyymmdd]{datetime}
+\renewcommand\dateseparator{-} % Separate date tokens with a "-"
+
+\usepackage{booktabs}
+
+% Use fancy document headers
+\usepackage{fancyhdr}
+\usepackage{tikz}
+
+\usetikzlibrary{
+  matrix,
+  positioning
+}
+
+\newcommand{\shamt}{\texttt{shamt}}
+\newcommand{\funct}{\texttt{funct}}
+\newcommand{\opcode}{\texttt{opcode}}
+\newcommand{\rd}{\texttt{rd}}
+\newcommand{\rs}{\texttt{rs}}
+\newcommand{\rt}{\texttt{rt}}
+\newcommand{\PC}{\texttt{PC}}
+
+\usepackage{microtype}
+
+% An environment for nice looking quotes
+\makeatletter
+\newenvironment{chapquote}[2][2em]
+  {\setlength{\@tempdima}{#1}%
+    \def\chapquote@author{#2}%
+    \parshape 1 \@tempdima \dimexpr\textwidth-2\@tempdima\relax}
+  {\par\normalfont\hfill\ \chapquote@author\hspace*{\@tempdima}\par}
+  \makeatother
+
+%
+% BibLaTeX
+%
+% Great reference system
+% Documentation:
+% http://mirrors.ctan.org/macros/latex/contrib/biblatex/doc/biblatex.pdf
+%___________________________________________________________
+\usepackage[style = ieee, urldate =comp, backend=bibtex]{biblatex}
+\addbibresource{references.bib}
+
+\renewcommand\dateseparator{-}
+
+\newcommand{\department}{Department of Computing Science}
+\newcommand{\university}{Ume\aa\ University}
+
+\newcommand{\authors}{Filip Allberg (\tt{filip@cs.umu.se})}
+\newcommand{\titlename}{MIPS32 Simulator}
+\title{\titlename}
+\author{\authors}
+\newcommand{\coursename}{Computer Organization and Architecture}
+\newcommand{\coursecode}{5DV118}
+\newcommand{\instructor}{Thomas Johansson}
+
+\pagestyle{fancy}

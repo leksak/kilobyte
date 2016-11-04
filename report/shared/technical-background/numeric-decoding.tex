@@ -1,0 +1,57 @@
+\subsubsection{Example: Numeric decoding}
+
+Consider the machine-language MIPS32 instruction \tt{0x71014802}.
+Depending on the format of the instruction it decomposes into fields
+varying lengths.
+
+Recall that for all numbers in the MIPS32 instruction set the leftmost
+six bits always represent the opcode for the instruction. The opcode
+alone is not always sufficient to identify the particular instruction,
+\emph{but} it is always sufficient to identify the format of the
+instruction.
+
+The leftmost six bits of \tt{0x71014802} is \tt{0x1c}. It is
+\emph{known} that this number corresponds to a set of instructions in
+the R-type format. The format specifies into which fields the 32-bit
+decomposes into. The number of bits composing each respective field is
+given in the bottom row of ~\autoref{fig:r-decomposed},
+
+\begin{figure}[H]
+\centering
+\input{r-decomposed.tikz}
+\caption{The length of each respective field for R-type format instructions}
+\label{fig:r-decomposed}
+\end{figure}
+
+Decomposing \tt{0x71014802} into the fields shown in
+\autoref{fig:r-decomposed} yields \tt{rs=8}, \tt{rt=1}, \tt{rd=9},
+\tt{shamt=0}, and \tt{funct=2}. The \emph{decomposed representation}
+of this instruction in hexadecimal form is thus \tt{[0x1c 8 1 9 0
+  2]}.\footnote{The corresponding \emph{decimal representation} is
+  \tt{[28 8 1 9 0 2]}}
+
+To identify the particular instruction represented by \tt{0x71014802}
+the \funct{} field must be consulted. Pairing the opcode, \tt{0x1c}
+and the value in the \funct{} field uniquely identifies the
+instruction a \tt{mul} instruction; see \autoref{fig:mul-decomposed}.
+
+\begin{figure}[H]
+  \centering
+  \input{mul-decomposed.tikz}
+  \caption{Decomposition and mnemonic representation of \tt{mul}}
+  \label{fig:mul-decomposed}
+\end{figure}
+
+Earlier we determined the fields \tt{rs}, \tt{rt} and \rd{} to have
+the addresses 8, 1, and 9, respectively. In MIPS registers are named,
+following the convention shown in
+\autoref{table:mips-register-naming-and-usage-convention}
+
+Replacing the numerical values of \tt{rs}, \tt{rt} and \rd{}, with
+their named counterparts yields the \emph{mnemonic representation} of
+the instruction to be
+
+\begin{lstlisting}[style=mips_lst]
+mul $t1, $t0, $at
+\end{lstlisting}
+%$

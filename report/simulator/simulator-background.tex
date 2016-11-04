@@ -1,0 +1,30 @@
+\section{Simulation}\label{sec:simulation}
+
+A \emph{simulator} is a system that behaves \emph{similar} to another
+system, but is implemented in a different way. The simulator provides
+the the same --- or the subset of the same --- behaviour of the sytem
+being simulated. As in, the simulator may or may not enforce all of
+the rules imposed by the original system. This is in contrast to an
+\emph{emulator} that exhibits the same \emph{exact} behaviour, as the
+emulator completely replicates the system being
+emulated,\footnote{Going so far as having binary compatible with the
+  emulated system's inputs and outputs} albeit operating in a
+different environment.
+
+With respect to our simulator the goal is to execute a MIPS32 assembly
+program and modifying the processor state as an effect of each
+executed instruction. 
+
+This means that the processor registers, program counter, data- and
+instruction memory is all affected, together with all other
+``hardware''. Our software parses the program in an
+instruction-by-instruction basis and allows each instruction to alter
+the processor state. Each instruction is decoded, and the associated
+operation is subsequently performed;
+\autoref{sec:implementation-requirements} outlines all of the
+behaviours our simulation is expected to exhibit.
+
+In the context of our single-cycle implementation our datapath
+contains all the functional units specified in
+\autoref{sec:simulation-requirements} with the additions of
+some multiplexors.

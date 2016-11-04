@@ -1,0 +1,74 @@
+\subsection{MIPS, RISC and CISC}
+
+MIPS (originally an acronym for Microprocessor without Interlocked
+Pipeline Stages) is a ``reduced instruction set computer'' (RISC), as
+opposed to a ``complex instruction set computer'' (CISC), instruction
+set architecture (ISA) developed by MIPS Technologies (formerly MIPS
+Computer Systems, Inc.). Meanwhile, RISC is a [design] concept
+developed at IBM, Stanford and UC Berkeley in the late 1970s and early
+1980s to overcome the typical deficiencies of CPUs of the 1970s
+ \cite{CNS:RISC-Architecture}\cite{Stokes:1999:RISCvsCISC}. Specifically the deficiencies
+experienced with CISC ISAs.
+% This ending sentence is iffy.
+
+We find that RISC offers two expressly \emph{practical} advantages
+over CISC. Per definition RISC has fewer and simpler instructions,
+and in 2001 Bart Trzynadlowski showed that the \tt{tst}, \tt{beq},
+\tt{bne}, \tt{move}, \tt{cmp}, \tt{cmpi} make up more
+than 70\% of all instructions executed on a Motorola
+M68K.\footnote{While many associate Motorola with cell-phones, and
+  rightfully so, the M68K was a 32-bit CISC microprocessor that were
+  used in calculators, UNIX workstations, and the Space Shuttle}
+\cite{Trzynadlowski:2001:68k} 
+
+The idea of the ``quantitative approach to computer design''
+\cite{Patterson:2008:COD:1502247} is to make the common case fast,
+which in itself is one of the four corner-stone design principles
+behind RISC.\footnote{The remaining three are ``Simplicity favors
+  regularity'', ``Smaller is faster'', and ``Good design demands
+  compromises''.\cite{Irwin:CSE331W02.11:2007:PSU}}
+
+A CISC-architecture requires the use of a microcode interpreter but by
+removing complex instructions from the instruction set the interpreter
+is made obsolete, as decoding is easier. This effect is compounded
+further if all of the instructions have the same width. All remaining
+instructions can be executed in one clock cycle, which makes
+pipelining and superscalar execution ``easy''. The design is a lot
+simpler, work has been moved from hardware to software.
+
+\textbf{A load/store architecture and more registers}
+
+As the RISC architecture makes both the microcode interpreter and the
+``complex instruction'' decoder redundant we can use the transistors
+otherwise occupied by the aforementioned two so that they may be used
+for other purposes, for instance multiple ALUs, better pipelining
+logic and many additional registers.
+
+A CPU with more registers affords more operations to be performed on
+its registers, alleviating the significant cost of memory accesses
+resulting in greater performance. With RISC there cannot be any
+implicit memory accesses, as there can be in CISC, hence the term
+``load/store architecture'': all memory accesses are only possible
+through load and store instructions; all other operations only work on
+registers.
+
+The time required for a program to execute is calculated using this
+formula:
+
+\begin{equation*}
+\frac{\textrm{time}}{\textrm{program}} =
+\frac{\textrm{time}}{\textrm{cycle}} \cdot
+\frac{\textrm{cycles}}{\textrm{instruction}} \cdot
+\frac{\textrm{instructions}}{\textrm{program}}
+\end{equation*}
+
+CISC CPUs keep the number of instructions per program low, while the
+time/cycle is high.  Because RISC CPUs do not have complex
+instructions, the number of instructions per program is higher, but
+this is compensated by a lower number of cycles per instruction. 
+
+Beyond its practical applications RISC is also well-suited for
+academic excursions such as this one. With a smaller set of
+instructions, all of equal width, it is arguably better suited as a
+pedagogical teaching tool for understanding the internal operation of
+a modern microprocessor.
