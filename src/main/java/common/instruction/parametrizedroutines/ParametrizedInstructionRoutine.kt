@@ -57,8 +57,8 @@ interface ParametrizedInstructionRoutine {
 
       val inst = prototype(mnemonic, machineCode)
       if (machineCode.shamt() != 0) {
-        //val err = "Expected shamt to be zero. Got ${machineCode.shamt()}"
-        return Either.right(PartiallyValidInstruction(inst, "hej"))
+        val err = "Expected shamt to be zero. Got ${machineCode.shamt()}"
+        return Either.right(PartiallyValidInstruction(inst, err))
       }
 
       // Create a new copy using these values
@@ -86,6 +86,51 @@ interface ParametrizedInstructionRoutine {
 
       val numericRepresentation = Format.fieldsToMachineCode(opcode, rs, rt, rd, shamt, funct)
       return prototype(standardizedMnemonic, numericRepresentation)
+    }
+  }
+
+  /**
+   * All I-format instructions are decomposed into fields of the
+   * same length.
+   *
+   * An I-type instruction is determined uniquely by its opcode field.
+   *
+   * The opcode is the leftmost 6-bits of the instruction when
+   * represented as a 32-bit number.
+   *
+   * The bit-fields then represent the
+   * following units of effect
+   *
+   * | 6 bits  | 5 bits | 5 bits | 16 bits |
+   * |:-------:|:------:|:------:|:-------:|
+   * | op      | rs     | rt     | offset  |
+   *
+   * This container object which contains a tuple of functions is
+   * to be used for instructions on the form
+   *
+   * iname rt, address
+   *
+   * For an example,
+   *
+   * lw $t0, 24($s2)
+   *
+   * which is represented numerically as (cite 5DV118 20131110 t:2B sl:18)
+   *
+   * | op      | rs     | rt     | offset  |
+   * |:-------:|:------:|:------:|:-------:|
+   * | 0x23    | 18     | 8      | 24_{10} |
+   *
+   * Note: the semantics of the instruction is
+   * Load word : Set $t0 to contents of effective memory word address",
+   */
+  object INAME_RT_RS_ADDR : ParametrizedInstructionRoutine {
+    fun invoke(prototype: Instruction, machineCode: Long):
+          Either<Instruction, PartiallyValidInstruction> {
+
+    }
+
+    fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction {
+
     }
   }
 }

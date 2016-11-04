@@ -163,15 +163,15 @@ data class Instruction private constructor(
                 "Machine code is all zeroes.",
           format = Format.R,
           pattern = ParametrizedInstructionRoutine.NOP)
-    /*@JvmField val SW = Instruction(
+    @JvmField val SW = Instruction(
           iname = "sw",
           opcode = 0x2b, // 43
-          mnemonicExamples = arrayOf("sw \$ra, 4(\$sp)", "sw \$a0, 0(\$sp)"),
-          numericExamples = arrayOf(0xafbf0004, 0xafa40000),
+          mnemonicRepresentation = "sw \$ra, 4(\$sp)",
+          numericRepresentation = 0xafbf0004,
           description = "Store the word from register rt at address.",
           format = Format.I,
-          pattern = ::INAME_RT_RS_ADDR
-    )*/
+          pattern = ParametrizedInstructionRoutine.INAME_RT_RS_ADDR
+    )
 
     // Lookup table
     // You can take the name of an Instruction and create
