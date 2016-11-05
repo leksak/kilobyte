@@ -1,0 +1,61 @@
+
+\section{Kotlin}
+
+Kotlin is a statically-typed programming language that runs on the
+Java Virtual Machine (JVM). While not syntax compatible with Java,
+Kotlin is designed to interoperate with Java code and is reliant on
+Java code from the existing Java Class Library, such as the
+collections framework.
+
+\subsection{Why Kotlin}
+
+Kotlin compiles to JVM bytecode (or JavaScript, but that is not
+pertinent to this project). It solves problems commonly associated
+with Java, in particular it requires far less boiler-plate to the
+benefit of legibility without incurring a refactor-ability
+cost.\footnote{Project Lombok can also offset a lot of Java
+  boiler-plate, and it is a ``plain'' Java library}
+
+Additionally its type system helps us avoid null-pointer exceptions
+while still retaining a notion of null which is useful when working
+with APIs that do (Java).
+
+It does this by making a distinction between nullable and non-nullable
+datatypes. All nullable objects must be declared with a ``\tt{?}''
+postfix after the type name. Operations on nullable objects need
+special care from developers; a null-check must be performed before
+using the value. Kotlin provides special operators for this.
+
+\subsubsection{Sum types}
+
+% TODO: Should we continue using io.atlassian.fugue.Either or go for
+% a sum type with valid and partially valid instruction
+
+\subsubsection{Singletons and class-less functions}
+
+Want a singleton? Create an object:
+
+object ThisIsASingleton {
+    val companyName: String = "JetBrains"
+  }
+
+  \subsubsection{Named arguments}
+
+
+
+\subsection{Kotlin --- applied}
+
+\begin{lstlisting}[style=java]
+@JvmField val ADD = Instruction(
+      iname = "add",
+      opcode = 0,
+      funct = 0x20,
+      mnemonicRepresentation = "add \$t1, \$t2, \$t3",
+      numericRepresentation = 0x014b4820,
+      description = "Addition with overflow,. Put the" +
+            " sum of registers rs and rt into register" +
+            " rd. Is only valid if shamt is 0.",
+      format = Format.R,
+      pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+\end{lstlisting}
+
