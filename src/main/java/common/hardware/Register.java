@@ -2,6 +2,15 @@ package common.hardware;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+/**
+ * Within the MIPS32 architecture there are 32 general-purpose registers,
+ * all of which are defined in this enum. The registers when written out,
+ * are preceded by a {@code $} (dollar-sign).  We use
+ * two formats for addressing a particular register, either
+ * we use the raw-numeric indices i.e. {@code $0}
+ * through {@code $31}. Or, using their equivalent mnemonic
+ * representations, for instance {@code $t1}. 
+ */
 public enum Register {
   // Registers 0 through 3
   $zero("Constant 0"),
