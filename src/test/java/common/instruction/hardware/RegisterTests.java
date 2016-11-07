@@ -19,4 +19,9 @@ public class RegisterTests {
           () -> assertEquals(Register.$t1, Register.fromString("$9"))
     );
   }
+
+  @Test
+  void testThatParsingANumberAsAnIndexYieldsTheCorrectRegister() {
+    assertEquals(Register.$zero, Register.fromIndex(0));
+  }
 }
