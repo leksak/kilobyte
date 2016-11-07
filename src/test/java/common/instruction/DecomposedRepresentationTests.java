@@ -21,7 +21,7 @@ public class DecomposedRepresentationTests {
 
   @Test
   void testDecimalDecomposition() {
-    val d = fromNumber(0x71014802, 6, 5, 5, 5, 5, 6);
+    DecomposedRepresentation d = fromNumber(0x71014802, 6, 5, 5, 5, 5, 6);
     assertEquals("[28 8 1 9 0 2]", d.asDecimalString());
   }
 }

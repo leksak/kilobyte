@@ -123,7 +123,7 @@ interface ParametrizedInstructionRoutine {
    * Note: the semantics of the instruction is
    * Load word : Set $t0 to contents of effective memory word address",
    */
-  object INAME_RT_RS_ADDR : ParametrizedInstructionRoutine {
+  /*object INAME_RT_RS_ADDR : ParametrizedInstructionRoutine {
     fun invoke(prototype: Instruction, machineCode: Long):
           Either<Instruction, PartiallyValidInstruction> {
 
@@ -132,7 +132,7 @@ interface ParametrizedInstructionRoutine {
     fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction {
 
     }
-  }
+  }*/
 }
 
 // For use with add, etc. but not sw, etc.

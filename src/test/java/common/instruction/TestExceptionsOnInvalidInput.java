@@ -90,7 +90,7 @@ public class TestExceptionsOnInvalidInput {
 
   @Test
   void testThatWhiteSpaceBetweenArgumentsDoNotMatter() throws Exception {
-    val mnemonicWithoutWhitespace = "add $t1,$t2,$t3";
+    String mnemonicWithoutWhitespace = "add $t1,$t2,$t3";
     Instruction.from(mnemonicWithoutWhitespace);
     success("No exception was caused by a lack of whitespace:",
           mnemonicWithoutWhitespace);
