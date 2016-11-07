@@ -7,6 +7,7 @@ import common.instruction.exceptions.NoSuchInstructionException;
 import io.atlassian.fugue.Either;
 import lombok.Getter;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -79,7 +80,8 @@ import java.util.Objects;
     return !Objects.isNull(o);
   }
 
-  private boolean headerlessFlag = false;
+  @NonFinal
+  boolean headerlessFlag = false;
 
   private static final String formatString = "%-12s %-3s %-16s %-22s %-18s";
   private static final Object[] header = {
