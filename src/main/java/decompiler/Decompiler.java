@@ -100,7 +100,7 @@ public class Decompiler {
 
     try {
       // parse the command line arguments
-      CommandLine line = d.parser.parse(options, args);
+      CommandLine line = parser.parse(options, args);
 
       if (line.hasOption("help")) {
         formatter.printHelp("Decompiler [OPTION] [file|number]...", options);
