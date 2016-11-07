@@ -1,11 +1,8 @@
 package common.instruction;
 
 import common.instruction.exceptions.IllegalCharactersInMnemonicException;
-import common.instruction.exceptions.NoSuchInstructionException;
-import lombok.val;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.StringJoiner;
 
 import static org.junit.jupiter.api.Assertions.expectThrows;

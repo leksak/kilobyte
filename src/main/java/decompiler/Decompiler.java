@@ -5,6 +5,8 @@ import common.instruction.MachineCodeDecoder;
 import common.instruction.PartiallyValidInstruction;
 import common.instruction.exceptions.NoSuchInstructionException;
 import io.atlassian.fugue.Either;
+import lombok.Getter;
+import lombok.Value;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -17,46 +19,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
-public class Decompiler {
+@Value public class Decompiler {
   // Decode a numeric representation of an instruction
   public static int decode(String s) {
     return MachineCodeDecoder.decode(s);
   }
 
-  public static Instruction decompile(String s) {
-    return null;
-  }
-
-  public static Set<Instruction> decompile(File f) {
-    return null;
-  }
-
-  private static Option singleNumber = Option.builder("n")
+  Option singleNumber = Option.builder("n")
         .argName("number(s)")
         .hasArgs()
         .desc("disassemble 32-bit word(s) from stdin")
         .build();
-  private static Option help = Option.builder("h")
+  Option help = Option.builder("h")
         .argName("help")
         .longOpt("help")
         .desc("print this message")
         .build();
-  private static Option headerless = Option.builder()
+  Option headerless = Option.builder()
         .longOpt("header-less")
         .desc("suppress table header")
         .build();
 
-  private static Options options = new Options();
-  private static HelpFormatter formatter = new HelpFormatter();
+  Options options = new Options();
 
-  static {
+  private Decompiler() {
     options.addOption(help);
     options.addOption(singleNumber);
     options.addOption(headerless);
   }
 
-  public void outputTable(List<Integer> instructions)
+  private void outputTable(List<Integer> instructions)
         throws IOException {
     if (!headerlessFlag) {
       System.out.format(formatString + "\n", header);
@@ -94,17 +86,25 @@ public class Decompiler {
         "Instruction", "Fmt", "Decomposition", "Decomp hex", "Source"};
   private static final CommandLineParser parser = new DefaultParser();
 
+  private CommandLine parse(String... args) throws ParseException {
+    return parser.parse(options, args);
+  }
+
+  private static final HelpFormatter formatter = new HelpFormatter();
+
+  private void printUsage() {
+    formatter.printHelp("Decompiler [OPTION] [file|number]...", options);
+  }
 
   public static void main(String[] args) throws IOException {
     Decompiler d = new Decompiler();
 
     try {
       // parse the command line arguments
-      CommandLine line = parser.parse(options, args);
+      CommandLine line = d.parse(args);
 
       if (line.hasOption("help")) {
-        formatter.printHelp("Decompiler [OPTION] [file|number]...", options);
-
+        d.printUsage();
         // TODO: Do we need to check if there are other args?
         // what does POSIX say?
         return;

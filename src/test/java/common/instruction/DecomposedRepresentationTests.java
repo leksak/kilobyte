@@ -1,7 +1,6 @@
 package common.instruction;
 
 import common.instruction.decomposedrepresentation.DecomposedRepresentation;
-import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import static common.instruction.decomposedrepresentation.DecomposedRepresentation.fromNumber;
