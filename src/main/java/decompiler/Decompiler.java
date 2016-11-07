@@ -5,13 +5,10 @@ import common.instruction.MachineCodeDecoder;
 import common.instruction.PartiallyValidInstruction;
 import common.instruction.exceptions.NoSuchInstructionException;
 import io.atlassian.fugue.Either;
-import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import org.apache.commons.cli.*;
 
-import java.io.File;
-import java.util.Set;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -49,8 +46,7 @@ import java.util.Objects;
     options.addOption(headerless);
   }
 
-  private void outputTable(List<Integer> instructions)
-        throws IOException {
+  private void outputTable(List<Integer> instructions) {
     if (!headerlessFlag) {
       System.out.format(formatString + "\n", header);
     }

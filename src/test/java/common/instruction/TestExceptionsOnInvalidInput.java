@@ -48,10 +48,10 @@ public class TestExceptionsOnInvalidInput {
 
   @Test
   void testThatNopCannotBeInstantiatedWithTooManyArguments() {
-    /*String faultyNopRepresentation = "nop foo";
+    String faultyNopRepresentation = "nop foo";
     Throwable e = expectThrows(IllegalArgumentException.class, () ->
           Instruction.from(faultyNopRepresentation));
-    success(e);*/
+    success(e);
   }
 
   @Test

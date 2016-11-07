@@ -68,9 +68,9 @@ import java.util.*
  *
  * @property iname The name of the instruction
  * @property opcode The opcode of the instruction
- * @property mnemonicExample A symbolic representation of one instruction instance
- * @property numericExample A numeric representation of <i>the same</i>
- *                       instruction instance as the mnemonicExample property
+ * @property mnemonicRepresentation A symbolic representation of the instruction instance
+ * @property numericRepresentation A numeric representation of <i>the same</i>
+ *                       instruction instance as the mnemonicRepresentation property
  * @property description A description of the semantics of the instruction
  * @property primordial A boolean flag set to true if the Instruction is
  *                  the first of its kind, existing from the beginning
@@ -162,6 +162,23 @@ data class Instruction private constructor(
 
   operator fun invoke(machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
     return this.pattern.invoke(this, machineCode)
+  }
+
+  override fun hashCode(): Int {
+    var result = iname.hashCode()
+    result = 31 * result + opcode
+    result = 31 * result + mnemonicRepresentation.hashCode()
+    result = 31 * result + numericRepresentation.hashCode()
+    result = 31 * result + description.hashCode()
+    result = 31 * result + format.hashCode()
+    result = 31 * result + pattern.hashCode()
+    result = 31 * result + primordial.hashCode()
+    result = 31 * result + (type?.hashCode() ?: 0)
+    result = 31 * result + (rt ?: 0)
+    result = 31 * result + (funct ?: 0)
+    result = 31 * result + example.hashCode()
+    result = 31 * result + (decomposed?.hashCode() ?: 0)
+    return result
   }
 
   init {
@@ -264,7 +281,7 @@ data class Instruction private constructor(
       if (!inameToPrototype.containsKey(iname)) {
         throw NoSuchInstructionException(iname)
       }
-      return inameToPrototype.get(symbolicRepresentation.iname())!!(symbolicRepresentation)
+      return inameToPrototype[symbolicRepresentation.iname()]!!(symbolicRepresentation)
     }
 
     @Throws(NoSuchInstructionException::class)

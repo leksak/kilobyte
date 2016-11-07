@@ -17,7 +17,7 @@ interface ParametrizedInstructionRoutine {
   object NOP: ParametrizedInstructionRoutine {
     override fun invoke(prototype: Instruction, machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
       if (machineCode.equals(0)) {
-        return Either.left(Instruction.NOP);
+        return Either.left(Instruction.NOP)
       }
       throw IllegalArgumentException("Cannot instantiate \"nop\" from: $machineCode")
     }
