@@ -1,11 +1,10 @@
 package common.instruction.parametrizedroutines
 
-import io.atlassian.fugue.Either
-
 import com.google.common.base.Preconditions.checkArgument
 import common.hardware.Register
 import common.instruction.*
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
+import io.atlassian.fugue.Either
 import java.util.*
 import java.util.regex.Pattern
 

@@ -1,7 +1,5 @@
 package common.instruction.exceptions;
 
-import lombok.val;
-
 import java.util.StringJoiner;
 
 public class IllegalCharactersInMnemonicException extends IllegalArgumentException {

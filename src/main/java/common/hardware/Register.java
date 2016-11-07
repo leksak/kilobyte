@@ -9,7 +9,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * two formats for addressing a particular register, either
  * we use the raw-numeric indices i.e. {@code $0}
  * through {@code $31}. Or, using their equivalent mnemonic
- * representations, for instance {@code $t1}. 
+ * representations, for instance {@code $t1}.
  */
 public enum Register {
   // Registers 0 through 3
