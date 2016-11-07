@@ -103,6 +103,37 @@ data class Instruction private constructor(
   val example = Example(mnemonicRepresentation, numericRepresentation)
   val decomposed = DecomposedRepresentation.fromNumber(numericRepresentation, *format.lengths)
 
+  fun asPaddedHexString(): String {
+    // Pad the string with leading zeroes. Target length is 10
+    // characters (including 0x). So for instance, the number
+    // 0x3e00008
+    // should be written as
+    // 0x03e00008
+
+    // Creates a hexadecimal string without the 0x prefix, target
+    // length is 8 characters.
+    var hexString = Integer.toHexString(numericRepresentation.toInt())
+
+    while (hexString.length < 8) {
+      hexString = "0" + hexString
+    }
+
+    return "0x" + hexString
+  }
+
+  fun asDecimalString() = decomposed.asDecimalString()
+  fun asHexadecimalString() = decomposed.asHexadecimalString()
+
+  override fun toString(): String {
+    return "%s %s %s %s %s".format(
+            asPaddedHexString(),
+            format,
+            asDecimalString(),
+            asHexadecimalString(),
+            mnemonicRepresentation
+            )
+  }
+
   override fun equals(other: Any?): Boolean {
     if (other == null) return false
 
@@ -242,7 +273,7 @@ data class Instruction private constructor(
     }
 
     @Throws(NoSuchInstructionException::class)
-    fun from(machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
+    @JvmStatic fun from(machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
       val opcode: Int = machineCode.opcode().toInt()
 
       // Check if the entire number is 0s, then we have a nop instruction

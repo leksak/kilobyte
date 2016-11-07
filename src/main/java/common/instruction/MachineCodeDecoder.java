@@ -1,7 +1,5 @@
 package common.instruction;
 
-import javax.annotation.Nonnull;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -10,7 +8,7 @@ public interface MachineCodeDecoder {
     return decode(s1) == decode(s2);
   }
 
-  static int decode(@Nonnull String s) {
+  static int decode(String s) {
     checkNotNull(s);
     checkArgument(s.length() >= 1,
           "Expected input argument to have non-zero length");
