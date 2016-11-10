@@ -1,0 +1,72 @@
+\section{Introduction}
+
+In the MIPS32 architecture, all machine instructions are represented
+as 32-bit numbers. This article presents a MIPS32-decompiler that,
+when passed 32-bit numbers which either partially or completely
+represent MIPS32 instructions yields a series of different
+representations of the same instruction.
+
+MIPS32 instructions are to be read from a file with numbers either in
+decimal or hexadecimal form. For each number in the input file, the
+disassembler will produce the following:
+
+\begin{itemize}
+  \item The number from the input file.
+  \item The format of the instruction (R, I, or J).
+  \item The decomposed representation in decimal.
+  \item The decomposed representation in hexadecimal.
+  \item The representation of the instruction in mnemonic format,
+    using register abbreviations wherever possible (e.g.,
+    \texttt{\$t0} instead of \texttt{\$8}) and using decimal numbers
+    whenever actual numbers are necessary.
+\end{itemize}
+
+In the following subsections an introduction of the terminology used
+throughout this document is provided. Afterwards you may refer to this
+section again if any of the above requirements seem foreign to you.
+
+The rest of the document will be dedicated to a high-level description
+of this solution accompanied with a guide on how to compile and run
+the software.
+
+The appendix contains an overview of all those instructions that the
+decompiler is capable of comprehending.
+
+\subsection{Terminology}
+
+According to Aho et al.\cite{Aho:2006:CPT:1177220} a \emph{compiler}
+is a program that can read a program in one language --- the
+\emph{source} language -- and translates it into an equivalent program
+in another language -- the \emph{target} language; see
+Fig.~\ref{fig:compiler}.
+
+\begin{figure}[H]
+  \centering
+  \input{compiler.tikz}
+  \caption{A compiler}
+  \label{fig:compiler}
+\end{figure}
+
+Conversely, a \emph{decompiler} is also a that performs the reverse
+operation of a compiler. It too, is a compiler. Commonly one views a
+compiler as a translator from a high-level human-readable source
+language into a low-level machine-readable language, similarly a
+decompiler translates in the opposite direction; see
+Fig. \ref{fig:decompiler}. 
+
+The two exhibit a chiral relation to one another, i. e. that they are
+mirrored images of each other in terms of functionality, but they are
+not themselves identical.
+
+\begin{figure}[H]
+  \centering
+  \input{decompiler.tikz}
+  \caption{A decompiler}
+  \label{fig:decompiler}
+\end{figure}
+
+In this assignment the decompiler must be able to translate from the
+machine-readable language of 32-bit numbers representing MIPS32
+instructions to the human-readable target language described in the
+introduction.
+

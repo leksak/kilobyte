@@ -1,9 +1,3 @@
-\documentclass[tikz,border=3mm,
-  convert={outfile=mips32-decompiler-interface.png}]{standalone}
-\usepackage{tikz} \usetikzlibrary{shapes.geometric,positioning}
-\usepackage{minted}
-\begin{document}
-
 \begin{tikzpicture}[>=stealth]
   \node [draw] (compiler) {\mintinline{java}{Instruction.fromInteger}};
   \node [above=of compiler] (input) {32-bit integer (\mintinline{java}{int})};
@@ -11,4 +5,3 @@
   \draw [->] (input) -- (compiler);
   \draw [->] (compiler) -- (output);
 \end{tikzpicture}
-\end{document}
