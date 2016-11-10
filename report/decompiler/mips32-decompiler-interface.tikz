@@ -1,7 +1,7 @@
 \begin{tikzpicture}[>=stealth]
-  \node [draw] (compiler) {\mintinline{java}{Instruction.fromInteger}};
-  \node [above=of compiler] (input) {32-bit integer (\mintinline{java}{int})};
-  \node [below=of compiler] (output) {\mintinline{java}{Instruction}};
+  \node [draw] (compiler) {Instruction.fromInteger};
+  \node [above=of compiler] (input) {32-bit integer (int)};
+  \node [below=of compiler] (output) {Instruction};
   \draw [->] (input) -- (compiler);
   \draw [->] (compiler) -- (output);
 \end{tikzpicture}
