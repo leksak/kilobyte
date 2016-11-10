@@ -8,14 +8,14 @@ all:
 clean:
 	find . -type l -delete
 	rm -f *.log
-	rm -rf _minted-simulator-report
-	rm -f simulator-report.aux
-	rm -f simulator-report.bbl
-	rm -f simulator-report.blg
-	rm -f simulator-report-blx.bib
-	rm -f simulator-report.log
-	rm -f simulator-report.out
-	rm -f simulator-report.pdf
-	rm -f simulator-report.run.xml
-	rm -f simulator-report.toc
+	rm -rf _minted-*-report
+	rm -f *-report.aux
+	rm -f *-report.bbl
+	rm -f *-report.blg
+	rm -f *-report-blx.bib
+	rm -f *-report.log
+	rm -f *-report.out
+	rm -f *-report.pdf
+	rm -f *-report.run.xml
+	rm -f *-report.toc
 
