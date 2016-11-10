@@ -1,22 +1,24 @@
 \subsubsection{Example: Mnemonic decoding}
 
-The reverse operation, translating from a human-legible form to the
-numerical form, is trivial. Given, of course, that you know the format
-that the mnemonic form is in and any conditions pertaining to the
-particular instruction. 
+Assuming you know how a particular instruction is represented in its
+mnemonic form then performing the reverse operation, i.e. translating from
+a human-legible form to the numerical form, is trivial.
 
-Take for instance \tt{div \$t2, \$t4}, given that we know its mnemonic
-representation to be on the form
+Take for instance \tt{div \$t2, \$t4}. We know that its mnemonic
+representation is patternized thusly,
 
 \begin{lstlisting}[style=mips_lst]
 div $rs, $rt
 \end{lstlisting}
 %$
 
-and that due to its nature both \shamt{} and \rd{} is both zero,
-together with the fact that we know its opcode and \funct{}, trivially
-we substitute all those values in together with the register
-addresses. Together we get
+We know the \opcode{} and the \funct{}, and from the pattern and the
+format of the instruction we infer that both the \shamt{} and the
+\rd{} fields have to be zero.
+
+Since we know how to interpret the symbolic names of the registers
+numerically we may now compose the numeric representation of the
+instruction which is as follows,
 
 \begin{figure}[H]
   \makebox[\textwidth][c]{
