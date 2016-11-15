@@ -6,13 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InstructionConstructorTests {
   @Test
-  void accessingTheAddPrototype() throws Exception {
-    Instruction actual = Instruction.from("add $t1, $t2, $t3");
-
-    assertEquals(Instruction.ADD, actual);
-  }
-
-  @Test
   void nonSymbolicNamesAreHandledAsWell() throws Exception {
     Instruction actual = Instruction.from("add $9, $10, $11");
     Instruction expected = Instruction.from("add $t1, $t2, $t3");
@@ -38,4 +31,31 @@ class InstructionConstructorTests {
     }
 
   }
+
+  @Test
+  void accessingTheAddPrototype() throws Exception {
+    Instruction variable = Instruction.from("add $t1, $t2, $t3");
+    assertEquals(Instruction.ADD, variable);
+
+    Instruction symbolic = Instruction.from("add $9, $10, $11");
+    assertEquals(variable, symbolic);
+
+    Instruction numeric = Instruction.unsafeFrom(0x014b4820);
+    assertEquals(symbolic, numeric);
+
+  }
+
+  @Test
+  void accessingTheSubPrototype() throws Exception {
+    Instruction variable = Instruction.from("sub $t1, $t2, $t3");
+    assertEquals(Instruction.SUB, variable);
+
+    Instruction symbolic = Instruction.from("sub $9, $10, $11");
+    assertEquals(variable, symbolic);
+
+    Instruction instructionNumeric = Instruction.unsafeFrom(0x00012122);
+    assertEquals(variable, instructionNumeric);
+  }
+
+
 }

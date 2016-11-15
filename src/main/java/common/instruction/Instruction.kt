@@ -190,27 +190,521 @@ data class Instruction private constructor(
   companion object InstructionSet {
     val primordialSet = mutableListOf<Instruction>()
 
-    @JvmField val ADD = Instruction(
-          iname = "add",
-          opcode = 0,
-          funct = 0x20,
-          mnemonicRepresentation = "add \$t1, \$t2, \$t3",
-          numericRepresentation = 0x014b4820,
-          description = "Addition with overflow,. Put the" +
-                " sum of registers rs and rt into register" +
-                " rd. Is only valid if shamt is 0.",
-          format = Format.R,
-          pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
     @JvmField val NOP = Instruction(
-          iname = "nop",
-          opcode = 0,
-          funct = 0,
-          mnemonicRepresentation = "nop",
-          numericRepresentation = 0,
-          description = "Null operation; do nothing. " +
-                "Machine code is all zeroes.",
-          format = Format.R,
-          pattern = ParametrizedInstructionRoutine.NOP)
+            iname = "nop",
+            opcode = 0,
+            funct = 0,
+            mnemonicRepresentation = "nop",
+            numericRepresentation = 0,
+            description = "Null operation; do nothing. " +
+                    "Machine code is all zeroes.",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.NOP)
+
+    @JvmField val SLL = Instruction(
+            iname = "sll",
+            opcode = 0,
+            funct = 0,
+            mnemonicRepresentation = "sll \$t1, \$t2, \$10",
+            numericRepresentation = 0x014A4800,
+            description = "Shift left logical : Set \$t1 to result of " +
+                    "shifting \$t2 left by number of bits specified by " +
+                    "immediate",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val SRL = Instruction(
+            iname = "srl",
+            opcode = 0,
+            funct = 2,
+            mnemonicRepresentation = "srl \$t1, \$t2, \$10",
+            numericRepresentation = 0x014A4802,
+            description = "Shift right logical : Set \$t1 to result of " +
+                    "shifting \$t2 right by number of bits specified " +
+                    "by immediate",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val SRA = Instruction(
+            iname = "sra",
+            opcode = 0,
+            funct = 3,
+            mnemonicRepresentation = "sra \$t1, \$t2, \$10",
+            numericRepresentation = 0x014A4803,
+            description = "Shift right arithmetic : Set \$t1 to result of " +
+                    "sign-extended shifting \$t2 right by number of bits " +
+                    "specified by immediateShift right arithmetic : Set \$t1 to " +
+                    "result of sign-extended shifting \$t2 right by number of " +
+                    "bits specified by immediate",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val SLLV = Instruction(
+            iname = "sllv",
+            opcode = 0,
+            funct = 4,
+            mnemonicRepresentation = "sllv \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014b4804,
+            description = "Shift left logical variable : Set \$t1 to result " +
+                    "of shifting \$t2 left by number of bits specified by " +
+                    "value in low-order 5 bits of \$t3",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val SRLV = Instruction(
+            iname = "srlv",
+            opcode = 0,
+            funct = 6,
+            mnemonicRepresentation = "srlv \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014b4806,
+            description = "Shift right logical variable : Set \$t1 to result " +
+                    "of shifting \$t2 right by number of bits specified by " +
+                    "value in low-order 5 bits of \$t3",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val SRAV = Instruction(
+            iname = "srav",
+            opcode = 0,
+            funct = 7,
+            mnemonicRepresentation = "srav \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014b4807,
+            description = "Shift right arithmetic variable : Set \$t1 to " +
+                    "result of sign-extended shifting \$t2 right by number " +
+                    "of bits specified by value in low-order 5 bits of \$t3",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val JR = Instruction(
+            iname = "jr",
+            opcode = 0,
+            funct = 8,
+            mnemonicRepresentation = "jr \$t1",
+            numericRepresentation = 0x01200008,
+            description = "Jump register unconditionally : Jump to statement " +
+                    "whose address is in \$t1",
+            format = Format.J,
+            pattern = ParametrizedInstructionRoutine.INAME_RS)
+
+    //TODO: Also exist JALR $t1 ($zero) but this should suffice.
+    @JvmField val JALR = Instruction(
+            iname = "jalr",
+            opcode = 0,
+            funct = 9,
+            mnemonicRepresentation = "jalr \$t1, \$t2",
+            numericRepresentation = 0x01404809,
+            description = "Jump and link register : Set \$t1 to Program Counter " +
+                    "(return address) then jump to statement whose address is " +
+                    "in \$t2",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS)
+
+    @JvmField val MOVZ = Instruction(
+            iname = "movz",
+            opcode = 0,
+            funct = 10,
+            mnemonicRepresentation = "movz \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014b480a,
+            description = "Move conditional zero : Set \$t1 to \$t2 if " +
+                    "\$t3 is zero",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val MOVN = Instruction(
+            iname = "movn",
+            opcode = 0,
+            funct = 11,
+            mnemonicRepresentation = "movn \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014b480b,
+            description = "Move conditional not zero : Set \$t1 to \$t2 " +
+                    "if \$t3 is not zero",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val SYSCALL = Instruction(
+            iname = "syscall",
+            opcode = 0,
+            funct = 12,
+            mnemonicRepresentation = "syscall",
+            numericRepresentation = 0x0000000c,
+            description = "Issue a system call : Execute the system call " +
+                    "specified by value in \$v0",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME)
+
+    @JvmField val BREAK = Instruction(
+            iname = "break",
+            opcode = 0,
+            funct = 13,
+            mnemonicRepresentation = "break",
+            numericRepresentation = 0x0000000d,
+            description = "Break execution : Terminate program execution " +
+                    "with exception",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME)
+
+    @JvmField val SYNC = Instruction(
+            iname = "sync",
+            opcode = 0,
+            funct = 15,
+            mnemonicRepresentation = "sync",
+            numericRepresentation = 0x0000000f,
+            description = "To order loads and stores to shared memory in a " +
+                    "multiprocessor system",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME)
+
+    //TODO: numeric mismatch? (0x00004810)Probably weird since only copy to register
+    @JvmField val MFHI = Instruction(
+            iname = "mfhi",
+            opcode = 0,
+            funct = 16,
+            mnemonicRepresentation = "mfhi \$t1",
+            numericRepresentation = 0x00004810,
+            description = "Move from HI register : Set \$t1 to contents of " +
+                    "HI (see multiply and divide operations)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD)
+
+    //TODO: numeric mismatch? (0x00004811)Probably weird since only copy to register
+    @JvmField val MTHI = Instruction(
+            iname = "mthi",
+            opcode = 0,
+            funct = 17,
+            mnemonicRepresentation = "mthi \$t1",
+            numericRepresentation = 0x01200011,
+            description = "Move to HI registerr : Set HI to contents of " +
+                    "\$t1 (see multiply and divide operations)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS)
+    //TODO: numeric mismatch? (0x00004812)Probably weird since only copy to register
+    @JvmField val MFLO = Instruction(
+            iname = "mflo",
+            opcode = 0,
+            funct = 18,
+            mnemonicRepresentation = "mflo \$t1",
+            numericRepresentation = 0x00004812,
+            description = "Move from LO register : Set \$t1 to contents of " +
+                    "LO (see multiply and divide operations)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD)
+
+
+    //TODO: numeric mismatch? (0x00004813)Probably weird since only copy to register
+    @JvmField val MTLO = Instruction(
+            iname = "mtlo",
+            opcode = 0,
+            funct = 19,
+            mnemonicRepresentation = "mtlo \$t1",
+            numericRepresentation = 0x01200013,
+            description = "Move to LO register : Set LO to contents of " +
+                    "\$t1 (see multiply and divide operations)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS)
+
+    @JvmField val MULT = Instruction(
+            iname = "mult",
+            opcode = 0,
+            funct = 24,
+            mnemonicRepresentation = "mult \$t1, \$t2",
+            numericRepresentation = 0x012A0018,
+            description = "ultiplication : Set hi to high-order 32 bits, " +
+                    "lo to low-order 32 bits of the product of \$t1 and " +
+                    "\$t2 (use mfhi to access hi, mflo to access lo)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+
+    @JvmField val MULTU = Instruction(
+            iname = "multu",
+            opcode = 0,
+            funct = 25,
+            mnemonicRepresentation = "multu \$t1, \$t2",
+            numericRepresentation = 0x012A0019,
+            description = "Multiplication unsigned : Set HI to high-order " +
+                    "32 bits, LO to low-order 32 bits of the product of " +
+                    "unsigned \$t1 and \$t2 (use mfhi to access HI, " +
+                    "mflo to access LO)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+
+    @JvmField val DIV = Instruction(
+            iname = "div",
+            opcode = 0,
+            funct = 26,
+            mnemonicRepresentation = "div \$t1, \$t2",
+            numericRepresentation = 0x012A001A,
+            description = " Division with overflow : Divide \$t1 by " +
+                    "\$t2 then set LO to quotient and HI to remainder " +
+                    "(use mfhi to access HI, mflo to access LO)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+
+
+    @JvmField val DIVU = Instruction(
+            iname = "divu",
+            opcode = 0,
+            funct = 27,
+            mnemonicRepresentation = "divu \$t1, \$t2",
+            numericRepresentation = 0x012A001B,
+            description = "Division unsigned without overflow : Divide " +
+                    "unsigned \$t1 by \$t2 then set LO to quotient and " +
+                    "HI to remainder (use mfhi to access HI, mflo to access " +
+                    "LO)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+
+    @JvmField val ADD = Instruction(
+            iname = "add",
+            opcode = 0,
+            funct = 32,
+            mnemonicRepresentation = "add \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014b4820,
+            description = "Addition with overflow,. Put the" +
+                    " sum of registers rs and rt into register" +
+                    " rd. Is only valid if shamt is 0.",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val ADDU = Instruction(
+            iname = "addu",
+            opcode = 0,
+            funct = 33,
+            mnemonicRepresentation = "addu \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014B4821,
+            description = "Addition unsigned without overflow : set \$t1 to " +
+                    "(\$t2 plus \$t3), no overflow",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val SUB = Instruction(
+            iname = "sub",
+            opcode = 0,
+            funct = 34,
+            mnemonicRepresentation = "sub \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014b4822,
+            description = "Subtraction with overflow : " +
+                    "set \$t1 to (\$t2 minus \$t3)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val SUBU = Instruction(
+            iname = "subu",
+            opcode = 0,
+            funct = 35,
+            mnemonicRepresentation = "subu \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014B4823,
+            description = "Subtraction unsigned without overflow : set " +
+                    "\$t1 to (\$t2 minus \$t3), no overflow",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val AND = Instruction(
+            iname = "and",
+            opcode = 0,
+            funct = 36,
+            mnemonicRepresentation = "and \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014B4824,
+            description = "Bitwise AND : Set \$t1 to bitwise " +
+                    "AND of \$t2 and \$t3",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val OR = Instruction(
+            iname = "or",
+            opcode = 0,
+            funct = 37,
+            mnemonicRepresentation = "or \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014B4825,
+            description = "Bitwise OR : Set \$t1 to bitwise OR of \$t2 " +
+                    "and \$t3",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val XOR = Instruction(
+            iname = "xor",
+            opcode = 0,
+            funct = 38,
+            mnemonicRepresentation = "xor \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014B4826,
+            description = "Bitwise XOR (exclusive OR) : Set \$t1 to bitwise " +
+                    "XOR of \$t2 and \$t3",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val NOR = Instruction(
+            iname = "nor",
+            opcode = 0,
+            funct = 39,
+            mnemonicRepresentation = "nor \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014B4827,
+            description = "Bitwise NOR : Set \$t1 to bitwise NOR of \$t2 " +
+                    "and \$t3",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val SLT = Instruction(
+            iname = "slt",
+            opcode = 0,
+            funct = 42,
+            mnemonicRepresentation = "slt \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014B482A,
+            description = "Set less than : If \$t2 is less than \$t3, then " +
+                    "set \$t1 to 1 else set \$t1 to 0",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val SLTU = Instruction(
+            iname = "sltu",
+            opcode = 0,
+            funct = 43,
+            mnemonicRepresentation = "sltu \$t1, \$t2, \$t3",
+            numericRepresentation = 0x014B482B,
+            description = "Set less than unsigned : If \$t2 is less than " +
+                    "\$t3 using unsigned comparision, then set \$t1 to 1 " +
+                    "else set \$t1 to 0",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val TGE = Instruction(
+            iname = "tge",
+            opcode = 0,
+            funct = 48,
+            mnemonicRepresentation = "tge \$t1, \$t2",
+            numericRepresentation = 0x012A0030,
+            description = "Trap if greater or equal : Trap if \$t1 is " +
+                    "greater than or equal to \$t2",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+
+    @JvmField val TGEU = Instruction(
+            iname = "tgeu",
+            opcode = 0,
+            funct = 49,
+            mnemonicRepresentation = "tgeu \$t1, \$t2",
+            numericRepresentation = 0x012A0031,
+            description = "Trap if greater or equal : Trap if \$t1 is " +
+                    "greater than or equal to \$t2",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+
+    @JvmField val TLT = Instruction(
+            iname = "tlt",
+            opcode = 0,
+            funct = 50,
+            mnemonicRepresentation = "tlt \$t1, \$t2",
+            numericRepresentation = 0x012A0032,
+            description = "Trap if less than: Trap if \$t1 less than \$t2",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+
+    @JvmField val TLTU = Instruction(
+            iname = "tltu",
+            opcode = 0,
+            funct = 51,
+            mnemonicRepresentation = "tltu \$t1, \$t2",
+            numericRepresentation = 0x012A0033,
+            description = "Trap if less than unsigned : Trap if \$t1 less " +
+                    "than \$t2, unsigned comparison",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+
+
+    @JvmField val TEQ = Instruction(
+            iname = "teq",
+            opcode = 0,
+            funct = 52,
+            mnemonicRepresentation = "teq \$t1, \$t2",
+            numericRepresentation = 0x012A0034,
+            description = "Trap if equal : Trap if \$t1 is equal to \$t2",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+
+
+    @JvmField val TNE = Instruction(
+            iname = "tne",
+            opcode = 0,
+            funct = 54,
+            mnemonicRepresentation = "tne \$t1, \$t2",
+            numericRepresentation = 0x012A0036,
+            description = "Trap if not equal : Trap if \$t1 is not " +
+                    "equal to \$t2",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+
+
+    /* Opcode 0x1c(16) 28(10) 011100(2)*/
+    /*
+    @JvmField val MADD = Instruction(
+            iname = "madd",
+            opcode = 28,
+            funct = 0,
+            mnemonicRepresentation = "madd \$t1, \$t2",
+            //TODO: numericRepresentation
+            numericRepresentation = 0,
+            description = "Multiply add : Multiply \$t1 by \$t2 then " +
+                    "increment HI by high-order 32 bits of product, " +
+                    "increment LO by low-order 32 bits of product (use mfhi " +
+                    "to access HI, mflo to access LO)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+    @JvmField val MADDU = Instruction(
+            iname = "maddu",
+            opcode = 0x1c,
+            funct = 1,
+            mnemonicRepresentation = "maddu \$t1, \$t2",
+            //TODO: numericRepresentation
+            numericRepresentation = 0,
+            description = "Multiply add unsigned : Multiply \$t1 by \$t2 " +
+                    "then increment HI by high-order 32 bits of product, " +
+                    "increment LO by low-order 32 bits of product, " +
+                    "unsigned (use mfhi to access HI, mflo to access LO",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val MUL = Instruction(
+            iname = "mul",
+            opcode = 0x1c,
+            funct = 2,
+            mnemonicRepresentation = "mul \$v0, \$a0, \$v0",
+            //TODO: numericRepresentation
+            numericRepresentation = 0x70821002,
+            description = "Multiplication without overflow  : Set HI to " +
+                    "high-order 32 bits, LO and \$t1 to low-order 32 bits of " +
+                    "the product of \$t2 and \$t3 (use mfhi to access HI, mflo " +
+                    "to access LO)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val MSUB = Instruction(
+            iname = "msub",
+            opcode = 0x1c,
+            funct = 4,
+            mnemonicRepresentation = "msub \$t1, \$t2",
+            //TODO: numericRepresentation
+            numericRepresentation = 0,
+            description = "Multiply subtract : Multiply \$t1 by \$t2 then " +
+                    "decrement HI by high-order 32 bits of product, " +
+                    "decrement LO by low-order 32 bits of product (use mfhi " +
+                    "to access HI, mflo to access LO)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+    @JvmField val MSUBU = Instruction(
+            iname = "msubu",
+            opcode = 0x1c,
+            funct = 5,
+            mnemonicRepresentation = "msubu \$t1, \$t2",
+            //TODO: numericRepresentation
+            numericRepresentation = 0,
+            description = "Multiply subtract unsigned : Multiply \$t1 by \$t2" +
+                    " then decrement HI by high-order 32 bits of product, " +
+                    "decement LO by low-order 32 bits of product, unsigned " +
+                    "(use mfhi to access HI, mflo to access LO)",
+            format = Format.R,
+            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+
+
     /*@JvmField val SW = Instruction(
           iname = "sw",
           opcode = 0x2b, // 43
@@ -220,6 +714,7 @@ data class Instruction private constructor(
           format = Format.I,
           pattern = ParametrizedInstructionRoutine.INAME_RT_RS_ADDR*/
 
+    */
 
     // Lookup table
     // You can take the name of an Instruction and create
