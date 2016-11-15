@@ -53,7 +53,7 @@ class InstructionConstructorTests {
     Instruction symbolic = Instruction.from("sub $9, $10, $11");
     assertEquals(variable, symbolic);
 
-    Instruction instructionNumeric = Instruction.unsafeFrom(0x00012122);
+    Instruction instructionNumeric = Instruction.unsafeFrom(0x014b4822);
     assertEquals(variable, instructionNumeric);
   }
 

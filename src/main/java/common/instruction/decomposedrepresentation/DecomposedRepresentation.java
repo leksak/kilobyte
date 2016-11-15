@@ -48,6 +48,10 @@ public class DecomposedRepresentation {
     return new DecomposedRepresentation(number, decomposition);
   }
 
+  public long asLong() {
+    return numericalRepresentation;
+  }
+
   public static DecomposedRepresentation fromIntArray(int[] bitfields, int... lengths) {
     if (Arrays.stream(lengths).sum() != 32) {
       String err = "Expected the sum of \"lengths\" to be 32. Got: ";

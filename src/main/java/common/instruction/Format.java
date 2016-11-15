@@ -6,9 +6,11 @@ public enum Format {
   J(6, 26);
 
   public final int[] lengths;
+  public final int noOfFields;
 
   Format(int... lengths) {
     this.lengths = lengths;
+    noOfFields = lengths.length;
   }
 
   public static long fieldsToMachineCode(int opcode, int rs, int rt, int rd, int shamt, int funct) {

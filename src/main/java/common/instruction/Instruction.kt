@@ -2,11 +2,8 @@ package common.instruction
 
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.NoSuchInstructionException
-import common.instruction.parametrizedroutines.INAME_RD_RS_RT
-import common.instruction.parametrizedroutines.ParametrizedInstructionRoutine
+import common.instruction.parametrizedroutines.*
 
-import common.instruction.parametrizedroutines.iname
-import common.instruction.parametrizedroutines.mnemonicEquals
 import io.atlassian.fugue.Either
 import java.util.*
 
@@ -411,11 +408,11 @@ data class Instruction private constructor(
             funct = 24,
             mnemonicRepresentation = "mult \$t1, \$t2",
             numericRepresentation = 0x012A0018,
-            description = "ultiplication : Set hi to high-order 32 bits, " +
+            description = "Multiplication : Set hi to high-order 32 bits, " +
                     "lo to low-order 32 bits of the product of \$t1 and " +
                     "\$t2 (use mfhi to access hi, mflo to access lo)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+            pattern = INAME_RS_RT)
 
     @JvmField val MULTU = Instruction(
             iname = "multu",
@@ -428,7 +425,7 @@ data class Instruction private constructor(
                     "unsigned \$t1 and \$t2 (use mfhi to access HI, " +
                     "mflo to access LO)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+            pattern = INAME_RS_RT)
 
     @JvmField val DIV = Instruction(
             iname = "div",
@@ -440,7 +437,7 @@ data class Instruction private constructor(
                     "\$t2 then set LO to quotient and HI to remainder " +
                     "(use mfhi to access HI, mflo to access LO)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+            pattern = INAME_RS_RT)
 
 
     @JvmField val DIVU = Instruction(
@@ -454,7 +451,7 @@ data class Instruction private constructor(
                     "HI to remainder (use mfhi to access HI, mflo to access " +
                     "LO)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+            pattern = INAME_RS_RT)
 
     @JvmField val ADD = Instruction(
             iname = "add",
@@ -577,7 +574,7 @@ data class Instruction private constructor(
             description = "Trap if greater or equal : Trap if \$t1 is " +
                     "greater than or equal to \$t2",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+            pattern = INAME_RS_RT)
 
     @JvmField val TGEU = Instruction(
             iname = "tgeu",
@@ -588,7 +585,7 @@ data class Instruction private constructor(
             description = "Trap if greater or equal : Trap if \$t1 is " +
                     "greater than or equal to \$t2",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+            pattern = INAME_RS_RT)
 
     @JvmField val TLT = Instruction(
             iname = "tlt",
@@ -598,7 +595,7 @@ data class Instruction private constructor(
             numericRepresentation = 0x012A0032,
             description = "Trap if less than: Trap if \$t1 less than \$t2",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+            pattern = INAME_RS_RT)
 
     @JvmField val TLTU = Instruction(
             iname = "tltu",
@@ -609,7 +606,7 @@ data class Instruction private constructor(
             description = "Trap if less than unsigned : Trap if \$t1 less " +
                     "than \$t2, unsigned comparison",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+            pattern = INAME_RS_RT)
 
 
     @JvmField val TEQ = Instruction(
@@ -620,7 +617,7 @@ data class Instruction private constructor(
             numericRepresentation = 0x012A0034,
             description = "Trap if equal : Trap if \$t1 is equal to \$t2",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+            pattern = INAME_RS_RT)
 
 
     @JvmField val TNE = Instruction(
@@ -632,7 +629,7 @@ data class Instruction private constructor(
             description = "Trap if not equal : Trap if \$t1 is not " +
                     "equal to \$t2",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS_RT)
+            pattern = INAME_RS_RT)
 
 
     /* Opcode 0x1c(16) 28(10) 011100(2)*/
@@ -798,22 +795,22 @@ data class Instruction private constructor(
         return Either.left(NOP)
       }
 
-      val inst: Instruction?
+      val prototype: Instruction?
       if (opcode == 0) {
-        inst = opcodeEquals0x00IdentifiedByFunct[machineCode.funct()]
+        prototype = opcodeEquals0x00IdentifiedByFunct[machineCode.funct()]
       } else if (opcode == 0x1c) {
-        inst = opcodeEquals0x1cIdentifiedByFunct[machineCode.funct()]
+        prototype = opcodeEquals0x1cIdentifiedByFunct[machineCode.funct()]
       } else if (opcode == 0x01) {
-        inst = opcodeEquals0x01IdentifiedByRt[machineCode.rt()]
+        prototype = opcodeEquals0x01IdentifiedByRt[machineCode.rt()]
       } else {
-        inst = identifiedByTheirOpcodeAlone[opcode]
+        prototype = identifiedByTheirOpcodeAlone[opcode]
       }
 
-      if (inst == null) {
+      if (prototype == null) {
         throw NoSuchInstructionException(machineCode)
       }
 
-      return Either.left(inst)
+      return prototype.pattern.invoke(prototype, machineCode)
     }
 
     @JvmStatic fun allExamples(): Iterable<Example> {
