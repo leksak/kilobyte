@@ -14,6 +14,10 @@ interface ParametrizedInstructionRoutine {
         Either<Instruction, PartiallyValidInstruction>
   fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction
 
+
+
+
+  
   object NOP: ParametrizedInstructionRoutine {
     override fun invoke(prototype: Instruction, machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
       if (machineCode.equals(0)) {
@@ -45,48 +49,7 @@ interface ParametrizedInstructionRoutine {
    *
    * require that the shamt field be zero.
    */
-  object INAME_RD_RS_RT: ParametrizedInstructionRoutine {
-    override fun invoke(prototype: Instruction, machineCode: Long):
-          Either<Instruction, PartiallyValidInstruction> {
-      val iname = prototype.iname
-      val rd = Register.fromInt(machineCode.rd()).toString()
-      val rs = Register.fromInt(machineCode.rs()).toString()
-      val rt = Register.fromInt(machineCode.rt()).toString()
-      val mnemonic = "$iname $rd, $rs, $rt"
 
-      val inst = prototype(mnemonic, machineCode)
-      if (machineCode.shamt() != 0) {
-        val err = "Expected shamt to be zero. Got ${machineCode.shamt()}"
-        return Either.right(PartiallyValidInstruction(inst, err))
-      }
-
-      // Create a new copy using these values
-      return Either.left(inst)
-    }
-
-    override fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction {
-      checkArgument(prototype.iname == mnemonicRepresentation.iname())
-      throwIfIncorrectNumberOfCommas(2, mnemonicRepresentation)
-
-      val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
-      throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
-
-      // This pattern shouldn't contain any parens
-      throwExceptionIfContainsParentheses(standardizedMnemonic)
-      throwIfIncorrectNumberOfArgs(3, standardizedMnemonic)
-
-      val tokens: Array<String> = standardizedMnemonic.tokenize()
-      val opcode = prototype.opcode
-      val rd = Register.fromString(tokens[1]).asInt()
-      val rs = Register.fromString(tokens[2]).asInt()
-      val rt = Register.fromString(tokens[3]).asInt()
-      val shamt = 0
-      val funct = prototype.funct!!
-
-      val numericRepresentation = Format.fieldsToMachineCode(opcode, rs, rt, rd, shamt, funct)
-      return prototype(standardizedMnemonic, numericRepresentation)
-    }
-  }
 
   /*
    * For an example, R-format instructions expressed on the form
@@ -325,6 +288,7 @@ interface ParametrizedInstructionRoutine {
       return prototype(standardizedMnemonic, numericRepresentation)
     }
   }
+
 
   /**
    * All I-format instructions are decomposed into fields of the

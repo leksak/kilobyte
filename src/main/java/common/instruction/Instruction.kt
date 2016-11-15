@@ -2,7 +2,9 @@ package common.instruction
 
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.NoSuchInstructionException
+import common.instruction.parametrizedroutines.INAME_RD_RS_RT
 import common.instruction.parametrizedroutines.ParametrizedInstructionRoutine
+
 import common.instruction.parametrizedroutines.iname
 import common.instruction.parametrizedroutines.mnemonicEquals
 import io.atlassian.fugue.Either
@@ -212,7 +214,7 @@ data class Instruction private constructor(
                     "shifting \$t2 left by number of bits specified by " +
                     "immediate",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val SRL = Instruction(
             iname = "srl",
@@ -224,7 +226,7 @@ data class Instruction private constructor(
                     "shifting \$t2 right by number of bits specified " +
                     "by immediate",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val SRA = Instruction(
             iname = "sra",
@@ -238,7 +240,7 @@ data class Instruction private constructor(
                     "result of sign-extended shifting \$t2 right by number of " +
                     "bits specified by immediate",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val SLLV = Instruction(
             iname = "sllv",
@@ -250,7 +252,7 @@ data class Instruction private constructor(
                     "of shifting \$t2 left by number of bits specified by " +
                     "value in low-order 5 bits of \$t3",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val SRLV = Instruction(
             iname = "srlv",
@@ -262,7 +264,7 @@ data class Instruction private constructor(
                     "of shifting \$t2 right by number of bits specified by " +
                     "value in low-order 5 bits of \$t3",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val SRAV = Instruction(
             iname = "srav",
@@ -274,7 +276,7 @@ data class Instruction private constructor(
                     "result of sign-extended shifting \$t2 right by number " +
                     "of bits specified by value in low-order 5 bits of \$t3",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val JR = Instruction(
             iname = "jr",
@@ -309,7 +311,7 @@ data class Instruction private constructor(
             description = "Move conditional zero : Set \$t1 to \$t2 if " +
                     "\$t3 is zero",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val MOVN = Instruction(
             iname = "movn",
@@ -320,7 +322,7 @@ data class Instruction private constructor(
             description = "Move conditional not zero : Set \$t1 to \$t2 " +
                     "if \$t3 is not zero",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val SYSCALL = Instruction(
             iname = "syscall",
@@ -464,7 +466,7 @@ data class Instruction private constructor(
                     " sum of registers rs and rt into register" +
                     " rd. Is only valid if shamt is 0.",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val ADDU = Instruction(
             iname = "addu",
@@ -475,7 +477,7 @@ data class Instruction private constructor(
             description = "Addition unsigned without overflow : set \$t1 to " +
                     "(\$t2 plus \$t3), no overflow",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val SUB = Instruction(
             iname = "sub",
@@ -486,7 +488,7 @@ data class Instruction private constructor(
             description = "Subtraction with overflow : " +
                     "set \$t1 to (\$t2 minus \$t3)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val SUBU = Instruction(
             iname = "subu",
@@ -497,7 +499,7 @@ data class Instruction private constructor(
             description = "Subtraction unsigned without overflow : set " +
                     "\$t1 to (\$t2 minus \$t3), no overflow",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val AND = Instruction(
             iname = "and",
@@ -508,7 +510,7 @@ data class Instruction private constructor(
             description = "Bitwise AND : Set \$t1 to bitwise " +
                     "AND of \$t2 and \$t3",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val OR = Instruction(
             iname = "or",
@@ -519,7 +521,7 @@ data class Instruction private constructor(
             description = "Bitwise OR : Set \$t1 to bitwise OR of \$t2 " +
                     "and \$t3",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val XOR = Instruction(
             iname = "xor",
@@ -530,7 +532,7 @@ data class Instruction private constructor(
             description = "Bitwise XOR (exclusive OR) : Set \$t1 to bitwise " +
                     "XOR of \$t2 and \$t3",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val NOR = Instruction(
             iname = "nor",
@@ -541,7 +543,7 @@ data class Instruction private constructor(
             description = "Bitwise NOR : Set \$t1 to bitwise NOR of \$t2 " +
                     "and \$t3",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val SLT = Instruction(
             iname = "slt",
@@ -552,7 +554,7 @@ data class Instruction private constructor(
             description = "Set less than : If \$t2 is less than \$t3, then " +
                     "set \$t1 to 1 else set \$t1 to 0",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val SLTU = Instruction(
             iname = "sltu",
@@ -564,7 +566,7 @@ data class Instruction private constructor(
                     "\$t3 using unsigned comparision, then set \$t1 to 1 " +
                     "else set \$t1 to 0",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val TGE = Instruction(
             iname = "tge",
@@ -647,7 +649,7 @@ data class Instruction private constructor(
                     "increment LO by low-order 32 bits of product (use mfhi " +
                     "to access HI, mflo to access LO)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
     @JvmField val MADDU = Instruction(
             iname = "maddu",
             opcode = 0x1c,
@@ -660,7 +662,7 @@ data class Instruction private constructor(
                     "increment LO by low-order 32 bits of product, " +
                     "unsigned (use mfhi to access HI, mflo to access LO",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val MUL = Instruction(
             iname = "mul",
@@ -674,7 +676,7 @@ data class Instruction private constructor(
                     "the product of \$t2 and \$t3 (use mfhi to access HI, mflo " +
                     "to access LO)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val MSUB = Instruction(
             iname = "msub",
@@ -688,7 +690,7 @@ data class Instruction private constructor(
                     "decrement LO by low-order 32 bits of product (use mfhi " +
                     "to access HI, mflo to access LO)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
     @JvmField val MSUBU = Instruction(
             iname = "msubu",
@@ -702,7 +704,7 @@ data class Instruction private constructor(
                     "decement LO by low-order 32 bits of product, unsigned " +
                     "(use mfhi to access HI, mflo to access LO)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+            pattern = INAME_RD_RS_RT)
 
 
     /*@JvmField val SW = Instruction(
