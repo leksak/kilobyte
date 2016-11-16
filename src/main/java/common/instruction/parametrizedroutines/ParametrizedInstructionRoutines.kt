@@ -7,6 +7,23 @@ import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import io.atlassian.fugue.Either
 import java.util.*
 
+val fieldNameToIndexMap: HashMap<String, Int> = hashMapOf(
+      Pair("rs", 1),
+      Pair("rt", 2),
+      Pair("rd", 3),
+      Pair("shamt", 4),
+      Pair("funct", 5),
+      Pair("offset", 4)
+)
+
+val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
+      Pair("rs", Long::rs),
+      Pair("rt", Long::rt),
+      Pair("rd", Long::rd),
+      Pair("shamt", Long::shamt),
+      Pair("funct", Long::funct)
+)
+
 /**
  * This method creates objects implementing the ParametrizedInstructionRoutine
  * by utilizing the given format to make assertions as to what manner 32-bit
@@ -121,21 +138,6 @@ import java.util.*
  * meaning that rs=$s2, rt=$t0, and the offset=24.
  */
 fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
-  val fieldNameToIndexMap = HashMap<String, Int>()
-  fieldNameToIndexMap["opcode"]=0
-  fieldNameToIndexMap["rs"]=1
-  fieldNameToIndexMap["rt"]=2
-  fieldNameToIndexMap["rd"]=3
-  fieldNameToIndexMap["shamt"]=4
-  fieldNameToIndexMap["funct"]=5
-  fieldNameToIndexMap["offset"]=4
-  val fieldNameToMethodCallMap = HashMap<String, (n: Long) -> Int>()
-  fieldNameToMethodCallMap["rs"]=Long::rs
-  fieldNameToMethodCallMap["rt"]=Long::rt
-  fieldNameToMethodCallMap["rd"]=Long::rd
-  fieldNameToMethodCallMap["shamt"]=Long::shamt
-  fieldNameToMethodCallMap["funct"]=Long::funct
-  
   /* We standardize the pattern to ensure consistency not out of necessity */
   val standardizedPattern = standardizeMnemonic(pattern)
 
