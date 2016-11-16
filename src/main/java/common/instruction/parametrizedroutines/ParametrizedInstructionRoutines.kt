@@ -186,7 +186,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
       // 6 cells.
       val n = IntArray(format.noOfFields)
       n[0] = opcode;
-      if (format == Format.R) {
+      if (format == Format.R || prototype.type == Type.J) {
         n[5] = prototype.funct!!
       }
 
@@ -245,6 +245,12 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
               return Either.right(PartiallyValidInstruction(inst, err))
             }
           }
+          if (!fields.contains("rt")) {
+            if (machineCode.rd() != 0) {
+              val err = "Expected rt to be zero. Got ${machineCode.rt()}"
+              return Either.right(PartiallyValidInstruction(inst, err))
+            }
+          }
 
           // Create a new copy using these values
           return Either.left(inst)
@@ -260,3 +266,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 
 @JvmField val INAME_RD_RS_RT = from(Format.R, "iname rd, rs, rt")
 @JvmField val INAME_RS_RT = from(Format.R, "iname rs, rt")
+@JvmField val INAME_RD_RS = from(Format.R, "iname rd, rs")
+@JvmField val INAME_RS = from(Format.J, "iname rs")
+@JvmField val INAME_RD = from(Format.J, "iname rd")
+

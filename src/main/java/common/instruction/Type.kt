@@ -12,6 +12,7 @@ enum class Type(val longName: String) {
   B("branch"),
   T("trap"),
   E("exception"),
-  Interrupt("interrupt")
+  Interrupt("interrupt"),
+  J("jump"), // Some jump instructions are on the r format such as jalr
 }
 

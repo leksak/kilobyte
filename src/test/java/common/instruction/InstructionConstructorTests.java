@@ -1,8 +1,11 @@
 package common.instruction;
 
+import io.atlassian.fugue.Either;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InstructionConstructorTests {
   @Test
@@ -55,6 +58,37 @@ class InstructionConstructorTests {
 
     Instruction instructionNumeric = Instruction.unsafeFrom(0x014b4822);
     assertEquals(variable, instructionNumeric);
+  }
+
+  @Test
+  void testInameRdRs() throws Exception {
+    Instruction mnemonic = Instruction.from("jalr $t1, $t2");
+    assertEquals(Instruction.JALR, mnemonic);
+
+    Instruction instructionNumeric = Instruction.unsafeFrom(0x01404809);
+    assertEquals(Instruction.JALR, instructionNumeric);
+    System.out.println(instructionNumeric.toString());
+    System.out.println(Instruction.JALR.toString());
+    assertEquals(mnemonic, instructionNumeric);
+  }
+
+  @Test
+  void testInameRdRsYieldsAPartiallyValidInstructionWhenRtIsNonZero() throws Exception {
+    Either<Instruction, PartiallyValidInstruction> instructionNumeric = Instruction.from(0x01404809 | (4 << 16));
+
+    assertTrue(instructionNumeric.isRight());
+  }
+
+
+  @Test
+  void testInameRs() throws Exception {
+    Instruction mnemonic = Instruction.from("jr $t1");
+    assertEquals(Instruction.JR, mnemonic, "Failed to translate from the mnemonic representation");
+
+    Instruction instructionNumeric = Instruction.unsafeFrom(0x01200008);
+    assertEquals(Instruction.JR, instructionNumeric, "Failed to translate from the numeric representation");
+
+    assertEquals(mnemonic, instructionNumeric);
   }
 
 

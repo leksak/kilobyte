@@ -283,8 +283,9 @@ data class Instruction private constructor(
             numericRepresentation = 0x01200008,
             description = "Jump register unconditionally : Jump to statement " +
                     "whose address is in \$t1",
-            format = Format.J,
-            pattern = ParametrizedInstructionRoutine.INAME_RS)
+            format = Format.R,
+            type=Type.J,
+            pattern = INAME_RS)
 
     //TODO: Also exist JALR $t1 ($zero) but this should suffice.
     @JvmField val JALR = Instruction(
@@ -297,7 +298,8 @@ data class Instruction private constructor(
                     "(return address) then jump to statement whose address is " +
                     "in \$t2",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD_RS)
+            type = Type.J,
+            pattern = INAME_RD_RS)
 
     @JvmField val MOVZ = Instruction(
             iname = "movz",
@@ -321,6 +323,7 @@ data class Instruction private constructor(
             format = Format.R,
             pattern = INAME_RD_RS_RT)
 
+    // TODO: The following three aren't actually in the R-format.
     @JvmField val SYSCALL = Instruction(
             iname = "syscall",
             opcode = 0,
@@ -364,7 +367,7 @@ data class Instruction private constructor(
             description = "Move from HI register : Set \$t1 to contents of " +
                     "HI (see multiply and divide operations)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD)
+            pattern = INAME_RD)
 
     //TODO: numeric mismatch? (0x00004811)Probably weird since only copy to register
     @JvmField val MTHI = Instruction(
