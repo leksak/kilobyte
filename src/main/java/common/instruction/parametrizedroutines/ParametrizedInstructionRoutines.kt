@@ -129,8 +129,13 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
   fieldNameToIndexMap["shamt"]=4
   fieldNameToIndexMap["funct"]=5
   fieldNameToIndexMap["offset"]=4
-
-
+  val fieldNameToMethodCallMap = HashMap<String, (n: Long) -> Int>()
+  fieldNameToMethodCallMap["rs"]=Long::rs
+  fieldNameToMethodCallMap["rt"]=Long::rt
+  fieldNameToMethodCallMap["rd"]=Long::rd
+  fieldNameToMethodCallMap["shamt"]=Long::shamt
+  fieldNameToMethodCallMap["funct"]=Long::funct
+  
   /* We standardize the pattern to ensure consistency not out of necessity */
   val standardizedPattern = standardizeMnemonic(pattern)
 
@@ -138,6 +143,14 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
   // we get that "iname rd, rs, rt".tokenize() yields ["rd", "rs", "rt"]
   // (note the boolean flag, which is why the "iname" disappears)
   val fields = standardizedPattern.tokenize(includeIname = false)
+
+  fun shouldFieldBeZero(fieldName: String): Boolean {
+    return !fields.contains(fieldName)
+  }
+
+  fun fieldIsNotZero(fieldName: String, machineCode: Long): Boolean {
+    return fieldNameToMethodCallMap[fieldName]!!.invoke(machineCode) != 0
+  }
 
   fun evaluateIfTheMnemonicRepresentationIsWellFormed(mnemonicRepresentation : String) {
     val expectedNumberOfCommas = standardizedPattern.countCommas()
@@ -201,7 +214,6 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
       return prototype(standardizedMnemonic, d)
     }
 
-
     override fun invoke(prototype: Instruction, machineCode: Long):
           Either<Instruction, PartiallyValidInstruction>
     {
@@ -235,23 +247,19 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
           mnemonicRepresentation = mnemonicRepresentation.trim()
 
           val inst = prototype(mnemonicRepresentation, machineCode)
-          if (!fields.contains("shamt")) {
-            if (machineCode.shamt() != 0) {
-              val err = "Expected shamt to be zero. Got ${machineCode.shamt()}"
-              return Either.right(PartiallyValidInstruction(inst, err))
-            }
+
+          if (shouldFieldBeZero("shamt") && fieldIsNotZero("shamt", machineCode)) {
+            val err = "Expected shamt to be zero. Got ${machineCode.shamt()}"
+            return Either.right(PartiallyValidInstruction(inst, err))
           }
-          if (!fields.contains("rd")) {
-            if (machineCode.rd() != 0) {
-              val err = "Expected rd to be zero. Got ${machineCode.rd()}"
-              return Either.right(PartiallyValidInstruction(inst, err))
-            }
+
+          if (shouldFieldBeZero("rd") && fieldIsNotZero("rd", machineCode)) {
+            val err = "Expected rd to be zero. Got ${machineCode.rd()}"
+            return Either.right(PartiallyValidInstruction(inst, err))
           }
-          if (!fields.contains("rt")) {
-            if (machineCode.rt() != 0) {
-              val err = "Expected rt to be zero. Got ${machineCode.rt()}"
-              return Either.right(PartiallyValidInstruction(inst, err))
-            }
+          if (shouldFieldBeZero("rt") && fieldIsNotZero("rt", machineCode)) {
+            val err = "Expected rt to be zero. Got ${machineCode.rt()}"
+            return Either.right(PartiallyValidInstruction(inst, err))
           }
 
           // Create a new copy using these values
