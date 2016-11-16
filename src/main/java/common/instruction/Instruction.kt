@@ -390,7 +390,7 @@ data class Instruction private constructor(
             description = "Move from LO register : Set \$t1 to contents of " +
                     "LO (see multiply and divide operations)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RD)
+            pattern = INAME_RD)
 
 
     //TODO: numeric mismatch? (0x00004813)Probably weird since only copy to register
@@ -783,7 +783,14 @@ data class Instruction private constructor(
 
     @Throws(NoSuchInstructionException::class)
     @JvmStatic fun unsafeFrom(machineCode: Long): Instruction {
-      return from(machineCode).left().get()
+      val inst = from(machineCode)
+      try {
+        // Attempt to get the left projection and return it.
+        return inst.left().get()
+      } catch (e : NoSuchElementException) {
+        throw NoSuchElementException("Attempted to get an instruction from $machineCode" +
+        " but got " + inst.right().get())
+      }
     }
 
     @Throws(NoSuchInstructionException::class)

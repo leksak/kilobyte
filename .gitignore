@@ -68,3 +68,4 @@ gradle-app.setting
 .DS_Store
 
 /*.log
+*_minted*-report

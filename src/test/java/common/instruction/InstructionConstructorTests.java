@@ -28,6 +28,7 @@ class InstructionConstructorTests {
     for (Example e : Instruction.allExamples()) {
       String mnemonic = e.getMnemonicExample();
       long numeric = e.getNumericExample();
+      System.out.println(mnemonic);
       Instruction fromMnemonic = Instruction.from(mnemonic);
       Instruction fromNumeric = Instruction.unsafeFrom(numeric);
       assertEquals(fromMnemonic, fromNumeric);
