@@ -64,12 +64,7 @@ import java.util.Objects;
   }
 
   private static void printInstruction(Either<Instruction, PartiallyValidInstruction> maybeInstruction) {
-    if (maybeInstruction.isLeft()) {
-      Instruction i = maybeInstruction.left().get();
-      System.out.println(i);
-    } else {
-      // Handle partially valid instruction
-    }
+    System.out.println(maybeInstruction.fold(Instruction::toString, PartiallyValidInstruction::toString));
   }
 
   private static boolean isNotNull(Object o) {
