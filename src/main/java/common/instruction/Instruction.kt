@@ -376,7 +376,7 @@ data class Instruction private constructor(
             funct = 17,
             mnemonicRepresentation = "mthi \$t1",
             numericRepresentation = 0x01200011,
-            description = "Move to HI registerr : Set HI to contents of " +
+            description = "Move to HI register : Set HI to contents of " +
                     "\$t1 (see multiply and divide operations)",
             format = Format.R,
             pattern = INAME_RS)
