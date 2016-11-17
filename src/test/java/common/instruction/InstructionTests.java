@@ -55,13 +55,14 @@ class InstructionTests {
     }
   }
 
-  /*
+
   @Test
+  @DisplayName("Creating an instruction from 0x00 yields \"NOP\"")
   void gettingTheNOPInstructionFromAllZeroes() throws NoSuchInstructionException {
-    Instruction actual = Instruction.unsafeFrom(0);
+    Instruction actual = Instruction.unsafeFrom(0x00);
     assertEquals(Instruction.NOP, actual);
   }
-*/
+
   @Test
   @DisplayName("All (long, String) archetype-pairs yield matching instructions")
   void checkThatAllPrototypesCreateEqualInstancesFromTheirRespectiveExamples() throws Exception {
