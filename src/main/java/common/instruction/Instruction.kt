@@ -379,7 +379,7 @@ data class Instruction private constructor(
             description = "Move to HI registerr : Set HI to contents of " +
                     "\$t1 (see multiply and divide operations)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS)
+            pattern = INAME_RS)
     //TODO: numeric mismatch? (0x00004812)Probably weird since only copy to register
     @JvmField val MFLO = Instruction(
             iname = "mflo",
@@ -403,7 +403,7 @@ data class Instruction private constructor(
             description = "Move to LO register : Set LO to contents of " +
                     "\$t1 (see multiply and divide operations)",
             format = Format.R,
-            pattern = ParametrizedInstructionRoutine.INAME_RS)
+            pattern = INAME_RS)
 
     @JvmField val MULT = Instruction(
             iname = "mult",
