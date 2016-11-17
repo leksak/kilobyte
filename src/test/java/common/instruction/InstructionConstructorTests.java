@@ -4,10 +4,7 @@ import common.instruction.exceptions.NoSuchInstructionException;
 import io.atlassian.fugue.Either;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.expectThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class InstructionConstructorTests {
   @Test
@@ -47,7 +44,6 @@ class InstructionConstructorTests {
 
     Instruction numeric = Instruction.unsafeFrom(0x014b4820);
     assertEquals(symbolic, numeric);
-
   }
 
   @Test
