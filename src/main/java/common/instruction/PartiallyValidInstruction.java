@@ -11,6 +11,6 @@ public class PartiallyValidInstruction {
 
   @Override
   public String toString() {
-    return instruction.toString() + " " + + errors;
+    return instruction.toString() + " " + errors;
   }
 }
