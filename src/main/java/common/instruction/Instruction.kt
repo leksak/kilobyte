@@ -836,9 +836,7 @@ data class Instruction private constructor(
      *                        which are executable. (not yet supported)
      */
     @JvmStatic fun printInstructionSet(onlyExecutables: Boolean = false) {
-      for (prototype in primordialSet) {
-        println(prototype.iname)
-      }
+      primordialSet.forEach { prototype -> println(prototype.iname) }
     }
   }
 }
