@@ -1,11 +1,13 @@
 package common.instruction;
 
+import common.instruction.exceptions.NoSuchInstructionException;
 import io.atlassian.fugue.Either;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.expectThrows;
 
 class InstructionConstructorTests {
   @Test
@@ -28,7 +30,6 @@ class InstructionConstructorTests {
     for (Example e : Instruction.allExamples()) {
       String mnemonic = e.getMnemonicExample();
       long numeric = e.getNumericExample();
-      System.out.println(mnemonic);
       Instruction fromMnemonic = Instruction.from(mnemonic);
       Instruction fromNumeric = Instruction.unsafeFrom(numeric);
       assertEquals(fromMnemonic, fromNumeric);
@@ -68,8 +69,6 @@ class InstructionConstructorTests {
 
     Instruction instructionNumeric = Instruction.unsafeFrom(0x01404809);
     assertEquals(Instruction.JALR, instructionNumeric);
-    System.out.println(instructionNumeric.toString());
-    System.out.println(Instruction.JALR.toString());
     assertEquals(mnemonic, instructionNumeric);
   }
 
@@ -92,5 +91,8 @@ class InstructionConstructorTests {
     assertEquals(mnemonic, instructionNumeric);
   }
 
-
+  @Test
+  void testNoSuchInstructionExceptionIsThrownOnUnknown32BitInteger() {
+    expectThrows(NoSuchInstructionException.class, () -> Instruction.unsafeFrom(0xFFFFFF));
+  }
 }
