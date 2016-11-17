@@ -632,6 +632,7 @@ data class Instruction private constructor(
             description = "Trap if not equal : Trap if \$t1 is not " +
                     "equal to \$t2",
             format = Format.R,
+            type = Type.T,
             pattern = INAME_RS_RT)
 
 
