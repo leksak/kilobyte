@@ -250,19 +250,25 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 
           val inst = prototype(mnemonicRepresentation, machineCode)
 
+          val errors = ArrayList<String>()
           if (shouldFieldBeZero("shamt") && fieldIsNotZero("shamt", machineCode)) {
-            val err = "Expected shamt to be zero. Got ${machineCode.shamt()}"
-            return Either.right(PartiallyValidInstruction(inst, err))
+            errors.add("Expected shamt to be zero. Got ${machineCode.shamt()}")
           }
 
           if (shouldFieldBeZero("rd") && fieldIsNotZero("rd", machineCode)) {
-            val err = "Expected rd to be zero. Got ${machineCode.rd()}"
-            return Either.right(PartiallyValidInstruction(inst, err))
+            errors.add("Expected rd to be zero. Got ${machineCode.rd()}")
           }
           if (shouldFieldBeZero("rt") && fieldIsNotZero("rt", machineCode)) {
-            val err = "Expected rt to be zero. Got ${machineCode.rt()}"
-            return Either.right(PartiallyValidInstruction(inst, err))
+            errors.add("Expected rt to be zero. Got ${machineCode.rt()}")
           }
+          if (shouldFieldBeZero("rs") && fieldIsNotZero("rs", machineCode)) {
+            errors.add("Expected rs to be zero. Got ${machineCode.rs()}")
+          }
+
+          if (errors.isNotEmpty()) {
+            return Either.right(PartiallyValidInstruction(inst, errors))
+          }
+
 
           // Create a new copy using these values
           return Either.left(inst)
