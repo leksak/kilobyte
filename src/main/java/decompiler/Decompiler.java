@@ -83,7 +83,7 @@ import java.util.Objects;
     return parser.parse(options, args);
   }
 
-  private static final HelpFormatter formatter = new HelpFormatter();
+  HelpFormatter formatter = new HelpFormatter();
 
   private void printUsage() {
     formatter.printHelp("Decompiler [OPTION] [file|number]...", options);
