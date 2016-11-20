@@ -139,7 +139,7 @@ class InstructionTests {
     }
 
   }
-  
+
   @Test
   @DisplayName("Creating an instruction from 0x00 yields \"NOP\"")
   void gettingTheNOPInstructionFromAllZeroes() throws NoSuchInstructionException {
