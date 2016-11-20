@@ -77,7 +77,6 @@ public class DecomposedRepresentation {
         next_shiftAmount = next_shiftAmount + lengths[i - 1];
       }
     }
-
     return new DecomposedRepresentation(composed, decomposition);
   }
 

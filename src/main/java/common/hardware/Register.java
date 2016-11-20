@@ -1,5 +1,7 @@
 package common.hardware;
 
+import org.jetbrains.annotations.NotNull;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
 /**
@@ -13,55 +15,55 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 public enum Register {
   // Registers 0 through 3
-  $zero("Constant 0"),
-  $at("Reserved for assembler"),
+  $zero("Constant 0", 0),
+  $at("Reserved for assembler", 1),
 
-  $v0("Expression evaluation and results of a function"),
-  $v1("Expression evaluation and results of a function"),
+  $v0("Expression evaluation and results of a function", 2),
+  $v1("Expression evaluation and results of a function", 3),
 
   // Registers 4 through 7
-  $a0("Argument 1"),
-  $a1("Argument 2"),
-  $a2("Argument 3"),
-  $a3("Argument 4"),
+  $a0("Argument 1", 4),
+  $a1("Argument 2", 5),
+  $a2("Argument 3", 6),
+  $a3("Argument 4", 7),
 
   // Registers 8 through 11
-  $t0("Temporary (not preserved across call)"),
-  $t1("Temporary (not preserved across call)"),
-  $t2("Temporary (not preserved across call)"),
-  $t3("Temporary (not preserved across call)"),
+  $t0("Temporary (not preserved across call)", 8),
+  $t1("Temporary (not preserved across call)", 9),
+  $t2("Temporary (not preserved across call)", 10),
+  $t3("Temporary (not preserved across call)", 11),
 
   // Registers 12 through 15
-  $t4("Temporary (not preserved across call)"),
-  $t5("Temporary (not preserved across call)"),
-  $t6("Temporary (not preserved across call)"),
-  $t7("Temporary (not preserved across call)"),
+  $t4("Temporary (not preserved across call)", 12),
+  $t5("Temporary (not preserved across call)", 13),
+  $t6("Temporary (not preserved across call)", 14),
+  $t7("Temporary (not preserved across call)", 15),
 
   // Registers 16 through 19
-  $s0("Saved temporary (preserved across call)"),
-  $s1("Saved temporary (preserved across call)"),
-  $s2("Saved temporary (preserved across call)"),
-  $s3("Saved temporary (preserved across call)"),
+  $s0("Saved temporary (preserved across call)", 16),
+  $s1("Saved temporary (preserved across call)", 17),
+  $s2("Saved temporary (preserved across call)", 18),
+  $s3("Saved temporary (preserved across call)", 19),
 
   // Registers 20 through 23
-  $s4("Saved temporary (preserved across call)"),
-  $s5("Saved temporary (preserved across call)"),
-  $s6("Saved temporary (preserved across call)"),
-  $s7("Saved temporary (preserved across call)"),
+  $s4("Saved temporary (preserved across call)", 20),
+  $s5("Saved temporary (preserved across call)", 21),
+  $s6("Saved temporary (preserved across call)", 22),
+  $s7("Saved temporary (preserved across call)", 23),
 
   // Registers 24 through 27
-  $t8("Temporary (not preserved across call)"),
-  $t9("Temporary (not preserved across call)"),
+  $t8("Temporary (not preserved across call)", 24),
+  $t9("Temporary (not preserved across call)", 25),
 
-  $k0("Reserved for OS kernel"),
-  $k1("Reserved for OS kernel"),
+  $k0("Reserved for OS kernel", 26),
+  $k1("Reserved for OS kernel", 27),
 
   // Registers 28 through 31 (32 total)
-  $gp("Pointer to global area"),
-  $sp("Stack pointer"),
-  $fp("Frame pointer"),
+  $gp("Pointer to global area", 28),
+  $sp("Stack pointer", 29),
+  $fp("Frame pointer", 30),
 
-  $ra("Return address (used by function call)"),
+  $ra("Return offset (used by function call)", 31),
   ;
   public int value;
   private final String description;
@@ -96,7 +98,7 @@ public enum Register {
     checkArgument(mnemonic.startsWith("$"), "Registers has to start with a \"$\"");
 
     String sansDollarSign = mnemonic.replace("$", "");
-    if (sansDollarSign.matches("[0-9]+")) {
+    if (sansDollarSign.matches("\\d+")) {
       // A non-symbolic name was passed, such as "$8" as opposed
       // to the symbolic "$t0".
       return fromIndex(Integer.valueOf(sansDollarSign));
@@ -108,6 +110,28 @@ public enum Register {
 
   public int asInt() {
     return this.ordinal();
+  }
+
+  public static Register registerFromOffset(String mnemonic) {
+    return fromString(offsetSplitter(mnemonic, false));
+
+  }
+
+  public static int offsetFromOffset(String mnemonic) {
+    return Integer.valueOf(offsetSplitter(mnemonic, true));
+  }
+
+  private static String offsetSplitter(String mnemonic, boolean wantOffset) {
+    //TODO: can there be minus? offset in I-instructions
+    if (!mnemonic.matches("(\\d+|\\d+\\(\\$[a-z0-9]+\\)|\\$\\d)")) {
+      throw new IllegalArgumentException("Invalid offsetFormat '"+mnemonic+"'");
+    }
+    String[] split = mnemonic.replace(")", "").split("[(]");
+    if (split.length > 2 || split[0].length() == 0) {
+      throw new IllegalArgumentException("Invalid offset format '"+mnemonic+"'.");
+    }
+    return (wantOffset ? split[0] : split[1]);
+
   }
 }
 

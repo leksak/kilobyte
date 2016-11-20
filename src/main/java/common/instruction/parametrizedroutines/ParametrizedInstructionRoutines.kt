@@ -13,7 +13,9 @@ val fieldNameToIndexMap: HashMap<String, Int> = hashMapOf(
       Pair("rd", 3),
       Pair("shamt", 4),
       Pair("funct", 5),
-      Pair("offset", 4)
+      Pair("offset", 3),
+      Pair("address", 3),
+      Pair("target", 1)
 )
 
 val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
@@ -21,7 +23,10 @@ val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
       Pair("rt", Long::rt),
       Pair("rd", Long::rd),
       Pair("shamt", Long::shamt),
-      Pair("funct", Long::funct)
+      Pair("funct", Long::funct),
+      Pair("offset", Long::offset),
+      Pair("target", Long::target),
+      Pair("address", Long::offset)
 )
 
 /**
@@ -123,7 +128,7 @@ val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
  *
  * I-format instructions are traditionally written on the form,
  *
- *     iname rt, address
+ *     iname rt, offset
  *
  * For an example,
  *
@@ -163,7 +168,9 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
     val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
     throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
 
-    if (format == Format.R || format == Format.J) {
+    if (format == Format.I) {
+      //throwExceptionIfNotContainsParentheses(standardizedMnemonic)
+    } else /*if (format == Format.R || format == Format.J) */{
       // This pattern shouldn't contain any parens
       throwExceptionIfContainsParentheses(standardizedMnemonic)
     }
@@ -207,10 +214,30 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
         n[5] = prototype.funct!!
       }
 
+      /* Will be set when op-code 1 */
+      if (prototype.rt != null) {
+        n[fieldNameToIndexMap.get("rt")!!] = prototype.rt!!
+      }
+
       for (i in tokens.indices) {
         val destinationIndex: Int = fieldNameToIndexMap.get(fields[i])!!
-        n[destinationIndex] = Register.fromString(tokens[i]).asInt()
+        if (fields[i] == "address") {
+          n[destinationIndex] = Register.offsetFromOffset(tokens[i])
+          if (!fields.contains("rs") && opcode != 15) {
+            n[fieldNameToIndexMap.get("rs")!!] = Register.registerFromOffset(tokens[i]).asInt()
+          }
+        }
+        else if (fields[i] == "offset") {
+          n[destinationIndex] = Register.offsetFromOffset(tokens[i])
+        }
+        else if (fields[i] == "target") {
+          n[destinationIndex] = Integer.valueOf(tokens[i])
+        }
+        else {
+          n[destinationIndex] = Register.fromString(tokens[i]).asInt()
+        }
       }
+
       val lengths = format.lengths
       val d = DecomposedRepresentation.fromIntArray(n, *lengths).asLong()
       return prototype(standardizedMnemonic, d)
@@ -220,36 +247,49 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
           Either<Instruction, PartiallyValidInstruction>
     {
       val iname = prototype.iname
+        var mnemonicRepresentation = "$iname "
+        for (i in fields.indices) {
+          // The fields are given in order, so we can just concatenate
+          // the strings.
+          if (fields[i] == "rd") {
+            mnemonicRepresentation += Register.fromInt(machineCode.rd()).toString()
+          }
 
-      when (format) {
-        Format.R -> {
-          var mnemonicRepresentation = "$iname "
-          for (i in fields.indices) {
-            // The fields are given in order, so we can just concatenate
-            // the strings.
-            if (fields[i] == "rd") {
-              mnemonicRepresentation += Register.fromInt(machineCode.rd()).toString()
-            }
+          if (fields[i] == "rt") {
+            mnemonicRepresentation += Register.fromInt(machineCode.rt()).toString()
+          }
 
-            if (fields[i] == "rt") {
-              mnemonicRepresentation += Register.fromInt(machineCode.rt()).toString()
-            }
+          if (fields[i] == "rs") {
+            mnemonicRepresentation += Register.fromInt(machineCode.rs()).toString()
+          }
 
-            if (fields[i] == "rs") {
+          if (fields[i] == "address") {
+            mnemonicRepresentation += machineCode.offset().toString()
+            if (!fields.contains("rs")  && iname != "lui") {
+              mnemonicRepresentation += "("
               mnemonicRepresentation += Register.fromInt(machineCode.rs()).toString()
-            }
-
-            if (i != fields.indices.last) {
-              mnemonicRepresentation += ", "
+              mnemonicRepresentation += ")"
             }
           }
 
-          // We might get a trailing space if there are no args so
-          // we remove it.
-          mnemonicRepresentation = mnemonicRepresentation.trim()
+          if (fields[i] == "offset") {
+            mnemonicRepresentation += machineCode.offset().toString()
+          }
 
-          val inst = prototype(mnemonicRepresentation, machineCode)
+          if (fields[i] == "target") {
+            mnemonicRepresentation += machineCode.target().toString()
+          }
 
+          if (i != fields.indices.last) {
+            mnemonicRepresentation += ", "
+          }
+        }
+        // We might get a trailing space if there are no args so
+        // we remove it.
+        mnemonicRepresentation = mnemonicRepresentation.trim()
+        val inst = prototype(mnemonicRepresentation, machineCode)
+      when (format) {
+        Format.R -> {
           if (shouldFieldBeZero("shamt") && fieldIsNotZero("shamt", machineCode)) {
             val err = "Expected shamt to be zero. Got ${machineCode.shamt()}"
             return Either.right(PartiallyValidInstruction(inst, err))
@@ -265,6 +305,13 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
           }
 
           // Create a new copy using these values
+
+          return Either.left(inst)
+        }
+        Format.I-> {
+          return Either.left(inst)
+        }
+        Format.J-> {
           return Either.left(inst)
         }
         else -> {
@@ -281,4 +328,10 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 @JvmField val INAME_RD_RS = from(Format.R, "iname rd, rs")
 @JvmField val INAME_RS = from(Format.R, "iname rs")
 @JvmField val INAME_RD = from(Format.R, "iname rd")
-
+@JvmField val INAME_RT_OFFSET = from(Format.I, "iname rt, offset")
+@JvmField val INAME_RT_ADDRESS = from(Format.I, "iname rt, address")
+@JvmField val INAME_RS_OFFSET = from(Format.I, "iname rs, offset")
+@JvmField val INAME_RS_RT_OFFSET = from(Format.I, "iname rs, rt, offset")
+@JvmField val INAME_RT_RS_IMMEDIATE = from(Format.I, "iname rt, rs, offset")
+@JvmField val INAME_RT_IMMEDIATE = from(Format.I, "iname rt, offset")
+@JvmField val INAME_TARGET = from(Format.J, "iname target")
