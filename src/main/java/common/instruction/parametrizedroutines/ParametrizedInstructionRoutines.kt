@@ -8,26 +8,80 @@ import io.atlassian.fugue.Either
 import java.util.*
 
 val fieldNameToIndexMap: HashMap<String, Int> = hashMapOf(
-      Pair("rs", 1),
-      Pair("rt", 2),
-      Pair("rd", 3),
-      Pair("shamt", 4),
-      Pair("funct", 5),
-      Pair("offset", 3),
-      Pair("address", 3),
-      Pair("target", 1)
+  Pair("rs", 1),
+  Pair("rt", 2),
+  Pair("rd", 3),
+  Pair("shamt", 4),
+  Pair("funct", 5),
+  Pair("offset", 3),
+  Pair("address", 3),
+  Pair("target", 1),
+  Pair("hint", 2)
 )
 
+
 val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
-      Pair("rs", Long::rs),
-      Pair("rt", Long::rt),
-      Pair("rd", Long::rd),
-      Pair("shamt", Long::shamt),
-      Pair("funct", Long::funct),
-      Pair("offset", Long::offset),
-      Pair("target", Long::target),
-      Pair("address", Long::offset)
+  Pair("rs", Long::rs),
+  Pair("rt", Long::rt),
+  Pair("rd", Long::rd),
+  Pair("shamt", Long::shamt),
+  Pair("funct", Long::funct),
+  Pair("offset", Long::offset),
+  Pair("target", Long::target),
+  Pair("address", Long::offset),
+  Pair("hint", Long::hint)
 )
+
+
+/** Hint-variable descriptions
+ * source: http://www.cs.cmu.edu/afs/cs/academic/class/15740-f97/public/doc/mips-isa.pdf
+ * page A-117
+ * Reference: MIPS-instruction with prefix 'PREF'
+ **/
+enum class Hint(val value: Int) {
+  LOAD(0),
+  STORE(1),
+  LOAD_STREAMED(3),
+  STORE_STREAMED(5),
+  LOAD_RETAINED(6),
+  STORE_RETAINED(7);
+
+  fun description(value: Int): String {
+    when(value) {
+      LOAD.value->return "Data is expected to be loaded (not modified). " +
+        "Fetch data as if for a load"
+
+      STORE.value->return "Data is expected to be stored or modified. " +
+        "Fetch data as if for a store."
+      LOAD_STREAMED.value->return "Data is expected to be loaded (not " +
+        "modified) but not reused extensively; " +
+        "it will “stream” through cache. Fetch " +
+        "data as if for a load and place it in " +
+        "the cache so that it will not displace " +
+        "data prefetched as 'retained'."
+      STORE_STREAMED.value->return "Data is expected to be stored or modified " +
+        "but not reused extensively; it will " +
+        "'stream' through cache. Fetch data as if " +
+        "for a store and place it in the cache so " +
+        "that it will not displace data " +
+        "prefetched as 'retained'."
+      LOAD_RETAINED.value->return "Data is expected to be loaded (not " +
+        "modified) and reused extensively; it " +
+        "should be “retained” in the cache. Fetch " +
+        "data as if for a load and place it in the " +
+        "cache so that it will not be displaced by " +
+        "data prefetched as “streamed”"
+      STORE_RETAINED.value->return "Data is expected to be stored or " +
+        "modified and reused extensively; it " +
+        "should be “retained” in the cache. " +
+        "Fetch data as if for a store and place " +
+        "it in the cache so that will not be " +
+        "displaced by data prefetched as “streamed”."
+      else->return "Not yet defined."
+    }
+  }
+}
+
 
 /**
  * This method creates objects implementing the ParametrizedInstructionRoutine
@@ -221,17 +275,14 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 
       for (i in tokens.indices) {
         val destinationIndex: Int = fieldNameToIndexMap.get(fields[i])!!
-        if (fields[i] == "address") {
+        if (fields[i] == "offset" || fields[i] == "address") {
           n[destinationIndex] = Register.offsetFromOffset(tokens[i])
-          if (!fields.contains("rs") && opcode != 15) {
+          if (fields[i] == "address") {
             n[fieldNameToIndexMap.get("rs")!!] = Register.registerFromOffset(tokens[i]).asInt()
           }
         }
-        else if (fields[i] == "offset") {
+        else if (fields[i] == "target" || fields[i] == "hint") {
           n[destinationIndex] = Register.offsetFromOffset(tokens[i])
-        }
-        else if (fields[i] == "target") {
-          n[destinationIndex] = Integer.valueOf(tokens[i])
         }
         else {
           n[destinationIndex] = Register.fromString(tokens[i]).asInt()
@@ -278,6 +329,10 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 
           if (fields[i] == "target") {
             mnemonicRepresentation += machineCode.target().toString()
+          }
+
+          if (fields[i] == "hint") {
+            mnemonicRepresentation += machineCode.hint().toString()
           }
 
           if (i != fields.indices.last) {
@@ -328,10 +383,13 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 @JvmField val INAME_RD_RS = from(Format.R, "iname rd, rs")
 @JvmField val INAME_RS = from(Format.R, "iname rs")
 @JvmField val INAME_RD = from(Format.R, "iname rd")
+
 @JvmField val INAME_RT_OFFSET = from(Format.I, "iname rt, offset")
-@JvmField val INAME_RT_ADDRESS = from(Format.I, "iname rt, address")
-@JvmField val INAME_RS_OFFSET = from(Format.I, "iname rs, offset")
 @JvmField val INAME_RS_RT_OFFSET = from(Format.I, "iname rs, rt, offset")
+@JvmField val INAME_RS_OFFSET = from(Format.I, "iname rs, offset")
+@JvmField val INAME_RT_ADDRESS = from(Format.I, "iname rt, address")
+@JvmField val INAME_HINT_ADDRESS = from(Format.I, "iname hint, address")
 @JvmField val INAME_RT_RS_IMMEDIATE = from(Format.I, "iname rt, rs, offset")
 @JvmField val INAME_RT_IMMEDIATE = from(Format.I, "iname rt, offset")
+
 @JvmField val INAME_TARGET = from(Format.J, "iname target")

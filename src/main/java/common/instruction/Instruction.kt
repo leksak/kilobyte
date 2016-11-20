@@ -99,7 +99,8 @@ data class Instruction private constructor(
   var type: Type? = null,
   var rt: Int? = null,
   var funct: Int? = null,
-  var offset: Int? = null) {
+  var offset: Int? = null,
+  var hint: Hint? = null) {
   val example = Example(mnemonicRepresentation, numericRepresentation)
   val decomposed = DecomposedRepresentation.fromNumber(numericRepresentation, *format.lengths)
 
@@ -216,6 +217,7 @@ data class Instruction private constructor(
       pattern = INAME_RD_RS_RT)
 
     //TODO: movf movt
+
     @JvmField val SRL = Instruction(
       iname = "srl",
       opcode = 0,
@@ -791,12 +793,20 @@ data class Instruction private constructor(
       rt = 19,
       mnemonicRepresentation = "bgczall \$t1, 10",
       numericRepresentation = 0x0533000A,
-      //TODO: description
-      description = "Branch greater..?",
+      description = "Branch on Greater Than or Equal to Zero and Link Likely:" +
+        "if (rs >= 0) then procedure_call_likely Place the return address " +
+        "link in GPR 31. The return link is the address of the second " +
+        "instruction following the branch, where execution would continue " +
+        "after a procedure call. An 18-bit signed offset (the 16-bit offset " +
+        "field shifted left 2 bits) is added to the address of the " +
+        "instruction following the branch (not the branch itself), in the " +
+        "branch delay slot, to form a PC-relative effective target address. " +
+        "If the contents of GPR rs are greater than or equal to zero " +
+        "(sign bit is 0), branch to the effective target address after the " +
+        "instruction in the delay slot is executed. If the branch is " +
+        "not taken, the instruction in the delay slot is not executed.",
       format = Format.I,
       pattern = INAME_RS_OFFSET)
-
-
 
     /* OP-code: 2(_10) 0x02(_16) 000010(_2) */
     @JvmField val J = Instruction(
@@ -939,9 +949,80 @@ data class Instruction private constructor(
       format = Format.I,
       pattern = INAME_RT_IMMEDIATE)
 
-    //TODO: op code 2-28
-    /* OP-code: 28(_10) 0x1c(_16) 011100(_2) */
+    //TODO: op code 16-18
 
+    @JvmField val BEQL = Instruction(
+      iname = "beql",
+      opcode = 20,
+      mnemonicRepresentation = "beql \$t1, \$t2, 6",
+      numericRepresentation = 0x512A0006,
+      description = "Branch on Equal Likely: " +
+        "if (rs = rt) then branch_likely. An 18-bit signed " +
+        "offset (the 16-bit offset field shifted " +
+        "left 2 bits) is added to the address of the instruction following " +
+        "the branch (not the branch itself), in the branch delay slot, to " +
+        "form a PC-relative effective target address. If the contents of " +
+        "GPR rs and GPR rt are equal, branch to the target address after " +
+        "the instruction in the delay slot is executed. If the branch is " +
+        "not taken, the instruction in the delay slot is not executed.",
+      format = Format.I,
+      pattern = INAME_RS_RT_OFFSET)
+
+    @JvmField val BNEL = Instruction(
+      iname = "bnel",
+      opcode = 21,
+      mnemonicRepresentation = "bnel \$t1, \$t2, 6",
+      numericRepresentation = 0x552A0006,
+      description = "Branch on Not Equal Likely:" +
+        "if (rs != rt) then branch_likely. An 18-bit signed " +
+        "offset (the 16-bit offset field shifted left 2 bits) is added to " +
+        "the address of the instruction following the branch (not the " +
+        "branch itself), in the branch delay slot, to form a PC-relative " +
+        "effective target address.If the contents of GPR rs and GPR rt are " +
+        "not equal, branch to the effective target address after the " +
+        "instruction in the delay slot is executed. If the branch is not " +
+        "taken, the instruction in the delay slot is not executed.",
+      format = Format.I,
+      pattern = INAME_RS_RT_OFFSET)
+
+    @JvmField val BLEZL = Instruction(
+      iname = "blezl",
+      opcode = 22,
+      mnemonicRepresentation = "blezl \$t1, 6",
+      numericRepresentation = 0x59200006,
+      description = "Branch on Less Than or Equal to Zero Likely: " +
+        "if (rs <= 0) then branch_likely. An 18-bit signed " +
+        "offset (the 16-bit offset field shifted left 2 bits) is added " +
+        "to the address of the instruction following the branch (not the " +
+        "branch itself), in the branch delay slot, to form a " +
+        "PC-relative effective target address. If the contents of GPR rs " +
+        "are less than or equal to zero (sign bit is 1 or value is zero), " +
+        "branch to the effective target address after the instruction in the " +
+        "delay slot is executed. If the branch is not taken, the instruction " +
+        "in the delay slot is not executed.",
+      format = Format.I,
+      pattern = INAME_RS_OFFSET)
+
+    @JvmField val BGTZL = Instruction(
+      iname = "bgtzl",
+      opcode = 23,
+      mnemonicRepresentation = "bgtzl \$t1, 6",
+      numericRepresentation = 0x5D200006,
+      description = "Branch on Greater Than Zero Likely: " +
+        "if (rs > 0) then branch_likely. An 18-bit signed offset (the " +
+        "16-bit offset field shifted left 2 bits) is added to the address " +
+        "of the instruction following the branch (not the branch itself), " +
+        "in the branch delay slot, to form a PC-relative effective " +
+        "target address. If the contents of GPR rs are greater than zero " +
+        "(sign bit is 0 but value not zero), branch to the effective target " +
+        "address after the instruction in the delay slot is executed. If " +
+        "the branch is not taken, the instruction in the delay slot is " +
+        "not executed.",
+      format = Format.I,
+      pattern = INAME_RS_OFFSET)
+
+
+    /* OP-code: 28(_10) 0x1c(_16) 011100(_2) */
     @JvmField val MADD = Instruction(
       iname = "madd",
       opcode = 28,
@@ -1018,27 +1099,96 @@ data class Instruction private constructor(
       format = Format.R,
       pattern = INAME_RD_RS)
 
-    @JvmField val CLD = Instruction(
-      iname = "cld",
+    @JvmField val CLO = Instruction(
+      iname = "clo",
       opcode = 28, //0x20,
       funct = 33,
-      mnemonicRepresentation = "cld \$t1, \$t2",
+      mnemonicRepresentation = "clo \$t1, \$t2",
       numericRepresentation = 0x71404821,
       description = "Count number of leading ones : Set \$t1 to the count of " +
         "leading one bits in \$t2 starting at most significant bit position.",
       format = Format.R,
       pattern = INAME_RD_RS)
+    /* End op-code 28 */
 
+    @JvmField val LB = Instruction(
+      iname = "lb",
+      opcode = 32,
+      mnemonicRepresentation = "lb \$t1, 7(\$t2)",
+      numericRepresentation = 0x81490007,
+      description = "Load byte : Set \$t1 to sign-extended 8-bit value " +
+        "from effective memory byte address",
+      format = Format.I,
+      pattern = INAME_RT_ADDRESS)
 
-    //TODO: all
+    @JvmField val LH = Instruction(
+      iname = "lh",
+      opcode = 33,
+      mnemonicRepresentation = "lh \$t1, 8(\$t2)",
+      numericRepresentation = 0x85490008,
+      description = "Load halfword : Set \$t1 to sign-extended 16-bit " +
+        "value from effective memory halfword address",
+      format = Format.I,
+      pattern = INAME_RT_ADDRESS)
 
+    @JvmField val LWL = Instruction(
+      iname = "lwl",
+      opcode = 34,
+      mnemonicRepresentation = "lwl \$t1, 9(\$t2)",
+      numericRepresentation = 0x89490009,
+      description = "Load word left : Load from 1 to 4 bytes left-justified " +
+        "into \$t1, starting with effective memory byte address and " +
+        "continuing through the low-order byte of its word",
+      format = Format.I,
+      pattern = INAME_RT_ADDRESS)
+
+    @JvmField val LW = Instruction(
+      iname = "lw",
+      opcode = 35,
+      mnemonicRepresentation = "lw \$t1, 10(\$t2)",
+      numericRepresentation = 0x8D49000a,
+      description = "Load word : Set \$t1 to contents of effective memory " +
+        "word address",
+      format = Format.I,
+      pattern = INAME_RT_ADDRESS)
+
+    @JvmField val LBU = Instruction(
+      iname = "lbu",
+      opcode = 36,
+      mnemonicRepresentation = "lbu \$t1, 11(\$t2)",
+      numericRepresentation = 0x9149000B,
+      description = "Load byte unsigned : Set \$t1 to zero-extended 8-bit " +
+        "value from effective memory byte address",
+      format = Format.I,
+      pattern = INAME_RT_ADDRESS)
+
+    @JvmField val LHU = Instruction(
+      iname = "lhu",
+      opcode = 37,
+      mnemonicRepresentation = "lhu \$t1, 12(\$t2)",
+      numericRepresentation = 0x9549000C,
+      description = "Load halfword unsigned : Set \$t1 to zero-extended " +
+        "16-bit value from effective memory halfword address",
+      format = Format.I,
+      pattern = INAME_RT_ADDRESS)
+
+    @JvmField val LWR = Instruction(
+      iname = "lwr",
+      opcode = 38,
+      mnemonicRepresentation = "lwr \$t1, 13(\$t2)",
+      numericRepresentation = 0x9949000D,
+      description = "Load word right : Load from 1 to 4 bytes right-justified" +
+        " into \$t1, starting with effective memory byte address and " +
+        "continuing through the high-order byte of its word",
+      format = Format.I,
+      pattern = INAME_RT_ADDRESS)
 
     @JvmField val SB = Instruction(
       iname = "sb",
       opcode = 40, // 0x28
       mnemonicRepresentation = "sb \$t1, 4(\$t2)",
       numericRepresentation = 0xA1490004,
-      description = "StorStore byte : Store the low-order 8 bits of \$t1 " +
+      description = "Store byte : Store the low-order 8 bits of \$t1 " +
         "into the effective memory byte address",
       format = Format.I,
       pattern = INAME_RT_ADDRESS)
@@ -1105,7 +1255,15 @@ data class Instruction private constructor(
       format = Format.I,
       pattern = INAME_RT_ADDRESS)
 
-    //TODO: pref (51 0x33)
+    @JvmField val PREF = Instruction(
+      iname = "pref",
+      opcode = 51, // 0x33
+      mnemonicRepresentation = "pref 5, 4(\$sp)",
+      numericRepresentation = 0xCFA50004,
+      description = "Load double word Coprocessor 1 (FPU)) : Set \$t1 to " +
+        "64-bit value from effective memory doubleword address.",
+      format = Format.I,
+      pattern = INAME_HINT_ADDRESS)
 
     @JvmField val LDC1 = Instruction(
       iname = "ldc1",
@@ -1148,7 +1306,6 @@ data class Instruction private constructor(
       format = Format.I,
       pattern = INAME_RT_ADDRESS)
 
-
     @JvmField val SWC2 = Instruction(
       iname = "swc2",
       opcode = 58, // 0x3a
@@ -1159,7 +1316,6 @@ data class Instruction private constructor(
       format = Format.I,
       pattern = INAME_RT_ADDRESS)
 
-
     @JvmField val SDC1 = Instruction(
       iname = "sdc1",
       opcode = 61, // 0x3d
@@ -1169,7 +1325,6 @@ data class Instruction private constructor(
         "Store 64 bit value in \$t1 to effective memory doubleword address",
       format = Format.I,
       pattern = INAME_RT_ADDRESS)
-
 
     @JvmField val SDC2 = Instruction(
       iname = "sdc2",
