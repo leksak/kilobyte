@@ -362,7 +362,6 @@ data class Instruction private constructor(
       format = Format.R,
       pattern = ParametrizedInstructionRoutine.INAME)
 
-    //TODO: numeric mismatch? (0x00004810)Probably weird since only copy to register
     @JvmField val MFHI = Instruction(
       iname = "mfhi",
       opcode = 0,
@@ -374,7 +373,6 @@ data class Instruction private constructor(
       format = Format.R,
       pattern = INAME_RD)
 
-    //TODO: numeric mismatch? (0x00004811)Probably weird since only copy to register
     @JvmField val MTHI = Instruction(
       iname = "mthi",
       opcode = 0,
@@ -386,7 +384,6 @@ data class Instruction private constructor(
       format = Format.R,
       pattern = ParametrizedInstructionRoutine.INAME_RS)
 
-    //TODO: numeric mismatch? (0x00004812)Probably weird since only copy to register
     @JvmField val MFLO = Instruction(
       iname = "mflo",
       opcode = 0,
@@ -398,7 +395,6 @@ data class Instruction private constructor(
       format = Format.R,
       pattern = INAME_RD)
 
-    //TODO: numeric mismatch? (0x00004813)Probably weird since only copy to register
     @JvmField val MTLO = Instruction(
       iname = "mtlo",
       opcode = 0,
@@ -876,7 +872,7 @@ data class Instruction private constructor(
       description = "Addition immediate with overflow : set \$t1 to (\$10 " +
         "plus signed 16-bit immediate)",
       format = Format.I,
-      pattern = INAME_RT_RS_IMMEDIATE)
+      pattern = INAME_RT_RS_OFFSET)
 
     @JvmField val ADDIU = Instruction(
       iname = "addiu",
@@ -886,7 +882,7 @@ data class Instruction private constructor(
       description = "Addition immediate with overflow : set \$t1 to (\$t2 " +
         "plus signed 16-bit immediate)",
       format = Format.I,
-      pattern = INAME_RT_RS_IMMEDIATE)
+      pattern = INAME_RT_RS_OFFSET)
 
     @JvmField val SLTI = Instruction(
       iname = "slti",
@@ -896,7 +892,7 @@ data class Instruction private constructor(
       description = "Set less than immediate : If \$t2 is less than " +
         "sign-extended 16-bit immediate, then set \$t1 to 1 else set \$t1 to 0",
       format = Format.I,
-      pattern = INAME_RT_RS_IMMEDIATE)
+      pattern = INAME_RT_RS_OFFSET)
 
     @JvmField val SLTIU = Instruction(
       iname = "sltiu",
@@ -907,7 +903,7 @@ data class Instruction private constructor(
         " sign-extended 16-bit immediate using unsigned comparison, " +
         "then set \$t1 to 1 else set \$t1 to 0",
       format = Format.I,
-      pattern = INAME_RT_RS_IMMEDIATE)
+      pattern = INAME_RT_RS_OFFSET)
 
     @JvmField val ANDI = Instruction(
       iname = "andi",
@@ -917,7 +913,7 @@ data class Instruction private constructor(
       description = "Bitwise AND immediate : Set \$t1 to bitwise AND of " +
         "\$t2 and zero-extended 16-bit immediate",
       format = Format.I,
-      pattern = INAME_RT_RS_IMMEDIATE)
+      pattern = INAME_RT_RS_OFFSET)
 
     @JvmField val ORI = Instruction(
       iname = "ori",
@@ -927,7 +923,7 @@ data class Instruction private constructor(
       description = "Bitwise OR immediate : Set \$t1 to bitwise OR of \$t2 " +
         "and zero-extended 16-bit immediate",
       format = Format.I,
-      pattern = INAME_RT_RS_IMMEDIATE)
+      pattern = INAME_RT_RS_OFFSET)
 
     @JvmField val XORI = Instruction(
       iname = "xori",
@@ -937,7 +933,7 @@ data class Instruction private constructor(
       description = "Bitwise XOR immediate : Set \$t1 to bitwise XOR " +
         "of \$t2 and zero-extended 16-bit immediate",
       format = Format.I,
-      pattern = INAME_RT_RS_IMMEDIATE)
+      pattern = INAME_RT_RS_OFFSET)
 
     @JvmField val LUI = Instruction(
       iname = "lui",
@@ -947,7 +943,7 @@ data class Instruction private constructor(
       description = "Load upper immediate : Set high-order 16 bits of \$t1 " +
         "to 16-bit immediate and low-order 16 bits to 0",
       format = Format.I,
-      pattern = INAME_RT_IMMEDIATE)
+      pattern = INAME_RT_OFFSET)
 
     //TODO: op code 16-18
 
@@ -1258,8 +1254,8 @@ data class Instruction private constructor(
     @JvmField val PREF = Instruction(
       iname = "pref",
       opcode = 51, // 0x33
-      mnemonicRepresentation = "pref 5, 4(\$sp)",
-      numericRepresentation = 0xCFA50004,
+      mnemonicRepresentation = "pref 1, 2(\$sp)",
+      numericRepresentation = 0xCFA10002,
       description = "Load double word Coprocessor 1 (FPU)) : Set \$t1 to " +
         "64-bit value from effective memory doubleword address.",
       format = Format.I,

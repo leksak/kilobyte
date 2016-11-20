@@ -114,6 +114,16 @@ class InstructionConstructorTests {
 
     assertEquals(mnemonic, instructionNumeric);
   }
+  @Test
+  void testPrefixInstruction() throws Exception {
+    Instruction mnemonic = Instruction.from("pref 1, 2($sp)");
+    assertEquals(Instruction.PREF, mnemonic, "Failed to translate from the mnemonic representation");
+
+    Instruction instructionNumeric = Instruction.unsafeFrom(0xCFA10002);
+    assertEquals(Instruction.PREF, instructionNumeric, "Failed to translate from the numeric representation");
+
+    assertEquals(mnemonic, instructionNumeric);
+  }
 
 
 }

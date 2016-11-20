@@ -38,13 +38,17 @@ val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
  * page A-117
  * Reference: MIPS-instruction with prefix 'PREF'
  **/
-enum class Hint(val value: Int) {
+enum class Hint (val value: Int) {
   LOAD(0),
   STORE(1),
   LOAD_STREAMED(3),
   STORE_STREAMED(5),
   LOAD_RETAINED(6),
   STORE_RETAINED(7);
+
+  companion object {
+    fun from(findValue: Int): Hint = Hint.values().first { it.value == findValue }
+  }
 
   fun description(value: Int): String {
     when(value) {
@@ -281,8 +285,13 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
             n[fieldNameToIndexMap.get("rs")!!] = Register.registerFromOffset(tokens[i]).asInt()
           }
         }
-        else if (fields[i] == "target" || fields[i] == "hint") {
+        else if (fields[i] == "target") {
           n[destinationIndex] = Register.offsetFromOffset(tokens[i])
+        }
+        else if (fields[i] == "hint") {
+          var hint = Integer.valueOf(tokens[i])
+          n[destinationIndex] = hint
+          prototype.hint = Hint.from(hint)
         }
         else {
           n[destinationIndex] = Register.fromString(tokens[i]).asInt()
@@ -333,6 +342,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 
           if (fields[i] == "hint") {
             mnemonicRepresentation += machineCode.hint().toString()
+            prototype.hint = Hint.from(machineCode.hint())
           }
 
           if (i != fields.indices.last) {
@@ -378,18 +388,24 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
   }
 }
 
+
+
 @JvmField val INAME_RD_RS_RT = from(Format.R, "iname rd, rs, rt")
 @JvmField val INAME_RS_RT = from(Format.R, "iname rs, rt")
 @JvmField val INAME_RD_RS = from(Format.R, "iname rd, rs")
 @JvmField val INAME_RS = from(Format.R, "iname rs")
 @JvmField val INAME_RD = from(Format.R, "iname rd")
 
+/**
+ * The difference between offset and address is that address will accept an
+ * syntax of N($REG) while offset will not. Offset can be referred as
+ * immediate-instruction-type like N whereas N is an number.
+ */
 @JvmField val INAME_RT_OFFSET = from(Format.I, "iname rt, offset")
-@JvmField val INAME_RS_RT_OFFSET = from(Format.I, "iname rs, rt, offset")
 @JvmField val INAME_RS_OFFSET = from(Format.I, "iname rs, offset")
+@JvmField val INAME_RS_RT_OFFSET = from(Format.I, "iname rs, rt, offset")
+@JvmField val INAME_RT_RS_OFFSET = from(Format.I, "iname rt, rs, offset")
 @JvmField val INAME_RT_ADDRESS = from(Format.I, "iname rt, address")
 @JvmField val INAME_HINT_ADDRESS = from(Format.I, "iname hint, address")
-@JvmField val INAME_RT_RS_IMMEDIATE = from(Format.I, "iname rt, rs, offset")
-@JvmField val INAME_RT_IMMEDIATE = from(Format.I, "iname rt, offset")
 
 @JvmField val INAME_TARGET = from(Format.J, "iname target")
