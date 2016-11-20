@@ -74,10 +74,10 @@ import java.util.Objects;
   @NonFinal
   boolean headerlessFlag = false;
 
-  private static final String formatString = "%-12s %-3s %-16s %-22s %-18s";
-  private static final Object[] header = {
+  String formatString = "%-12s %-3s %-16s %-22s %-18s";
+  Object[] header = {
         "Instruction", "Fmt", "Decomposition", "Decomp hex", "Source"};
-  private static final CommandLineParser parser = new DefaultParser();
+  CommandLineParser parser = new DefaultParser();
 
   private CommandLine parse(String... args) throws ParseException {
     return parser.parse(options, args);
