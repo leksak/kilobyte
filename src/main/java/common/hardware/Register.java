@@ -113,16 +113,43 @@ public enum Register {
     return this.ordinal();
   }
 
+  /**
+   * Of a given address-formatted String ('NUMBER($REG)') $REG will be returned
+   * as a Register-class.
+   * @param mnemonic  The given address-formatted String
+   * @return          Register-class of $REG from the given address-formatted
+   *                  String.
+   */
   public static Register registerFromOffset(String mnemonic) {
     return fromString(offsetSplitter(mnemonic, false));
-
   }
 
+  /**
+   * Of a given address-formatted String ('NUMBER($REG)') NUMBER will be returned.
+   * @param mnemonic  The given address-formatted String
+   * @return          NUMBER of the given address-formatted String.
+   */
   public static int offsetFromOffset(String mnemonic) {
     return Integer.valueOf(offsetSplitter(mnemonic, true));
   }
 
-  private static String offsetSplitter(String mnemonic, boolean wantOffset) {
+
+  /**
+   * Will, if given the address-part('NUMBER($REG)') of a mnemonic-string and
+   * will return either the NUMBER representation in base 10 or it will return
+   * the register part '$REG' of the string.
+   * @param mnemonic    The address-part of a mnemonic-string.
+   * @param wantOffset  If true then will return NUMBER, else it will return $REG
+   * @return            String representation of requested part of the
+   *                    address-string
+   * @throws StringIndexOutOfBoundsException  if requesting $REG but the given
+   *                                          String was not address-formatted.
+   * @throws IllegalArgumentException         If requesting $REG but the given
+   *                                          String had not $REG-formatted-
+   *                                          address-part.
+   */
+  private static String offsetSplitter(String mnemonic, boolean wantOffset)
+        throws StringIndexOutOfBoundsException, IllegalArgumentException {
     String[] split = mnemonic.replace(")", "").split("[(]");
     //TODO: can there be minus? offset in I-instructions
     if (wantOffset) {

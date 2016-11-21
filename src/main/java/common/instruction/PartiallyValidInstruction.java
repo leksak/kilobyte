@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.StringJoiner;
 
 public class PartiallyValidInstruction {
-  public final Instruction instruction;
-  public final String errors;
+  public Instruction instruction;
+  public String errors;
 
   public PartiallyValidInstruction(Instruction instruction, String errors) {
     this.instruction = instruction;

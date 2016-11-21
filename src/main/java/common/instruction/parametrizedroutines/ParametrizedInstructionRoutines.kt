@@ -4,8 +4,10 @@ import com.google.common.base.Preconditions.checkArgument
 import common.hardware.Register
 import common.instruction.*
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
+import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import io.atlassian.fugue.Either
 import java.util.*
+import java.util.regex.Pattern
 
 val fieldNameToIndexMap: HashMap<String, Int> = hashMapOf(
   Pair("rs", 1),
@@ -200,6 +202,12 @@ enum class Hint (val value: Int) {
  *
  * meaning that rs=$s2, rt=$t0, and the offset=24.
  */
+interface ParametrizedInstructionRoutine {
+  fun invoke(prototype: Instruction, machineCode: Long):
+    Either<Instruction, PartiallyValidInstruction>
+  fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction
+}
+
 fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
   /* We standardize the pattern to ensure consistency not out of necessity */
   val standardizedPattern = standardizeMnemonic(pattern)
@@ -209,34 +217,29 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
   // (note the boolean flag, which is why the "iname" disappears)
   val fields = standardizedPattern.tokenize(includeIname = false)
 
-  fun shouldFieldBeZero(fieldName: String): Boolean {
-    return !fields.contains(fieldName)
-  }
-
-  fun fieldIsNotZero(fieldName: String, machineCode: Long): Boolean {
-    return fieldNameToMethodCallMap[fieldName]!!.invoke(machineCode) != 0
-  }
-
   fun evaluateIfTheMnemonicRepresentationIsWellFormed(mnemonicRepresentation : String) {
-    val expectedNumberOfCommas = standardizedPattern.countCommas()
-    val expectedNumberOfArguments =
-          standardizedPattern.replace(",", "").split(" ").size - 1
-    throwIfIncorrectNumberOfCommas(expectedNumberOfCommas, mnemonicRepresentation)
-
     val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
     throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
-
-    if (format == Format.I) {
-      //throwExceptionIfNotContainsParentheses(standardizedMnemonic)
-    } else /*if (format == Format.R || format == Format.J) */{
-      // This pattern shouldn't contain any parens
-      throwExceptionIfContainsParentheses(standardizedMnemonic)
-    }
-
+    val expectedNumberOfCommas = standardizedPattern.countCommas()
+    throwIfIncorrectNumberOfCommas(expectedNumberOfCommas, mnemonicRepresentation)
+    val expectedNumberOfArguments = standardizedPattern.replace(",", "").split(" ").size - 1
     throwIfIncorrectNumberOfArgs(expectedNumberOfArguments, standardizedMnemonic)
+    throwIfInvalidParentheses(standardizedMnemonic, format)
   }
 
   return object : ParametrizedInstructionRoutine {
+    /** For instructions expressed using the mnemonic-pattern "iname rd, rs, rt"
+      * we get that the contents of the tokens array will contain
+      * the _values_ of rd, rs, and rt, like so:
+      *
+      * tokens=[rd, rs, rt]
+      *
+      * however, the arguments rd, rs, rt do not appear in the same
+      * order as they have to when represented numerically so we
+      * use the "fields" array which tells us what values we are observing
+      * inside the tokens array together with "fieldNameToIndexMap"
+      * to place the values at the correct places.
+      */
     override fun invoke(prototype: Instruction,
                         mnemonicRepresentation: String): Instruction
     {
@@ -244,161 +247,148 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
       val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
       checkArgument(prototype.iname == standardizedMnemonic.iname())
 
-      /* For instructions expressed using the pattern "iname rd, rs, rt"
-       * we get that the contents of the tokens array will contain
-       * the _values_ of rd, rs, and rt, like so:
-       *
-       * tokens=[rd, rs, rt]
-       *
-       * however, the arguments rd, rs, rt do not appear in the same
-       * order as they have to when represented numerically so we
-       * use the "fields" array which tells us what values we are observing
-       * inside the tokens array together with "fieldNameToIndexMap"
-       * to place the values at the correct places.
-       */
+
       val tokens: Array<String> = standardizedMnemonic.tokenize(includeIname = false)
       val opcode = prototype.opcode
-
-      // Equivalent in Java: new int[size]
-      //
-      // Will have as many cells as the instruction should be decomposed
-      // into, so that for an R-format instruction the array is
-      // 6 cells.
       val n = IntArray(format.noOfFields)
-
       n[0] = opcode
-
       if (format == Format.R || prototype.type == Type.J) {
         n[5] = prototype.funct!!
       }
-
-      /* Will be set when op-code 1 */
       if (prototype.rt != null) {
-        n[fieldNameToIndexMap.get("rt")!!] = prototype.rt!!
+        /* Will be set when op-code 1 */
+        n[fieldNameToIndexMap["rt"]!!] = prototype.rt!!
       }
 
-      for (i in tokens.indices) {
-        val destinationIndex: Int = fieldNameToIndexMap.get(fields[i])!!
-        if (fields[i] == "offset" || fields[i] == "address") {
-          n[destinationIndex] = Register.offsetFromOffset(tokens[i])
-          if (fields[i] == "address") {
-            n[fieldNameToIndexMap.get("rs")!!] = Register.registerFromOffset(tokens[i]).asInt()
-          }
-        }
-        else if (fields[i] == "target") {
-          n[destinationIndex] = Register.offsetFromOffset(tokens[i])
-        }
-        else if (fields[i] == "hint") {
-          var hint = Register.offsetFromOffset(tokens[i])
-          n[destinationIndex] = hint
-          prototype.hint = Hint.from(hint)
-        }
-        else {
-          n[destinationIndex] = Register.fromString(tokens[i]).asInt()
-        }
-      }
-
-      val lengths = format.lengths
-      val d = DecomposedRepresentation.fromIntArray(n, *lengths).asLong()
+      formatMnemonic(tokens, n, prototype, fields)
+      val d = DecomposedRepresentation.fromIntArray(n, *format.lengths).asLong()
       return prototype(standardizedMnemonic, d)
     }
 
+
+    /**
+     * When in machineCode, we trust.
+     */
     override fun invoke(prototype: Instruction, machineCode: Long):
           Either<Instruction, PartiallyValidInstruction>
     {
-      val iname = prototype.iname
-        var mnemonicRepresentation = "$iname "
-        for (i in fields.indices) {
-          // The fields are given in order, so we can just concatenate
-          // the strings.
-          if (fields[i] == "rd") {
-            mnemonicRepresentation += Register.fromInt(machineCode.rd()).toString()
-          }
-
-          if (fields[i] == "rt") {
-            mnemonicRepresentation += Register.fromInt(machineCode.rt()).toString()
-          }
-
-          if (fields[i] == "rs") {
-            mnemonicRepresentation += Register.fromInt(machineCode.rs()).toString()
-          }
-
-          if (fields[i] == "address") {
-            mnemonicRepresentation += machineCode.offset().toString()
-            if (!fields.contains("rs")  && iname != "lui") {
-              mnemonicRepresentation += "("
-              mnemonicRepresentation += Register.fromInt(machineCode.rs()).toString()
-              mnemonicRepresentation += ")"
-            }
-          }
-
-          if (fields[i] == "offset") {
-            mnemonicRepresentation += machineCode.offset().toString()
-          }
-
-          if (fields[i] == "target") {
-            mnemonicRepresentation += machineCode.target().toString()
-          }
-
-          if (fields[i] == "hint") {
-            mnemonicRepresentation += machineCode.hint().toString()
-            prototype.hint = Hint.from(machineCode.hint())
-          }
-
-          if (i != fields.indices.last) {
-            mnemonicRepresentation += ", "
-          }
-        }
-      val errors = ArrayList<String>()
-
-        // We might get a trailing space if there are no args so
-        // we remove it.
-        mnemonicRepresentation = mnemonicRepresentation.trim()
-        val inst = prototype(mnemonicRepresentation, machineCode)
-      when (format) {
-        Format.R -> {
-          if (shouldFieldBeZero("shamt") && fieldIsNotZero("shamt", machineCode)) {
-            errors.add("Expected shamt to be zero. Got ${machineCode.shamt()}")
-          }
-
-          if (shouldFieldBeZero("rd") && fieldIsNotZero("rd", machineCode)) {
-            errors.add("Expected rd to be zero. Got ${machineCode.rd()}")
-          }
-          if (shouldFieldBeZero("rt") && fieldIsNotZero("rt", machineCode)) {
-            errors.add("Expected rt to be zero. Got ${machineCode.rt()}")
-          }
-          if (shouldFieldBeZero("rs") && fieldIsNotZero("rs", machineCode)) {
-            errors.add("Expected rs to be zero. Got ${machineCode.rs()}")
-          }
-
-          if (errors.isNotEmpty()) {
-            return Either.right(PartiallyValidInstruction(inst, errors))
-          }
-
-          // Create a new copy using these values
-
-          return Either.left(inst)
-        }
-        Format.I-> {
-          return Either.left(inst)
-        }
-        Format.J-> {
-          return Either.left(inst)
-        }
-        else -> {
-          throw IllegalStateException("Attempted to instantiate " +
-                "a instruction from an unknown format. Format: $format")
-        }
+      val mnemonicRepresentation = formatMachineCodeToMnemonic(prototype,
+                                                               machineCode,
+                                                               fields)
+      val inst = prototype(mnemonicRepresentation, machineCode)
+      val errors = errorCheckPrototype(
+                                       machineCode, format, fields)
+      if (errors.isNotEmpty()) {
+        return Either.right(PartiallyValidInstruction(inst, errors))
       }
+      return Either.left(inst)
     }
   }
+
 }
 
-@JvmField val INAME_RD_RS_RT = from(Format.R, "iname rd, rs, rt")
-@JvmField val INAME_RS_RT = from(Format.R, "iname rs, rt")
-@JvmField val INAME_RD_RS = from(Format.R, "iname rd, rs")
+fun shouldFieldBeZero(fieldName: String, fields: Array<String>): Boolean {
+  return !fields.contains(fieldName)
+}
+
+fun fieldIsNotZero(fieldName: String, machineCode: Long): Boolean {
+  return fieldNameToMethodCallMap[fieldName]!!.invoke(machineCode) != 0
+}
+
+private fun errorCheckPrototype(machineCode: Long,
+                                format: Format,
+                                fields: Array<String>): ArrayList<String> {
+  val errors = ArrayList<String>()
+  when (format) {
+    Format.R -> {
+      if (shouldFieldBeZero("shamt", fields) && fieldIsNotZero("shamt", machineCode)) {
+        errors.add("Expected shamt to be zero. Got ${machineCode.shamt()}")
+      }
+      if (shouldFieldBeZero("rd", fields) && fieldIsNotZero("rd", machineCode)) {
+        errors.add("Expected rd to be zero. Got ${machineCode.rd()}")
+      }
+      if (shouldFieldBeZero("rt", fields) && fieldIsNotZero("rt", machineCode)) {
+        errors.add("Expected rt to be zero. Got ${machineCode.rt()}")
+      }
+      if (shouldFieldBeZero("rs", fields) && fieldIsNotZero("rs", machineCode)) {
+        errors.add("Expected rs to be zero. Got ${machineCode.rs()}")
+      }
+    }
+    Format.I-> {
+    }
+    Format.J-> {
+    }
+    else -> {
+      throw IllegalStateException("Attempted to instantiate " +
+        "a instruction from an unknown format. Format: $format")
+    }
+  }
+  return errors
+}
+
+private fun formatMachineCodeToMnemonic(prototype: Instruction,
+                                        machineCode: Long,
+                                        fields: Array<String>): String {
+  val iname = prototype.iname
+  var mnemonicRepresentation = "$iname "
+  for (i in fields.indices) {
+    // The fields are given in order, so we can just concatenate
+    // the strings.
+    when(fields[i]) {
+      "rd" -> mnemonicRepresentation += Register.fromInt(machineCode.rd()).toString()
+      "rt" -> mnemonicRepresentation += Register.fromInt(machineCode.rt()).toString()
+      "rs" -> mnemonicRepresentation += Register.fromInt(machineCode.rs()).toString()
+      "offset" -> mnemonicRepresentation += machineCode.offset().toString()
+      "target" -> mnemonicRepresentation += machineCode.target().toString()
+      "address" -> {mnemonicRepresentation += machineCode.offset().toString()
+        if (!fields.contains("rs") && iname != "lui") {
+          mnemonicRepresentation += "("
+          mnemonicRepresentation += Register.fromInt(machineCode.rs()).toString()
+          mnemonicRepresentation += ")"
+        }
+      }
+      "hint" -> {
+        mnemonicRepresentation += machineCode.hint().toString()
+        prototype.hint = Hint.from(machineCode.hint())
+      }
+    }
+
+    if (i != fields.indices.last) {
+      mnemonicRepresentation += ", "
+    }
+  }
+  return mnemonicRepresentation.trim()
+}
+
+private fun formatMnemonic(tokens: Array<String>, n: IntArray, prototype: Instruction, fields: Array<String>): Array<String> {
+  tokens.indices.forEach { i ->
+    val destinationIndex: Int = fieldNameToIndexMap[fields[i]]!!
+    when(fields[i]) {
+      "target"-> n[destinationIndex] = Register.offsetFromOffset(tokens[i])
+      "offset"-> n[destinationIndex] = Register.offsetFromOffset(tokens[i])
+      "address"-> {
+        n[destinationIndex] = Register.offsetFromOffset(tokens[i])
+        n[fieldNameToIndexMap["rs"]!!] = Register.registerFromOffset(tokens[i]).asInt()
+      }
+      "hint"-> {
+        val hint = Register.offsetFromOffset(tokens[i])
+        n[destinationIndex] = hint
+        prototype.hint = Hint.from(hint)
+      }
+      else -> n[destinationIndex] = Register.fromString(tokens[i]).asInt()
+    }
+  }
+  return tokens
+}
+
+
+
+@JvmField val INAME = from(Format.R, "iname")
 @JvmField val INAME_RS = from(Format.R, "iname rs")
 @JvmField val INAME_RD = from(Format.R, "iname rd")
+@JvmField val INAME_RS_RT = from(Format.R, "iname rs, rt")
+@JvmField val INAME_RD_RS = from(Format.R, "iname rd, rs")
+@JvmField val INAME_RD_RS_RT = from(Format.R, "iname rd, rs, rt")
 
 /**
  * The difference between offset and address is that address will accept an
