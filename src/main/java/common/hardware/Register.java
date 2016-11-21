@@ -1,5 +1,6 @@
 package common.hardware;
 
+import common.instruction.MachineCodeDecoder;
 import org.jetbrains.annotations.NotNull;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -122,15 +123,19 @@ public enum Register {
   }
 
   private static String offsetSplitter(String mnemonic, boolean wantOffset) {
+    String[] split = mnemonic.replace(")", "").split("[(]");
     //TODO: can there be minus? offset in I-instructions
-    if (!mnemonic.matches("(\\d+|\\d+\\(\\$[a-z0-9]+\\)|\\$\\d)")) {
+    if (wantOffset) {
+      return String.valueOf(MachineCodeDecoder.decode(split[0], 10));
+    }
+    /* This will only be called if $REG is wanted from N($REG) */
+    if (split.length > 2 || split.length < 2) {
+      throw new StringIndexOutOfBoundsException("Invalid offset format for register '"+mnemonic+"'.");
+    }
+    if (!split[1].matches("\\$[a-z0-9]+")) {
       throw new IllegalArgumentException("Invalid offsetFormat '"+mnemonic+"'");
     }
-    String[] split = mnemonic.replace(")", "").split("[(]");
-    if (split.length > 2 || split[0].length() == 0) {
-      throw new IllegalArgumentException("Invalid offset format '"+mnemonic+"'.");
-    }
-    return (wantOffset ? split[0] : split[1]);
+    return split[1];
 
   }
 }

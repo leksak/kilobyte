@@ -1,6 +1,7 @@
 package common.instruction.parametrizedroutines
 
 import common.hardware.Register
+import common.instruction.MachineCodeDecoder
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 
@@ -46,7 +47,20 @@ fun mnemonicEquals(s1: String, s2: String): Boolean {
         // two representations are not equal!
         return false
       }
+
       if (tok1 != tok2) {
+        // There is a possibility that this is a address-instruction
+        //TODO: Will this be too arbitrary?
+        try {
+          if (Register.offsetFromOffset(tok1) == Register.offsetFromOffset(tok1))
+            if (Register.registerFromOffset(tok1) == Register.registerFromOffset(tok1))
+              continue
+        } catch (e: IllegalArgumentException) {
+          return false
+        } catch (e : StringIndexOutOfBoundsException) {
+          //this means that the string only was different numeric-base.
+          continue
+        }
         // Neither string is a register so compare them for simple equality
         return false
       }

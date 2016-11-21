@@ -260,9 +260,7 @@ fun standardizeMnemonic(mnemonic: String): String {
   //
   // This sequence of operations also normalises
   // "jr $t1" to "jr $t1" (identity transformation).
-  return mnemonic.replace(",", ", ")
-        .replace(Regex("\\s+"), " ")
-        .trim()
+  return mnemonic.replace(",", ", ").replace(Regex("\\s+"), " ").trim()
 }
 
 fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : String) {

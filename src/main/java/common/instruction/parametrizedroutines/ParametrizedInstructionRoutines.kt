@@ -289,7 +289,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
           n[destinationIndex] = Register.offsetFromOffset(tokens[i])
         }
         else if (fields[i] == "hint") {
-          var hint = Integer.valueOf(tokens[i])
+          var hint = Register.offsetFromOffset(tokens[i])
           n[destinationIndex] = hint
           prototype.hint = Hint.from(hint)
         }

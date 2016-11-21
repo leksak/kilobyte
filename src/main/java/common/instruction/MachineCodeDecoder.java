@@ -75,4 +75,8 @@ public interface MachineCodeDecoder {
 
     return Integer.parseInt(s, base);
   }
+
+  static int decode(String s, int base) {
+    return Integer.parseInt(String.valueOf(decode(s)), base);
+  }
 }
