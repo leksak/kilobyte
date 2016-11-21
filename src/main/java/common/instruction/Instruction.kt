@@ -578,6 +578,7 @@ data class Instruction private constructor(
       description = "Trap if greater or equal : Trap if \$t1 is " +
         "greater than or equal to \$t2",
       format = Format.R,
+      type = Type.T,
       pattern = INAME_RS_RT)
 
     @JvmField val TGEU = Instruction(
@@ -589,6 +590,7 @@ data class Instruction private constructor(
       description = "Trap if greater or equal : Trap if \$t1 is " +
         "greater than or equal to \$t2",
       format = Format.R,
+      type = Type.T,
       pattern = INAME_RS_RT)
 
     @JvmField val TLT = Instruction(
@@ -599,6 +601,7 @@ data class Instruction private constructor(
       numericRepresentation = 0x012A0032,
       description = "Trap if less than: Trap if \$t1 less than \$t2",
       format = Format.R,
+      type = Type.T,
       pattern = INAME_RS_RT)
 
     @JvmField val TLTU = Instruction(
@@ -610,6 +613,7 @@ data class Instruction private constructor(
       description = "Trap if less than unsigned : Trap if \$t1 less " +
         "than \$t2, unsigned comparison",
       format = Format.R,
+      type = Type.T,
       pattern = INAME_RS_RT)
 
     @JvmField val TEQ = Instruction(
@@ -620,6 +624,7 @@ data class Instruction private constructor(
       numericRepresentation = 0x012A0034,
       description = "Trap if equal : Trap if \$t1 is equal to \$t2",
       format = Format.R,
+      type = Type.T,
       pattern = INAME_RS_RT)
 
     @JvmField val TNE = Instruction(
@@ -631,6 +636,7 @@ data class Instruction private constructor(
       description = "Trap if not equal : Trap if \$t1 is not " +
         "equal to \$t2",
       format = Format.R,
+      type = Type.T,
       pattern = INAME_RS_RT)
 
 
@@ -644,6 +650,7 @@ data class Instruction private constructor(
       description = "Branch if less than zero : Branch to statement at " +
         "label's address if \$t1 is less than zero",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val BGEZ = Instruction(
@@ -655,6 +662,7 @@ data class Instruction private constructor(
       description = "Branch if greater than or equal to zero : Branch to " +
         "statement at label's address if \$t1 is greater than or equal to zero",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val BLTZL = Instruction(
@@ -666,6 +674,7 @@ data class Instruction private constructor(
       description = "Branch if less than zero likely : Branch to statement at " +
         "label's address if \$t1 is less than zero",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val BGEZL = Instruction(
@@ -678,6 +687,7 @@ data class Instruction private constructor(
         "Branch to statement at label's address if \$t1 is greater than or " +
         "equal to zero",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val TGEI = Instruction(
@@ -689,6 +699,7 @@ data class Instruction private constructor(
       description = "Trap if greater than or equal to immediate : " +
         "Trap if \$t1 greater than or equal to sign-extended 16 bit immediate",
       format = Format.I,
+      type = Type.T,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val TGEIU = Instruction(
@@ -701,6 +712,7 @@ data class Instruction private constructor(
         "Trap if \$t1 greater than or equal to sign-extended 16 bit " +
         "immediate, unsigned comparison",
       format = Format.I,
+      type = Type.T,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val TLTI = Instruction(
@@ -712,6 +724,7 @@ data class Instruction private constructor(
       description = "Trap if less than immediate : Trap if \$t1 less than " +
         "sign-extended 16-bit immediate",
       format = Format.I,
+      type = Type.T,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val TLTIU = Instruction(
@@ -723,6 +736,7 @@ data class Instruction private constructor(
       description = "Trap if less than immediate unsigned : Trap if \$t1 " +
         "less than sign-extended 16-bit immediate, unsigned comparison",
       format = Format.I,
+      type = Type.T,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val TEQI = Instruction(
@@ -734,6 +748,7 @@ data class Instruction private constructor(
       description = "Trap if equal to immediate : Trap if \$t1 " +
         "is equal to sign-extended 16 bit immediate",
       format = Format.I,
+      type = Type.T,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val TNEI = Instruction(
@@ -745,6 +760,7 @@ data class Instruction private constructor(
       description = "Trap if not equal to immediate: " +
         "Trap if \$t1 is not equal to sign-extended 16 bit immediate",
       format = Format.I,
+      type = Type.T,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val BLTZAL = Instruction(
@@ -757,6 +773,7 @@ data class Instruction private constructor(
         "than or equal to zero, then set \$ra to the Program Counter and " +
         "branch to statement at label's address",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val BGEZAL = Instruction(
@@ -769,6 +786,7 @@ data class Instruction private constructor(
         "If \$t1 is greater than or equal to zero, then set \$ra to the " +
         "Program Counter and branch to statement at label's address",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val BLTZALL = Instruction(
@@ -781,6 +799,7 @@ data class Instruction private constructor(
         "If \$t1 is greater than or equal to zero, then set \$ra to the " +
         "Program Counter and branch to statement at label's address",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val BGCZALL = Instruction(
@@ -802,6 +821,7 @@ data class Instruction private constructor(
         "instruction in the delay slot is executed. If the branch is " +
         "not taken, the instruction in the delay slot is not executed.",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     /* OP-code: 2(_10) 0x02(_16) 000010(_2) */
@@ -832,6 +852,7 @@ data class Instruction private constructor(
       description = "Branch if equal : Branch to statement at label's " +
         "address if \$t1 and \$t2 are equal",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_RT_OFFSET)
 
     @JvmField val BNE = Instruction(
@@ -842,6 +863,7 @@ data class Instruction private constructor(
       description = "Branch if not equal : Branch to statement at label's " +
         "address if \$t1 and \$t2 are not equal",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_RT_OFFSET)
 
     @JvmField val BLEZ = Instruction(
@@ -852,6 +874,7 @@ data class Instruction private constructor(
       description = "Branch if less than or equal to zero : Branch to " +
         "statement at label's address if \$t1 is less than or equal to zero",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val BGTZ = Instruction(
@@ -862,6 +885,7 @@ data class Instruction private constructor(
       description = "Branch if greater than zero : Branch to statement at " +
         "label's address if \$t1 is greater than zero",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val ADDI = Instruction(
@@ -962,6 +986,7 @@ data class Instruction private constructor(
         "the instruction in the delay slot is executed. If the branch is " +
         "not taken, the instruction in the delay slot is not executed.",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_RT_OFFSET)
 
     @JvmField val BNEL = Instruction(
@@ -979,6 +1004,7 @@ data class Instruction private constructor(
         "instruction in the delay slot is executed. If the branch is not " +
         "taken, the instruction in the delay slot is not executed.",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_RT_OFFSET)
 
     @JvmField val BLEZL = Instruction(
@@ -997,6 +1023,7 @@ data class Instruction private constructor(
         "delay slot is executed. If the branch is not taken, the instruction " +
         "in the delay slot is not executed.",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
     @JvmField val BGTZL = Instruction(
@@ -1015,6 +1042,7 @@ data class Instruction private constructor(
         "the branch is not taken, the instruction in the delay slot is " +
         "not executed.",
       format = Format.I,
+      type = Type.B,
       pattern = INAME_RS_OFFSET)
 
 

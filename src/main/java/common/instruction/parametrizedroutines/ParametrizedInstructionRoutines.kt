@@ -4,10 +4,8 @@ import com.google.common.base.Preconditions.checkArgument
 import common.hardware.Register
 import common.instruction.*
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
-import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import io.atlassian.fugue.Either
 import java.util.*
-import java.util.regex.Pattern
 
 val fieldNameToIndexMap: HashMap<String, Int> = hashMapOf(
   Pair("rs", 1),
@@ -20,7 +18,6 @@ val fieldNameToIndexMap: HashMap<String, Int> = hashMapOf(
   Pair("target", 1),
   Pair("hint", 2)
 )
-
 
 val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
   Pair("rs", Long::rs),
@@ -211,39 +208,29 @@ interface ParametrizedInstructionRoutine {
 fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
   /* We standardize the pattern to ensure consistency not out of necessity */
   val standardizedPattern = standardizeMnemonic(pattern)
-
-  // Produces an array of the tokens in the pattern, for an example
-  // we get that "iname rd, rs, rt".tokenize() yields ["rd", "rs", "rt"]
-  // (note the boolean flag, which is why the "iname" disappears)
+  /* We create an array of the tokens in the standardized array */
   val fields = standardizedPattern.tokenize(includeIname = false)
 
-  fun evaluateIfTheMnemonicRepresentationIsWellFormed(mnemonicRepresentation : String) {
-    val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
-    throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
-    val expectedNumberOfCommas = standardizedPattern.countCommas()
-    throwIfIncorrectNumberOfCommas(expectedNumberOfCommas, mnemonicRepresentation)
-    val expectedNumberOfArguments = standardizedPattern.replace(",", "").split(" ").size - 1
-    throwIfIncorrectNumberOfArgs(expectedNumberOfArguments, standardizedMnemonic)
-    throwIfInvalidParentheses(standardizedMnemonic, format)
-  }
+
 
   return object : ParametrizedInstructionRoutine {
-    /** For instructions expressed using the mnemonic-pattern "iname rd, rs, rt"
-      * we get that the contents of the tokens array will contain
-      * the _values_ of rd, rs, and rt, like so:
-      *
-      * tokens=[rd, rs, rt]
-      *
-      * however, the arguments rd, rs, rt do not appear in the same
-      * order as they have to when represented numerically so we
-      * use the "fields" array which tells us what values we are observing
-      * inside the tokens array together with "fieldNameToIndexMap"
-      * to place the values at the correct places.
-      */
+    /**
+     * For instructions expressed using the mnemonic-pattern "iname rd, rs, rt"
+     * we get that the contents of the tokens array will contain
+     * the _values_ of rd, rs, and rt, like so:
+     *
+     * tokens=[rd, rs, rt]
+     *
+     * however, the arguments rd, rs, rt do not appear in the same
+     * order as they have to when represented numerically so we
+     * use the "fields" array which tells us what values we are observing
+     * inside the tokens array together with "fieldNameToIndexMap"
+     * to place the values at the correct places.
+     **/
     override fun invoke(prototype: Instruction,
                         mnemonicRepresentation: String): Instruction
     {
-      evaluateIfTheMnemonicRepresentationIsWellFormed(mnemonicRepresentation)
+      evaluateIfTheMnemonicRepresentationIsWellFormed(mnemonicRepresentation, standardizedPattern, format)
       val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
       checkArgument(prototype.iname == standardizedMnemonic.iname())
 
@@ -268,7 +255,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 
     /**
      * When in machineCode, we trust.
-     */
+     **/
     override fun invoke(prototype: Instruction, machineCode: Long):
           Either<Instruction, PartiallyValidInstruction>
     {
@@ -287,12 +274,24 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 
 }
 
-fun shouldFieldBeZero(fieldName: String, fields: Array<String>): Boolean {
+private fun shouldFieldBeZero(fieldName: String, fields: Array<String>): Boolean {
   return !fields.contains(fieldName)
 }
 
-fun fieldIsNotZero(fieldName: String, machineCode: Long): Boolean {
+private fun fieldIsNotZero(fieldName: String, machineCode: Long): Boolean {
   return fieldNameToMethodCallMap[fieldName]!!.invoke(machineCode) != 0
+}
+
+private fun evaluateIfTheMnemonicRepresentationIsWellFormed(mnemonicRepresentation: String,
+                                                    standardizedPattern: String,
+                                                    format: Format) {
+  val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
+  throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
+  val expectedNumberOfCommas = standardizedPattern.countCommas()
+  throwIfIncorrectNumberOfCommas(expectedNumberOfCommas, mnemonicRepresentation)
+  val expectedNumberOfArguments = standardizedPattern.replace(",", "").split(" ").size - 1
+  throwIfIncorrectNumberOfArgs(expectedNumberOfArguments, standardizedMnemonic)
+  throwIfInvalidParentheses(standardizedMnemonic, format)
 }
 
 private fun errorCheckPrototype(machineCode: Long,
@@ -323,6 +322,7 @@ private fun errorCheckPrototype(machineCode: Long,
         "a instruction from an unknown format. Format: $format")
     }
   }
+
   return errors
 }
 

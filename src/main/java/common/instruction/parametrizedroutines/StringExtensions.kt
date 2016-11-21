@@ -2,7 +2,6 @@ package common.instruction.parametrizedroutines
 
 import common.hardware.Register
 import common.instruction.Format
-import common.instruction.MachineCodeDecoder
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -27,11 +26,15 @@ fun String.containsNewlineCharacter(): Boolean = {
 
 /**
  * Will tokenize a mnemonic String so it can return an array of tokens.
+ * Produces an array of the tokens in the pattern, for an example
+ * we get that "iname rd, rs, rt".tokenize() yields ["rd", "rs", "rt"]
+ *
+ * @param includeIname exclude the "iname" in the return
  */
 fun String.tokenize(includeIname: Boolean = true): Array<String> = {
   var a = this.trim().replace(",", " ").replace(Regex("\\s+"), " ").split(" ").toTypedArray()
   if (!includeIname) {
-    // Remove the name
+    // Remove the iname
     a = Arrays.copyOfRange(a, 1, a.size)
   }
   a
@@ -101,18 +104,6 @@ fun mnemonicEquals(s1: String, s2: String): Boolean {
 }
 
 
-// For use with add, etc. but not sw, etc.
-fun throwIfInvalidParentheses(standardizedMnemonic: String, format : Format) {
-  if (format == Format.I) {
-    //throwExceptionIfNotContainsParentheses(standardizedMnemonic)
-  } else /*if (format == Format.R || format == Format.J) */{
-    // This pattern shouldn't contain any parens
-    if (standardizedMnemonic.containsParentheses()) {
-      throw IllegalCharactersInMnemonicException(
-        standardizedMnemonic, "<parentheses>")
-    }
-  }
-}
 
 fun throwExceptionIfContainsIllegalCharacters(standardizedMnemonic: String) {
   // Throw an exception if the passed string contains a new line character
@@ -156,6 +147,28 @@ fun throwExceptionIfContainsIllegalCharacters(standardizedMnemonic: String) {
   }
 }
 
+
+/**
+ * Check if String contains parentheses when excepted.
+ * For example can not Format.J or Format.J contain parentheses but
+ * Format.I can, however Format.I is not exclusively with parentheses.
+ */
+fun throwIfInvalidParentheses(standardizedMnemonic: String, format : Format) {
+  if (format == Format.R || format == Format.J) {
+    if (standardizedMnemonic.containsParentheses()) {
+      throw IllegalCharactersInMnemonicException(
+        standardizedMnemonic, "<parentheses>")
+    }
+  }
+}
+
+/**
+ * Check if given String contains excepted number of commas.
+ * Example:
+ * add $t1, $t2, $t3    (2)
+ * jr $t1               (0)
+ * break                (0)
+ */
 fun throwIfIncorrectNumberOfCommas(expectedNumberOfCommas: Int, standardizedMnemonic: String) {
   val actualNumberOfCommas = standardizedMnemonic.countCommas()
 
@@ -166,28 +179,30 @@ fun throwIfIncorrectNumberOfCommas(expectedNumberOfCommas: Int, standardizedMnem
   }
 }
 
-// Begin by replacing all commas with a space,
-// thereby transforming:
-//
-// add $t1,$t2, $t3 (intentional space before $t3)
-//
-// so we get
-//
-// add $t1, $t2,   $t3 (triple space before $t3)
-//
-// Then, replace all white-space characters (\\s+) with a single
-// space and remove any leading or trailing spaces (trim).
-//
-// This would normalise both "add $t1, $t2, $t3" and
-// "    add $t1,$t2,  $t3  " to the same string, namely
-// "add $t1, $t2, $t3".
-//
-// This sequence of operations also normalises
-// "jr $t1" to "jr $t1" (identity transformation).
+/**
+ * Replace all white-space characters (\\s+) with a single and will correct
+ * commas so always followed with a white-space. Will remove any leading
+ * or trailing spaces (trim) to normalise String.
+ *
+ * Examples:
+ * add $t1,$t2, $t3       (intentional space before $t3)
+ * add $t1, $t2,   $t3    (triple space before $t3)
+ * add $t1, $t2, $t3      (Correct String)
+ * will all be formatted to:
+ * add $t1, $t2, $t3
+ */
 fun standardizeMnemonic(mnemonic: String): String {
   return mnemonic.replace(",", ", ").replace(Regex("\\s+"), " ").trim()
 }
 
+/**
+ * Check if given String contains correct number of arguments. Arguments is
+ * how many parameters an instruction has been given.
+ * Example:
+ * add $t1, $t2, $t3   (3)
+ * jr $t1             (1)
+ * break              (0)
+ */
 fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : String) {
   // -1 for the instruction name
   val withoutCommas = standardizedMnemonic.replace(",", "")
