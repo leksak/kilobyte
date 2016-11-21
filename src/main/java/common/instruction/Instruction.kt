@@ -202,7 +202,7 @@ data class Instruction private constructor(
       description = "Null operation; do nothing. " +
         "Machine code is all zeroes.",
       format = Format.R,
-      pattern = ParametrizedInstructionRoutine.NOP)
+      pattern = INAME)
 
     @JvmField val SLL = Instruction(
       iname = "sll",
@@ -338,7 +338,7 @@ data class Instruction private constructor(
       description = "Issue a system call : Execute the system call " +
         "specified by value in \$v0",
       format = Format.R,
-      pattern = ParametrizedInstructionRoutine.INAME)
+      pattern = INAME)
 
     @JvmField val BREAK = Instruction(
       iname = "break",
@@ -349,7 +349,7 @@ data class Instruction private constructor(
       description = "Break execution : Terminate program execution " +
         "with exception",
       format = Format.R,
-      pattern = ParametrizedInstructionRoutine.INAME)
+      pattern = INAME)
 
     @JvmField val SYNC = Instruction(
       iname = "sync",
@@ -360,7 +360,7 @@ data class Instruction private constructor(
       description = "To order loads and stores to shared memory in a " +
         "multiprocessor system",
       format = Format.R,
-      pattern = ParametrizedInstructionRoutine.INAME)
+      pattern = INAME)
 
     @JvmField val MFHI = Instruction(
       iname = "mfhi",
@@ -374,15 +374,15 @@ data class Instruction private constructor(
       pattern = INAME_RD)
 
     @JvmField val MTHI = Instruction(
-            iname = "mthi",
-            opcode = 0,
-            funct = 17,
-            mnemonicRepresentation = "mthi \$t1",
-            numericRepresentation = 0x01200011,
-            description = "Move to HI register : Set HI to contents of " +
-                    "\$t1 (see multiply and divide operations)",
-            format = Format.R,
-            pattern = INAME_RS)
+      iname = "mthi",
+      opcode = 0,
+      funct = 17,
+      mnemonicRepresentation = "mthi \$t1",
+      numericRepresentation = 0x01200011,
+      description = "Move to HI register : Set HI to contents of " +
+              "\$t1 (see multiply and divide operations)",
+      format = Format.R,
+      pattern = INAME_RS)
 
     @JvmField val MFLO = Instruction(
       iname = "mflo",
@@ -396,16 +396,15 @@ data class Instruction private constructor(
       pattern = INAME_RD)
 
     @JvmField val MTLO = Instruction(
-            iname = "mtlo",
-            opcode = 0,
-            funct = 19,
-            mnemonicRepresentation = "mtlo \$t1",
-            numericRepresentation = 0x01200013,
-            description = "Move to LO register : Set LO to contents of " +
-                    "\$t1 (see multiply and divide operations)",
-            format = Format.R,
-            pattern = INAME_RS)
-
+      iname = "mtlo",
+      opcode = 0,
+      funct = 19,
+      mnemonicRepresentation = "mtlo \$t1",
+      numericRepresentation = 0x01200013,
+      description = "Move to LO register : Set LO to contents of " +
+              "\$t1 (see multiply and divide operations)",
+      format = Format.R,
+      pattern = INAME_RS)
 
     @JvmField val MULT = Instruction(
       iname = "mult",
@@ -632,7 +631,6 @@ data class Instruction private constructor(
         "equal to \$t2",
       format = Format.R,
       pattern = INAME_RS_RT)
-
 
 
     /* OP-code: 1(_10) 0x01(_16) 000001(_2) */
@@ -1220,7 +1218,7 @@ data class Instruction private constructor(
       format = Format.I,
       pattern = INAME_RT_ADDRESS)
 
-    //TODO: cache
+    //TODO: cache 47
 
     @JvmField val LL = Instruction(
       iname = "ll",

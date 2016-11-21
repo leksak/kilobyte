@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.StringJoiner;
 
 public class PartiallyValidInstruction {
-  public final Instruction instruction;
-  public final String errors;
+  public Instruction instruction;
+  public String errors;
 
   public PartiallyValidInstruction(Instruction instruction, String errors) {
     this.instruction = instruction;
@@ -15,10 +15,10 @@ public class PartiallyValidInstruction {
   }
 
   public PartiallyValidInstruction(Instruction instruction, Collection<String> errors) {
-    this.instruction = instruction;
+    /*this.instruction = instruction;
     val sj = new StringJoiner("\", \"", "[\"", "\"]");
     errors.forEach(sj::add);
-    this.errors = sj.toString();
+    this.errors = sj.toString();*/
   }
 
   @Override
