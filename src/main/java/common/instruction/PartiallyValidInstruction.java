@@ -1,7 +1,5 @@
 package common.instruction;
 
-import lombok.val;
-
 import java.util.Collection;
 import java.util.StringJoiner;
 
