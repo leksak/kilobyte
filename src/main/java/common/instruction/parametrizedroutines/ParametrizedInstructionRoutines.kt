@@ -351,7 +351,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
         }
       val errors = ArrayList<String>()
 
-      // We might get a trailing space if there are no args so
+        // We might get a trailing space if there are no args so
         // we remove it.
         mnemonicRepresentation = mnemonicRepresentation.trim()
         val inst = prototype(mnemonicRepresentation, machineCode)

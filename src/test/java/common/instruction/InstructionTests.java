@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
@@ -128,17 +129,15 @@ class InstructionTests {
   class SignednessTests {
     @Test
     void testAddi() throws NoSuchInstructionException {
-      String source = "addi $sp, $sp, -8"; // From the course website
-      long instruction = 0x23bdfff8;
+      String sourceNeg = "addi $sp, $sp, -8"; // From the course website
+      long instructionNeg = 0x23bdfff8; // 8 29 29 -8 (-8 = 65528 when unsigned)
+      assertEquals(Instruction.from(sourceNeg), Instruction.unsafeFrom(instructionNeg));
 
-      int opcode = Instruction.ADDI.getOpcode();
-      int rt = Register.$sp.asInt();
-      int rs = Register.$sp.asInt();
-      int immediate = (int) Integer.toUnsignedLong(-8) & 0xffff;
+      Instruction instructionPos = Instruction.unsafeFrom(0x23bd0008); // 8 29 29 8
+      Instruction sourcePos = Instruction.from("addi $sp, $sp, 8");
+      assertEquals(instructionPos, sourcePos);
 
-      int expected = opcode << 26 | rt << 21 | rs << 16 | immediate;
-      if (expected - instruction != 0) throw new IllegalStateException("These two should be equal");
-
+      assertThat(instructionNeg, is(not(equalTo(instructionPos))));
     }
   }
 }
