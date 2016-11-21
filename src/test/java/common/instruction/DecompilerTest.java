@@ -1,6 +1,6 @@
 package common.instruction;
 
-import decompiler.Decompiler;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -23,5 +23,13 @@ public class DecompilerTest {
       assertEquals(0x71014802, Decompiler.decode("0X71014802"));
       assertEquals(0x71014802, Decompiler.decode("0D1895909378"));
     });
+  }
+
+  @Nested
+  class IntegrationTests {
+    @Test
+    void testThatReadingASingleLineFromAFileYieldsTheAppropriateInstruction() {
+
+    }
   }
 }

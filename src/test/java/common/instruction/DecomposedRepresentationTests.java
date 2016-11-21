@@ -34,6 +34,7 @@ public class DecomposedRepresentationTests {
     DecomposedRepresentation d1 = fromNumber(0x23bdfff8, 6, 5, 5, 16);
     DecomposedRepresentation d2 = fromIntArray(new int[] { 8, 29, 29, -8}, 6, 5, 5, 16);
     assertEquals(d1, d2);
+    assertTrue(Arrays.equals(d1.toIntArray(), d2.toIntArray()));
   }
 
   @Test
