@@ -1,5 +1,7 @@
 package common.instruction;
 
+import common.hardware.Register;
+import common.instruction.decomposedrepresentation.DecomposedRepresentation;
 import common.instruction.exceptions.NoSuchInstructionException;
 import io.atlassian.fugue.Either;
 import org.junit.jupiter.api.DisplayName;
@@ -111,12 +113,32 @@ class InstructionTests {
 
   @Test
   void testHexInstruction() throws Exception {
-    Instruction mnemonic = Instruction.from("pref 0x01, 0x02($sp)");
-    assertEquals(Instruction.PREF, mnemonic, "Failed to translate from the mnemonic representation");
+    String s = "pref 0x01, 0x02($sp)";
+    Instruction mnemonic = Instruction.from(s);
+    assertEquals(Instruction.PREF, mnemonic, "Failed to translate from the mnemonic representation \"" + s + "\"");
 
     Instruction instructionNumeric = Instruction.unsafeFrom(0xCFA10002);
     assertEquals(Instruction.PREF, instructionNumeric, "Failed to translate from the numeric representation");
 
     assertEquals(mnemonic, instructionNumeric);
+  }
+
+  @Nested
+  @DisplayName("Testing that two's complement is handled nicely across immediate (signed/unsigned) instructions")
+  class SignednessTests {
+    @Test
+    void testAddi() throws NoSuchInstructionException {
+      String source = "addi $sp, $sp, -8"; // From the course website
+      long instruction = 0x23bdfff8;
+
+      int opcode = Instruction.ADDI.getOpcode();
+      int rt = Register.$sp.asInt();
+      int rs = Register.$sp.asInt();
+      int immediate = (int) Integer.toUnsignedLong(-8) & 0xffff;
+
+      int expected = opcode << 26 | rt << 21 | rs << 16 | immediate;
+      if (expected - instruction != 0) throw new IllegalStateException("These two should be equal");
+
+    }
   }
 }

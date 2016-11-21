@@ -150,7 +150,7 @@ fun throwExceptionIfContainsIllegalCharacters(standardizedMnemonic: String) {
   // We only consider letters, commas, spaces, numbers,
   // dollar signs and parentheses as being legal characters.
   //TODO: can there be minus? offset in I-instructions
-  val regex = "[A-Za-z, ()0-9\$]"
+  val regex = "[A-Za-z, \\-()0-9\$]"
   val p = Pattern.compile(regex)
   val matcher = p.matcher(standardizedMnemonic)
   // TODO:Get rid of any pre-existing plus signs?
@@ -160,17 +160,17 @@ fun throwExceptionIfContainsIllegalCharacters(standardizedMnemonic: String) {
   // add $t1, $t2, $t3!#$sp
   //
   // then the below statement will yield a mask with "+" signs on characters
-  // that match the regex and "-" signs on characters that do not
+  // that match the regex and "^" signs on characters that do not
   // match, i.e. illegal characters. So, for the above example the
   // match will be
   //
   // mask == +++++++++++++++++--+++
-  val mask = matcher.replaceAll("+").replace(Regex("[^+]"), "-")
-  if (mask.contains("-")) {
+  val mask = matcher.replaceAll("+").replace(Regex("[^+]"), "^")
+  if (mask.contains("^")) {
     // At least one illegal character was detected,
     val illegalCharacters = StringJoiner("', '", "['", "']")
     for (i in 0..(standardizedMnemonic.length - 1)) {
-      if (mask[i] == '-') {
+      if (mask[i] == '^') {
         illegalCharacters.add(standardizedMnemonic[i].toString())
       }
     }

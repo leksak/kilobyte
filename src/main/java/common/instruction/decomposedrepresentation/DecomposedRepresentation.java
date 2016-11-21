@@ -11,7 +11,15 @@ public class DecomposedRepresentation {
 
   private DecomposedRepresentation(long numericalRepresentation, int[] decomposition) {
     this.numericalRepresentation = numericalRepresentation;
-    this.decomposition = decomposition;
+    this.decomposition = new int[decomposition.length];
+    for (int i = 0; i < decomposition.length; i++) {
+      this.decomposition[i] = (int) Integer.toUnsignedLong(decomposition[i]) & 0xffff;
+    }
+  }
+
+  @Override
+  public String toString() {
+    return String.format("DecomposedRepresentation{%s, %d}", this.asDecimalString(), numericalRepresentation);
   }
 
   /**
@@ -70,7 +78,12 @@ public class DecomposedRepresentation {
       int bitfieldVal = bitfields[i];
       decomposition[i] = bitfieldVal;
 
-      composed = (bitfieldVal << current_shiftAmount) | composed;
+      if (bitfieldVal < 0) {
+        int unsigned = (int) (Integer.toUnsignedLong(bitfieldVal) & 0xffff);
+        composed = unsigned << (current_shiftAmount) | composed;
+      } else {
+        composed = (bitfieldVal << current_shiftAmount) | composed;
+      }
       current_shiftAmount = next_shiftAmount;
 
       if (i > 0) {
@@ -250,4 +263,22 @@ public class DecomposedRepresentation {
       }
       return pad + binaryString;
     }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    DecomposedRepresentation that = (DecomposedRepresentation) o;
+
+    if (numericalRepresentation != that.numericalRepresentation) return false;
+    return Arrays.equals(decomposition, that.decomposition);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Arrays.hashCode(decomposition);
+    result = 31 * result + (int) (numericalRepresentation ^ (numericalRepresentation >>> 32));
+    return result;
+  }
 }

@@ -122,6 +122,7 @@ data class Instruction private constructor(
     return "0x" + hexString
   }
 
+  fun asLong() = numericRepresentation;
   fun asDecimalString() = decomposed.asDecimalString()
   fun asHexadecimalString() = decomposed.asHexadecimalString()
 

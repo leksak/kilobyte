@@ -23,7 +23,7 @@ public interface MachineCodeDecoder {
      * Check that all characters match either hexadecimal, decimal
      * or binary strings.
      */
-    if (!s.matches("([0-9]+)|(0[x][0-9a-f]+)|(0[b][0-1]+)|(0[d])?[0-9]+")) {
+    if (!s.matches("-?([0-9]+)|(0[x][0-9a-f]+)|(0[b][0-1]+)|(0[d])?[0-9]+")) {
       throw new NumberFormatException(); // TODO: Add error message
     }
 
