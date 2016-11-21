@@ -70,6 +70,11 @@ public interface MachineCodeDecoder {
       //
       // Remove the prefix from the string, substring() takes the
       // tail starting from the second character.
+      if (s.length()>8) {
+        int i = Integer.parseInt(s.substring(2), 16);
+        int o = s.length() - 8;
+        return (i >> o);
+      }
       s = s.substring(2);
     }
 

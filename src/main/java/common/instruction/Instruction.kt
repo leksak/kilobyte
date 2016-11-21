@@ -837,8 +837,8 @@ data class Instruction private constructor(
     @JvmField val JAL = Instruction(
       iname = "jal",
       opcode = 3, //0x03
-      mnemonicRepresentation = "jal 4",
-      numericRepresentation = 0x0c000004,
+      mnemonicRepresentation = "jal 4194304",
+      numericRepresentation = 0x0C400000,
       description = "Jump and link : Set \$ra to Program Counter " +
         "(return address) then jump to statement at target address",
       format = Format.J,
@@ -1427,6 +1427,7 @@ data class Instruction private constructor(
     @Throws(NoSuchInstructionException::class)
     @JvmStatic fun unsafeFrom(machineCode: Long): Instruction {
       val inst = from(Integer.toUnsignedLong(machineCode.toInt()))
+
       try {
         // Attempt to get the left projection and return it.
         return inst.left().get()

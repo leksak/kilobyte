@@ -95,6 +95,11 @@ public enum Register {
     return Register.values()[index];
   }
 
+  /**
+   *
+   * @param mnemonic
+   * @return
+   */
   public static Register fromString(String mnemonic) {
     checkArgument(mnemonic.startsWith("$"), "Registers has to start with a \"$\"");
 

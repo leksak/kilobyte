@@ -15,6 +15,7 @@ public class DecomposedRepresentation {
     for (int i = 0; i < decomposition.length; i++) {
       this.decomposition[i] = (int) Integer.toUnsignedLong(decomposition[i]) & 0xffff;
     }
+
   }
 
   @Override

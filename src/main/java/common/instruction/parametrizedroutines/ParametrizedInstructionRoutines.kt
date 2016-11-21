@@ -322,7 +322,6 @@ private fun errorCheckPrototype(machineCode: Long,
         "a instruction from an unknown format. Format: $format")
     }
   }
-
   return errors
 }
 
