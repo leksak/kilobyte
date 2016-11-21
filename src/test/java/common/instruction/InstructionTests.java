@@ -1,22 +1,17 @@
 package common.instruction;
 
-import common.hardware.Register;
-import common.instruction.decomposedrepresentation.DecomposedRepresentation;
 import common.instruction.exceptions.NoSuchInstructionException;
-import io.atlassian.fugue.Either;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static common.instruction.Format.I;
-import static common.instruction.Format.J;
-import static common.instruction.Format.R;
-import static common.instruction.Type.B;
+import static common.instruction.Format.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.expectThrows;
 
 class InstructionTests {
   @Nested

@@ -3,9 +3,6 @@ package common.instruction;
 import decompiler.Decompiler;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

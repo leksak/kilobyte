@@ -1,7 +1,6 @@
 package common.hardware;
 
 import common.instruction.MachineCodeDecoder;
-import org.jetbrains.annotations.NotNull;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

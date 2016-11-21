@@ -104,7 +104,7 @@ public class DecomposedRepresentation {
    *
    * satisfies
    *
-   * <pre>{@code Arrays.equals(d, new int[] {0x1c, 8, 1, 9, 0, 2})</pre>
+   * <pre>{@code Arrays.equals(d.toIntArray(), new int[] {0x1c, 8, 1, 9, 0, 2})</pre>
    */
   public int[] toIntArray() {
     return decomposition;
