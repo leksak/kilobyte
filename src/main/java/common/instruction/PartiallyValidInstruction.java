@@ -16,7 +16,7 @@ public class PartiallyValidInstruction {
 
   public PartiallyValidInstruction(Instruction instruction, Collection<String> errors) {
     this.instruction = instruction;
-    val sj = new StringJoiner("\", \"", "[\"", "\"]");
+    StringJoiner sj = new StringJoiner("\", \"", "[\"", "\"]");
     errors.forEach(sj::add);
     this.errors = sj.toString();
   }
