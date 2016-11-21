@@ -65,4 +65,58 @@ class InstructionTests {
   void testNoSuchInstructionExceptionIsThrownOnUnknown32BitInteger() {
     expectThrows(NoSuchInstructionException.class, () -> Instruction.unsafeFrom(0xFFFFFF));
   }
+
+
+  @Test
+  void testInameRs() throws Exception {
+    Instruction mnemonic = Instruction.from("jr $t1");
+    assertEquals(Instruction.JR, mnemonic, "Failed to translate from the mnemonic representation");
+
+    Instruction instructionNumeric = Instruction.unsafeFrom(0x01200008);
+    assertEquals(Instruction.JR, instructionNumeric, "Failed to translate from the numeric representation");
+
+    assertEquals(mnemonic, instructionNumeric);
+  }
+
+  @Test
+  void testMaddInstruction() throws Exception {
+    Instruction mnemonic = Instruction.from("madd $t1, $t2");
+    assertEquals(Instruction.MADD, mnemonic, "Failed to translate from the mnemonic representation");
+
+    Instruction instructionNumeric = Instruction.unsafeFrom(0x712A0000);
+    assertEquals(Instruction.MADD, instructionNumeric, "Failed to translate from the numeric representation");
+
+    assertEquals(mnemonic, instructionNumeric);
+  }
+  @Test
+  void testSWInstruction() throws Exception {
+    Instruction mnemonic = Instruction.from("sw $ra, 4($sp)");
+    assertEquals(Instruction.SW, mnemonic, "Failed to translate from the mnemonic representation");
+
+    Instruction instructionNumeric = Instruction.unsafeFrom(0xAFBF0004);
+    assertEquals(Instruction.SW, instructionNumeric, "Failed to translate from the numeric representation");
+
+    assertEquals(mnemonic, instructionNumeric);
+  }
+  @Test
+  void testPrefixInstruction() throws Exception {
+    Instruction mnemonic = Instruction.from("pref 1, 2($sp)");
+    assertEquals(Instruction.PREF, mnemonic, "Failed to translate from the mnemonic representation");
+
+    Instruction instructionNumeric = Instruction.unsafeFrom(0xCFA10002);
+    assertEquals(Instruction.PREF, instructionNumeric, "Failed to translate from the numeric representation");
+
+    assertEquals(mnemonic, instructionNumeric);
+  }
+
+  @Test
+  void testHexInstruction() throws Exception {
+    Instruction mnemonic = Instruction.from("pref 0x01, 0x02($sp)");
+    assertEquals(Instruction.PREF, mnemonic, "Failed to translate from the mnemonic representation");
+
+    Instruction instructionNumeric = Instruction.unsafeFrom(0xCFA10002);
+    assertEquals(Instruction.PREF, instructionNumeric, "Failed to translate from the numeric representation");
+
+    assertEquals(mnemonic, instructionNumeric);
+  }
 }

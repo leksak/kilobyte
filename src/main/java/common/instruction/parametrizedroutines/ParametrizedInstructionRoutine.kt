@@ -14,10 +14,6 @@ interface ParametrizedInstructionRoutine {
         Either<Instruction, PartiallyValidInstruction>
   fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction
 
-
-
-
-  
   object NOP: ParametrizedInstructionRoutine {
     override fun invoke(prototype: Instruction, machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
       if (machineCode.equals(0)) {
@@ -54,7 +50,6 @@ interface ParametrizedInstructionRoutine {
           Either<Instruction, PartiallyValidInstruction> {
       val iname = prototype.iname
       val mnemonic = iname
-
       val inst = prototype(mnemonic, machineCode)
       if (machineCode.shamt() != 0) {
         val err = "Expected shamt to be zero. Got ${machineCode.shamt()}"
@@ -107,7 +102,7 @@ interface ParametrizedInstructionRoutine {
    * This container object which contains a tuple of functions is
    * to be used for instructions on the form
    *
-   * iname rt, address
+   * iname rt, offset
    *
    * For an example,
    *
@@ -120,7 +115,7 @@ interface ParametrizedInstructionRoutine {
    * | 0x23    | 18     | 8      | 24_{10} |
    *
    * Note: the semantics of the instruction is
-   * Load word : Set $t0 to contents of effective memory word address",
+   * Load word : Set $t0 to contents of effective memory word offset",
    */
   /*object INAME_RT_RS_ADDR : ParametrizedInstructionRoutine {
     fun invoke(prototype: Instruction, machineCode: Long):
@@ -154,6 +149,7 @@ fun throwExceptionIfContainsIllegalCharacters(standardizedMnemonic: String) {
   //
   // We only consider letters, commas, spaces, numbers,
   // dollar signs and parentheses as being legal characters.
+  //TODO: can there be minus? offset in I-instructions
   val regex = "[A-Za-z, ()0-9\$]"
   val p = Pattern.compile(regex)
   val matcher = p.matcher(standardizedMnemonic)
@@ -212,9 +208,7 @@ fun standardizeMnemonic(mnemonic: String): String {
   //
   // This sequence of operations also normalises
   // "jr $t1" to "jr $t1" (identity transformation).
-  return mnemonic.replace(",", ", ")
-        .replace(Regex("\\s+"), " ")
-        .trim()
+  return mnemonic.replace(",", ", ").replace(Regex("\\s+"), " ").trim()
 }
 
 fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : String) {

@@ -8,21 +8,84 @@ import io.atlassian.fugue.Either
 import java.util.*
 
 val fieldNameToIndexMap: HashMap<String, Int> = hashMapOf(
-      Pair("rs", 1),
-      Pair("rt", 2),
-      Pair("rd", 3),
-      Pair("shamt", 4),
-      Pair("funct", 5),
-      Pair("offset", 4)
+  Pair("rs", 1),
+  Pair("rt", 2),
+  Pair("rd", 3),
+  Pair("shamt", 4),
+  Pair("funct", 5),
+  Pair("offset", 3),
+  Pair("address", 3),
+  Pair("target", 1),
+  Pair("hint", 2)
 )
 
+
 val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
-      Pair("rs", Long::rs),
-      Pair("rt", Long::rt),
-      Pair("rd", Long::rd),
-      Pair("shamt", Long::shamt),
-      Pair("funct", Long::funct)
+  Pair("rs", Long::rs),
+  Pair("rt", Long::rt),
+  Pair("rd", Long::rd),
+  Pair("shamt", Long::shamt),
+  Pair("funct", Long::funct),
+  Pair("offset", Long::offset),
+  Pair("target", Long::target),
+  Pair("address", Long::offset),
+  Pair("hint", Long::hint)
 )
+
+
+/** Hint-variable descriptions
+ * source: http://www.cs.cmu.edu/afs/cs/academic/class/15740-f97/public/doc/mips-isa.pdf
+ * page A-117
+ * Reference: MIPS-instruction with prefix 'PREF'
+ **/
+enum class Hint (val value: Int) {
+  LOAD(0),
+  STORE(1),
+  LOAD_STREAMED(3),
+  STORE_STREAMED(5),
+  LOAD_RETAINED(6),
+  STORE_RETAINED(7);
+
+  companion object {
+    fun from(findValue: Int): Hint = Hint.values().first { it.value == findValue }
+  }
+
+  fun description(value: Int): String {
+    when(value) {
+      LOAD.value->return "Data is expected to be loaded (not modified). " +
+        "Fetch data as if for a load"
+
+      STORE.value->return "Data is expected to be stored or modified. " +
+        "Fetch data as if for a store."
+      LOAD_STREAMED.value->return "Data is expected to be loaded (not " +
+        "modified) but not reused extensively; " +
+        "it will “stream” through cache. Fetch " +
+        "data as if for a load and place it in " +
+        "the cache so that it will not displace " +
+        "data prefetched as 'retained'."
+      STORE_STREAMED.value->return "Data is expected to be stored or modified " +
+        "but not reused extensively; it will " +
+        "'stream' through cache. Fetch data as if " +
+        "for a store and place it in the cache so " +
+        "that it will not displace data " +
+        "prefetched as 'retained'."
+      LOAD_RETAINED.value->return "Data is expected to be loaded (not " +
+        "modified) and reused extensively; it " +
+        "should be “retained” in the cache. Fetch " +
+        "data as if for a load and place it in the " +
+        "cache so that it will not be displaced by " +
+        "data prefetched as “streamed”"
+      STORE_RETAINED.value->return "Data is expected to be stored or " +
+        "modified and reused extensively; it " +
+        "should be “retained” in the cache. " +
+        "Fetch data as if for a store and place " +
+        "it in the cache so that will not be " +
+        "displaced by data prefetched as “streamed”."
+      else->return "Not yet defined."
+    }
+  }
+}
+
 
 /**
  * This method creates objects implementing the ParametrizedInstructionRoutine
@@ -123,7 +186,7 @@ val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
  *
  * I-format instructions are traditionally written on the form,
  *
- *     iname rt, address
+ *     iname rt, offset
  *
  * For an example,
  *
@@ -163,7 +226,9 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
     val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
     throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
 
-    if (format == Format.R || format == Format.J) {
+    if (format == Format.I) {
+      //throwExceptionIfNotContainsParentheses(standardizedMnemonic)
+    } else /*if (format == Format.R || format == Format.J) */{
       // This pattern shouldn't contain any parens
       throwExceptionIfContainsParentheses(standardizedMnemonic)
     }
@@ -207,10 +272,32 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
         n[5] = prototype.funct!!
       }
 
+      /* Will be set when op-code 1 */
+      if (prototype.rt != null) {
+        n[fieldNameToIndexMap.get("rt")!!] = prototype.rt!!
+      }
+
       for (i in tokens.indices) {
         val destinationIndex: Int = fieldNameToIndexMap.get(fields[i])!!
-        n[destinationIndex] = Register.fromString(tokens[i]).asInt()
+        if (fields[i] == "offset" || fields[i] == "address") {
+          n[destinationIndex] = Register.offsetFromOffset(tokens[i])
+          if (fields[i] == "address") {
+            n[fieldNameToIndexMap.get("rs")!!] = Register.registerFromOffset(tokens[i]).asInt()
+          }
+        }
+        else if (fields[i] == "target") {
+          n[destinationIndex] = Register.offsetFromOffset(tokens[i])
+        }
+        else if (fields[i] == "hint") {
+          var hint = Register.offsetFromOffset(tokens[i])
+          n[destinationIndex] = hint
+          prototype.hint = Hint.from(hint)
+        }
+        else {
+          n[destinationIndex] = Register.fromString(tokens[i]).asInt()
+        }
       }
+
       val lengths = format.lengths
       val d = DecomposedRepresentation.fromIntArray(n, *lengths).asLong()
       return prototype(standardizedMnemonic, d)
@@ -220,37 +307,56 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
           Either<Instruction, PartiallyValidInstruction>
     {
       val iname = prototype.iname
+        var mnemonicRepresentation = "$iname "
+        for (i in fields.indices) {
+          // The fields are given in order, so we can just concatenate
+          // the strings.
+          if (fields[i] == "rd") {
+            mnemonicRepresentation += Register.fromInt(machineCode.rd()).toString()
+          }
 
-      when (format) {
-        Format.R -> {
-          var mnemonicRepresentation = "$iname "
-          for (i in fields.indices) {
-            // The fields are given in order, so we can just concatenate
-            // the strings.
-            if (fields[i] == "rd") {
-              mnemonicRepresentation += Register.fromInt(machineCode.rd()).toString()
-            }
+          if (fields[i] == "rt") {
+            mnemonicRepresentation += Register.fromInt(machineCode.rt()).toString()
+          }
 
-            if (fields[i] == "rt") {
-              mnemonicRepresentation += Register.fromInt(machineCode.rt()).toString()
-            }
+          if (fields[i] == "rs") {
+            mnemonicRepresentation += Register.fromInt(machineCode.rs()).toString()
+          }
 
-            if (fields[i] == "rs") {
+          if (fields[i] == "address") {
+            mnemonicRepresentation += machineCode.offset().toString()
+            if (!fields.contains("rs")  && iname != "lui") {
+              mnemonicRepresentation += "("
               mnemonicRepresentation += Register.fromInt(machineCode.rs()).toString()
-            }
-
-            if (i != fields.indices.last) {
-              mnemonicRepresentation += ", "
+              mnemonicRepresentation += ")"
             }
           }
 
-          // We might get a trailing space if there are no args so
-          // we remove it.
-          mnemonicRepresentation = mnemonicRepresentation.trim()
+          if (fields[i] == "offset") {
+            mnemonicRepresentation += machineCode.offset().toString()
+          }
 
-          val inst = prototype(mnemonicRepresentation, machineCode)
+          if (fields[i] == "target") {
+            mnemonicRepresentation += machineCode.target().toString()
+          }
 
-          val errors = ArrayList<String>()
+          if (fields[i] == "hint") {
+            mnemonicRepresentation += machineCode.hint().toString()
+            prototype.hint = Hint.from(machineCode.hint())
+          }
+
+          if (i != fields.indices.last) {
+            mnemonicRepresentation += ", "
+          }
+        }
+      val errors = ArrayList<String>()
+
+      // We might get a trailing space if there are no args so
+        // we remove it.
+        mnemonicRepresentation = mnemonicRepresentation.trim()
+        val inst = prototype(mnemonicRepresentation, machineCode)
+      when (format) {
+        Format.R -> {
           if (shouldFieldBeZero("shamt") && fieldIsNotZero("shamt", machineCode)) {
             errors.add("Expected shamt to be zero. Got ${machineCode.shamt()}")
           }
@@ -269,8 +375,14 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
             return Either.right(PartiallyValidInstruction(inst, errors))
           }
 
-
           // Create a new copy using these values
+
+          return Either.left(inst)
+        }
+        Format.I-> {
+          return Either.left(inst)
+        }
+        Format.J-> {
           return Either.left(inst)
         }
         else -> {
@@ -288,3 +400,16 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 @JvmField val INAME_RS = from(Format.R, "iname rs")
 @JvmField val INAME_RD = from(Format.R, "iname rd")
 
+/**
+ * The difference between offset and address is that address will accept an
+ * syntax of N($REG) while offset will not. Offset can be referred as
+ * immediate-instruction-type like N whereas N is an number.
+ */
+@JvmField val INAME_RT_OFFSET = from(Format.I, "iname rt, offset")
+@JvmField val INAME_RS_OFFSET = from(Format.I, "iname rs, offset")
+@JvmField val INAME_RS_RT_OFFSET = from(Format.I, "iname rs, rt, offset")
+@JvmField val INAME_RT_RS_OFFSET = from(Format.I, "iname rt, rs, offset")
+@JvmField val INAME_RT_ADDRESS = from(Format.I, "iname rt, address")
+@JvmField val INAME_HINT_ADDRESS = from(Format.I, "iname hint, address")
+
+@JvmField val INAME_TARGET = from(Format.J, "iname target")
