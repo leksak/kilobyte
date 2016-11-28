@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions.checkArgument
 import common.hardware.Register
 import common.instruction.*
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
+import common.instruction.extensions.*
 import decompiler.Decoder
 import io.atlassian.fugue.Either
 import java.util.*
@@ -47,7 +48,7 @@ enum class Hint (val value: Int) {
   STORE_RETAINED(7);
 
   companion object {
-    fun from(findValue: Int): Hint = Hint.values().first { it.value == findValue }
+    fun from(findValue: Int): Hint = values().first { it.value == findValue }
   }
 
   fun description(value: Int): String {
@@ -202,7 +203,7 @@ enum class Hint (val value: Int) {
  */
 interface ParametrizedInstructionRoutine {
   fun invoke(prototype: Instruction, machineCode: Long):
-    Either<Instruction, PartiallyValidInstruction>
+        Either<Instruction, PartiallyValidInstruction>
   fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction
 }
 
@@ -269,8 +270,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
                                                                machineCode,
                                                                fields)
       val inst = prototype(mnemonicRepresentation, machineCode)
-      val errors = errorCheckPrototype(
-                                       machineCode, format, fields)
+      val errors = errorCheckPrototype(machineCode, format, fields)
       if (errors.isNotEmpty()) {
         return Either.right(PartiallyValidInstruction(inst, errors))
       }
@@ -319,9 +319,9 @@ private fun errorCheckPrototype(machineCode: Long,
         errors.add("Expected rs to be zero. Got ${machineCode.rs()}")
       }
     }
-    Format.I-> {
+    Format.I -> {
     }
-    Format.J-> {
+    Format.J -> {
     }
     else -> {
       throw IllegalStateException("Attempted to instantiate " +

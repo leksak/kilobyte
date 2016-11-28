@@ -172,7 +172,8 @@ class InstructionTests {
       // 0x11000003
       //
       // should be decompiled into
-      // beq $t0, $zero, 4  note 4 instructions forwards
+      //
+      // beq $t0, $zero, 4  (note 4 instructions forwards
 
       Object[] beq = {0x11000003, B, "[4 8 0 3]",   "[4 8 0 3]", "beq $t0, $zero, 4"};
       test(beq);

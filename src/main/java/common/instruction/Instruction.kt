@@ -2,6 +2,9 @@ package common.instruction
 
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.NoSuchInstructionException
+import common.instruction.extensions.funct
+import common.instruction.extensions.opcode
+import common.instruction.extensions.rt
 import common.instruction.parametrizedroutines.*
 
 import io.atlassian.fugue.Either
@@ -88,19 +91,19 @@ import java.util.*
  * @property funct Like the @rt property but for the funct field.
  */
 data class Instruction private constructor(
-  val iname: String,
-  val opcode: Int,
-  val mnemonicRepresentation: String,
-  val numericRepresentation: Long, // Long because of overflow
-  val description: String,
-  val format: Format,
-  val pattern: ParametrizedInstructionRoutine,
-  val primordial: Boolean = true,
-  var type: Type? = null,
-  var rt: Int? = null,
-  var funct: Int? = null,
-  var offset: Int? = null,
-  var hint: Hint? = null) {
+      val iname: String,
+      val opcode: Int,
+      val mnemonicRepresentation: String,
+      val numericRepresentation: Long, // Long because of overflow
+      val description: String,
+      val format: Format,
+      val pattern: ParametrizedInstructionRoutine,
+      val primordial: Boolean = true,
+      var type: Type? = null,
+      var rt: Int? = null,
+      var funct: Int? = null,
+      var offset: Int? = null,
+      var hint: Hint? = null) {
   val example = Example(mnemonicRepresentation, numericRepresentation)
   val decomposed = DecomposedRepresentation.fromNumber(numericRepresentation, *format.lengths)
 

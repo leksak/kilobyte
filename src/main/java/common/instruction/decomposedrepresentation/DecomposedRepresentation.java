@@ -157,92 +157,37 @@ public class DecomposedRepresentation {
 
   public long toNumericalRepresentation() { return numericalRepresentation; }
 
-  public static int bits(int upperIndex, int lowerIndex, int number) {
-      checkArgument(upperIndex > lowerIndex,
-            "upperIndex (%s) must be greater than lowerIndex (%s)",
-            upperIndex, lowerIndex);
-
-      checkArgument(upperIndex <= 31,
-            "upperIndex (%s) must be less than (or equal to) 31",
-            upperIndex);
-
-      checkArgument(lowerIndex >= 0,
-            "lowerIndex (%s) must be greater than or equal to zero",
-            upperIndex, lowerIndex);
-
-      // upperIndex denotes the MSB of the subsection of bits
-      // requested, and lowerIndex the LSB.
-      // The difference, upperIndex - lowerIndex equals the length
-      // of the bit-sequence requested. By right-shifting "number"
-      // by lowerIndex, we get a number where the requested bits
-      // are in B[0] to B[X] where X is the length (upperIndex - lowerIndex)
-      //
-      // Now, using bitwise-AND between the shifted number and
-      // 32 - (upperIndex - lowerIndex) amount of zeroes followed by
-      // (upperIndex - lowerIndex) 1's we get a mask that only leaves
-      // the requested bits intact.
-      //
-      // Take for instance the number:
-      //
-      // 0b0000 0001 0100 1011 0100 1000 0010 0000 = 0x014b4820
-      //                  ^--^----------+
-      // Now if we want these four bits |
-      //
-      // we'd call bits(19, 16, 0x014b4820), to get B[19]..B[16]
-      // (inclusive, and with zero indexing).
-      //
-      // Shifting it leaves,
-      //
-      // 0b101001011
-      //
-      // we request _4_ bits, so we create a mask "1111", and prefix the
-      // mask with leading 0's, effectively getting "000001011" (there
-      // are actually more leading zeroes) and then we perform a bitwise
-      // AND
-      //
-      // 0b101001011 & 0b000001111
-      //
-      // which leaves 1011, which is what we wanted.
-      final int len = upperIndex - lowerIndex + 1;
-      final int shifted = number >> lowerIndex;
-
-      final String unwanted = new String(new char[32 - len]).replace('\0', '0');
-      final String requested = new String(new char[len]).replace('\0', '1');
-      final String mask = unwanted + requested;
-
-      return shifted & Integer.valueOf(mask, 2);
+  /**
+   * Given a 32-bit {@code number} and an index, {@code start}, specifying at what
+   * bit position in the 32-bit {@code number}, to yank {@code numberOfBits}
+   * bits from the supplied {@code number}. {@code start = 0} starts yanking
+   * bits from the 32nd (MSB) bit. Valid ranges of {@code start} ranges from
+   * 0-31.
+   *
+   * For instance, consider the number
+   *
+   * n = 0b1110001000000010100100000000010 (= 0x71014802)
+   *
+   * Then, retrieving the leftmost six bits may be done by calling,
+   *
+   * leftMostSixBits = getNBits(n, 0, 6) => leftMostSixBits = 28 = 0x1c
+   *
+   * @param number the number to yank bits from.
+   * @param start the starting bit index from which to retrieve bits.
+   * @param numberOfBits the amount of bits to retrieve.
+   * @return a numeric representation of the retrieved bits.
+   * @throws IllegalArgumentException if
+   * {@code start} does not satisfy {@code 0 <= start <= 31} or if
+   * {@code start + numberOfBits > 32}.
+   */
+  public static int getNBits(long number, int start, int numberOfBits) {
+    if (start > 31 || start < 0) {
+      throw new IllegalArgumentException(start > 31 ?
+            "The supplied index \"start\" must satisfy start <= 31" :
+            "The supplied index \\\"start\\\" must satisfy start >= 0");
     }
 
-    /**
-     * Given a 32-bit {@code number} and an index, {@code start}, specifying at what
-     * bit position in the 32-bit {@code number}, to yank {@code numberOfBits}
-     * bits from the supplied {@code number}. {@code start = 0} starts yanking
-     * bits from the 32nd (MSB) bit. Valid ranges of {@code start} ranges from
-     * 0-31.
-     *
-     * For instance, consider the number
-     *
-     * n = 0b1110001000000010100100000000010 (= 0x71014802)
-     *
-     * Then, retrieving the leftmost six bits may be done by calling,
-     *
-     * leftMostSixBits = getNBits(n, 0, 6) => leftMostSixBits = 28 = 0x1c
-     *
-     * @param number the number to yank bits from.
-     * @param start the starting bit index from which to retrieve bits.
-     * @param numberOfBits the amount of bits to retrieve.
-     * @return a numeric representation of the retrieved bits.
-     * @throws IllegalArgumentException if
-     * {@code start} does not satisfy {@code 0 <= start <= 31} or if
-     * {@code start + numberOfBits > 32}.
-     */
-    public static int getNBits(long number, int start, int numberOfBits) {
-      if (start > 31 || start < 0) {
-        throw new IllegalArgumentException(start > 31 ?
-              "The supplied index \"start\" must satisfy start <= 31" :
-              "The supplied index \\\"start\\\" must satisfy start >= 0");
-      }
-      if (start + numberOfBits > 32) {
+    if (start + numberOfBits > 32) {
         throw new IllegalArgumentException(
               "The argument pair \"start\" and \"numberOfBits\" must " +
                     "satisfy the condition (start + numberOfBits <= 32). " +
