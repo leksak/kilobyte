@@ -3,7 +3,6 @@ package common.instruction;
 import common.instruction.decomposedrepresentation.DecomposedRepresentation;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static common.instruction.decomposedrepresentation.DecomposedRepresentation.fromIntArray;

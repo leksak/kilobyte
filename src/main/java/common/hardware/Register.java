@@ -1,6 +1,6 @@
 package common.hardware;
 
-import common.instruction.MachineCodeDecoder;
+import decompiler.Decoder;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -157,7 +157,7 @@ public enum Register {
     String[] split = mnemonic.replace(")", "").split("[(]");
     //TODO: can there be minus? offset in I-instructions
     if (wantOffset) {
-      return String.valueOf(MachineCodeDecoder.decode(split[0], 10));
+      return String.valueOf(Decoder.decode(split[0], 10));
     }
     /* This will only be called if $REG is wanted from N($REG) */
     if (split.length > 2 || split.length < 2) {

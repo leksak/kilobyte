@@ -122,7 +122,7 @@ data class Instruction private constructor(
     return "0x" + hexString
   }
 
-  fun asLong() = numericRepresentation;
+  fun asLong() = numericRepresentation
   fun asDecimalString() = decomposed.asDecimalString()
   fun asHexadecimalString() = decomposed.asHexadecimalString()
 
@@ -837,8 +837,8 @@ data class Instruction private constructor(
     @JvmField val JAL = Instruction(
       iname = "jal",
       opcode = 3, //0x03
-      mnemonicRepresentation = "jal 4194304",
-      numericRepresentation = 0x0C400000,
+      mnemonicRepresentation = "jal 0x00400000",
+      numericRepresentation = 0x0c100000,
       description = "Jump and link : Set \$ra to Program Counter " +
         "(return address) then jump to statement at target address",
       format = Format.J,

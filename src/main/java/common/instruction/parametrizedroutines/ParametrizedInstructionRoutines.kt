@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions.checkArgument
 import common.hardware.Register
 import common.instruction.*
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
+import decompiler.Decoder
 import io.atlassian.fugue.Either
 import java.util.*
 
@@ -211,8 +212,6 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
   /* We create an array of the tokens in the standardized array */
   val fields = standardizedPattern.tokenize(includeIname = false)
 
-
-
   return object : ParametrizedInstructionRoutine {
     /**
      * For instructions expressed using the mnemonic-pattern "iname rd, rs, rt"
@@ -234,7 +233,6 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
       val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
       checkArgument(prototype.iname == standardizedMnemonic.iname())
 
-
       val tokens: Array<String> = standardizedMnemonic.tokenize(includeIname = false)
       val opcode = prototype.opcode
       val n = IntArray(format.noOfFields)
@@ -247,7 +245,15 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
         n[fieldNameToIndexMap["rt"]!!] = prototype.rt!!
       }
 
+      // TODO: Why? return value is not captured does this happen in-place?
       formatMnemonic(tokens, n, prototype, fields)
+
+      if (prototype == Instruction.JAL) {
+        // The jump instruction (jal) specifies an absolute memory address
+        // (in bytes) to jump to, but is coded without its last two bits.
+        n[1] = (Decoder.decode(tokens[0]) shr 2).toInt()
+      }
+
       val d = DecomposedRepresentation.fromIntArray(n, *format.lengths).asLong()
       return prototype(standardizedMnemonic, d)
     }
