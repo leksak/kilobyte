@@ -68,10 +68,6 @@ public enum Register {
   public int value;
   private final String description;
 
-  Register(String description) {
-    this.description = description;
-  }
-
   Register(String description, int initialValue) {
     // TODO: I know gp and sp will need a different value, stub for now
     this.description = description;

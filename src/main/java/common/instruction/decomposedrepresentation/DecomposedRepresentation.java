@@ -1,13 +1,16 @@
 package common.instruction.decomposedrepresentation;
 
+import lombok.Value;
+
 import java.util.Arrays;
 import java.util.StringJoiner;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+@Value
 public class DecomposedRepresentation {
-  private final int[] decomposition;
-  private final long numericalRepresentation;
+  int[] decomposition;
+  long numericalRepresentation;
 
   private DecomposedRepresentation(long numericalRepresentation, int[] decomposition) {
     this.numericalRepresentation = numericalRepresentation;
@@ -45,7 +48,6 @@ public class DecomposedRepresentation {
       err += Arrays.stream(lengths).sum();
       throw new IllegalArgumentException(err);
     }
-    assert(Arrays.stream(lengths).sum() == 32);
 
     int[] decomposition = new int[lengths.length];
     int start = 0;
@@ -57,9 +59,7 @@ public class DecomposedRepresentation {
     return new DecomposedRepresentation(number, decomposition);
   }
 
-  public long asLong() {
-    return numericalRepresentation;
-  }
+  public long asLong() { return numericalRepresentation; }
 
   public static DecomposedRepresentation fromIntArray(int[] bitfields, int... lengths) {
     if (Arrays.stream(lengths).sum() != 32) {
@@ -67,7 +67,6 @@ public class DecomposedRepresentation {
       err += Arrays.stream(lengths).sum();
       throw new IllegalArgumentException(err);
     }
-    assert(Arrays.stream(lengths).sum() == 32);
 
     int[] decomposition = new int[lengths.length];
     int next_shiftAmount = lengths[lengths.length - 1];

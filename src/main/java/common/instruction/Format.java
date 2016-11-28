@@ -12,13 +12,4 @@ public enum Format {
     this.lengths = lengths;
     noOfFields = lengths.length;
   }
-
-  public static long fieldsToMachineCode(int opcode, int rs, int rt, int rd, int shamt, int funct) {
-    return opcode << 26
-          | rs << 21
-          | rt << 16
-          | rd << 11
-          | shamt << 6
-          | funct;
-  }
 }
