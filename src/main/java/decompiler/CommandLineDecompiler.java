@@ -12,14 +12,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static decompiler.Decoder.decode;
-
 @Value
 public class CommandLineDecompiler {
   final Options options = new Options()
         .addOption("h", "help", false, "print this message")
         .addOption("n", "number(s)", true, "disassemble 32-bit word(s) from stdin")
-        .addOption("header-less", "suppress table header");
+        .addOption("headerless", "suppress table header");
 
   @NonFinal
   boolean headerlessFlag = false;
@@ -41,11 +39,11 @@ public class CommandLineDecompiler {
   HelpFormatter formatter = new HelpFormatter();
 
   void printUsage() {
-    formatter.printHelp("Decoder [OPTION] [file|number]...", options);
+    formatter.printHelp("MachineCodeDecoder [OPTION] [file|number]...", options);
   }
 
   DecompiledInstruction decompile(String number) {
-    return decompile(Decoder.decode(number));
+    return decompile(MachineCodeDecoder.decode(number));
   }
 
   DecompiledInstruction decompile(Long number) {
@@ -87,15 +85,15 @@ public class CommandLineDecompiler {
       // Passed a list of files.
       for (String arg : argv) {
         // Decode the contents of each file
-        numbers.addAll(decode(new File(arg)));
+        numbers.addAll(MachineCodeDecoder.decode(new File(arg)));
       }
     } else if (argv.length == 0) {
       // Decompile from standard in
-      numbers = decode(new InputStreamReader(System.in));
+      numbers = MachineCodeDecoder.decode(new InputStreamReader(System.in));
     }
     // Decompile all of the numbers
     numbers.forEach(i -> decompiledInstructions.add(decompiler.decompile(i)));
-
+    outputTable(decompiledInstructions);
   }
 
   private static void outputTable(List<DecompiledInstruction> decompiledInstructions) {

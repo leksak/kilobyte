@@ -5,7 +5,15 @@ import common.instruction.exceptions.NoSuchInstructionException
 sealed class DecompiledInstruction {
   class Valid(val instruction: Instruction) : DecompiledInstruction()
   class PartiallyValid(val instruction: PartiallyValidInstruction) : DecompiledInstruction()
-  class NoSuchInstruction() : DecompiledInstruction()
+  class NoSuchInstruction(val errorMsg: String?) : DecompiledInstruction()
+
+  override fun toString() : String {
+    when (this) {
+      is Valid -> return instruction.toString()
+      is PartiallyValid -> return instruction.toString()
+      is NoSuchInstruction -> return errorMsg!!
+    }
+  }
 
   companion object {
     @JvmStatic fun from(machineCode: Long): DecompiledInstruction {
@@ -17,7 +25,7 @@ sealed class DecompiledInstruction {
           return DecompiledInstruction.PartiallyValid(inst.right().get())
         }
       } catch (e: NoSuchInstructionException) {
-        return DecompiledInstruction.NoSuchInstruction()
+        return DecompiledInstruction.NoSuchInstruction(e.message)
       }
     }
   }

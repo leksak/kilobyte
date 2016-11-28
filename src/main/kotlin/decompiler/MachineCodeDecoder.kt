@@ -5,7 +5,7 @@ import com.google.common.base.Preconditions.checkArgument
 import java.io.*
 import java.util.ArrayList
 
-object Decoder {
+object MachineCodeDecoder {
   @JvmStatic fun decode(f: File): List<Long> {
     return decode(FileReader(f))
   }

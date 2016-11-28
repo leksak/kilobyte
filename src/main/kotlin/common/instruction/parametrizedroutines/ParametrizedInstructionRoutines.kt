@@ -5,7 +5,7 @@ import common.hardware.Register
 import common.instruction.*
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.extensions.*
-import decompiler.Decoder
+import decompiler.MachineCodeDecoder
 import io.atlassian.fugue.Either
 import java.util.*
 
@@ -252,7 +252,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
       if (prototype == Instruction.JAL) {
         // The jump instruction (jal) specifies an absolute memory address
         // (in bytes) to jump to, but is coded without its last two bits.
-        n[1] = (Decoder.decode(tokens[0]) shr 2).toInt()
+        n[1] = (MachineCodeDecoder.decode(tokens[0]) shr 2).toInt()
       }
 
       val d = DecomposedRepresentation.fromIntArray(n, *format.lengths).asLong()
