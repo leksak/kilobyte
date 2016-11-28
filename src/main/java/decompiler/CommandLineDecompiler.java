@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Value
-public class CommandLineDecompiler {
+public class CommandLineDecompiler implements Decompiler {
   final Options options = new Options()
         .addOption("h", "help", false, "print this message")
         .addOption("n", "number(s)", true, "disassemble 32-bit word(s) from stdin")
@@ -40,14 +40,6 @@ public class CommandLineDecompiler {
 
   void printUsage() {
     formatter.printHelp("MachineCodeDecoder [OPTION] [file|number]...", options);
-  }
-
-  DecompiledInstruction decompile(String number) {
-    return decompile(MachineCodeDecoder.decode(number));
-  }
-
-  DecompiledInstruction decompile(Long number) {
-    return DecompiledInstruction.from(number);
   }
 
   public static void main(String[] args) throws IOException {

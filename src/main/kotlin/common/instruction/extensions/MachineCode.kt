@@ -2,22 +2,6 @@ package common.instruction.extensions
 
 import com.google.common.base.Preconditions.checkArgument
 
-/* Kotlin affords us the ability to extend primitive, and other,
- * classes - which let's us perform operations on them without
- * polluting our code with "StringUtil", "IntegerUtil", ... classes
- * populated with static methods. In Kotlin we can then write,
- *
- * 2.bits(4, 3)
- *
- * for an example (see the below "bits" function). But this does not
- * translate to Java so be wary.
- *
- * Read more here: goo.gl/8BVUYb
- *
- * Note: This shouldn't be a "Javadoc" comment. Kotlin uses KDoc
- * https://kotlinlang.org/docs/reference/kotlin-doc.html
- */
-
 /* Convenience functions */
 fun Long.opcode() = this.bits(31, 26)
 fun Long.rs() = this.bits(25, 21)
@@ -52,6 +36,8 @@ fun Long.bits(upperIndex: Int, lowerIndex: Int): Int {
         "lowerIndex (%s) must be greater than or equal to zero",
         upperIndex, lowerIndex)
 
+  val len = upperIndex - lowerIndex + 1 // Total number of bits.
+
   // upperIndex denotes the MSB of the subsection of bits
   // requested, and lowerIndex the LSB.
   // The difference, upperIndex - lowerIndex equals the length
@@ -73,26 +59,22 @@ fun Long.bits(upperIndex: Int, lowerIndex: Int): Int {
   // we'd call bits(19, 16, 0x014b4820), to get B[19]..B[16]
   // (inclusive, and with zero indexing).
   //
-  // Shifting it leaves,
+  // Shifting the number by "lowerIndex" leaves,
   //
   // 0b101001011
-  //
-  // we request _4_ bits, so we create a mask "1111", and prefix the
+  val shifted = this shr lowerIndex
+
+  // We requested _4_ bits, so we create a mask "1111", and prefix the
   // mask with leading 0's, effectively getting "000001011" (there
-  // are actually more leading zeroes) and then we perform a bitwise
-  // AND
+  // are actually more leading zeroes)
+  val leadingZeroes = String(CharArray(32 - len)).replace('\u0000', '0')
+  val requested = String(CharArray(len)).replace('\u0000', '1')
+  val mask = leadingZeroes + requested
+
+  // and then we perform a bitwise "AND" like so
   //
   // 0b101001011 & 0b000001111
   //
   // which leaves 1011, which is what we wanted.
-  val len = upperIndex - lowerIndex + 1
-  val shifted = this shr lowerIndex
-
-  // Kotlin obscures the meaning a bit. Read
-  // final String unwanted = new String(new char[32 - len]).replace('\0', '0');
-  val unwanted = String(CharArray(32 - len)).replace('\u0000', '0')
-  val requested = String(CharArray(len)).replace('\u0000', '1')
-  val mask = unwanted + requested
-
   return (shifted and Integer.valueOf(mask, 2).toLong()).toInt()
 }
