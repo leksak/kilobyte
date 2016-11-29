@@ -24,11 +24,6 @@ import java.util.*
  * that this interface supplies <i>but</i> all the methods perform a
  * best-effort attempt to instantiate a suitable {@code Instruction}.
  *
- * This means that most of the times the methods prefixed with
- * unsafe should be avoided whenever possible and the functions with
- * the monadic return-value of the
- * {@link io.atlassian.fugue.Either} class.
- *
  * An Instruction may serve as a template for another instruction,
  * i.e. we can spawn actual instances of the "add" {@code Instruction}
  * class using {@code Instruction.ADD} as a template.
