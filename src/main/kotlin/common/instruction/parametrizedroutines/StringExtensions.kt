@@ -159,8 +159,9 @@ fun throwIfInvalidParentheses(standardizedMnemonic: String, format : Format) {
 }
 
 /**
- * Check if given String contains excepted number of commas.
- * Example:
+ * Check if given String contains the excepted number of commas.
+ *
+ * Example(s):
  * add $t1, $t2, $t3    (2)
  * jr $t1               (0)
  * break                (0)
@@ -176,9 +177,10 @@ fun throwIfIncorrectNumberOfCommas(expectedNumberOfCommas: Int, standardizedMnem
 }
 
 /**
- * Replace all white-space characters (\\s+) with a single and will correct
- * commas so always followed with a white-space. Will remove any leading
- * or trailing spaces (trim) to normalise String.
+ * Replace all white-space characters (\\s+) with a single space and
+ * will ensure that any commas in the return value are always followed
+ * by a single space. Any leading or trailing spaces are removed (trimmed)
+ * from the return value.
  *
  * Examples:
  * add $t1,$t2, $t3       (intentional space before $t3)
@@ -201,7 +203,7 @@ fun standardizeMnemonic(mnemonic: String): String {
  */
 fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : String) {
   // -1 for the instruction name
-  val withoutCommas = standardizedMnemonic.replace(",", "")
+  val withoutCommas = standardizedMnemonic.removeCommas()
   val actualArgc = withoutCommas.split(" ").size - 1
 
   if (expectedArgc == actualArgc) { return }
@@ -210,6 +212,9 @@ fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : Strin
     standardizedMnemonic, expectedArgc, actualArgc)
   throw IllegalArgumentException("Wrong number of arguments: " + err)
 }
+
+fun String.remove(substring: String) = this.replace(substring, "")
+fun String.removeCommas() = this.remove(",")
 
 
 

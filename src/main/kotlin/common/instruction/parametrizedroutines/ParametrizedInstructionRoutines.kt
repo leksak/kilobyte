@@ -21,6 +21,10 @@ val fieldNameToIndexMap: HashMap<String, Int> = hashMapOf(
   Pair("hint", 2)
 )
 
+fun indexOf(fieldName: String): Int? {
+  return fieldNameToIndexMap[fieldName]
+}
+
 val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
   Pair("rs", Long::rs),
   Pair("rt", Long::rt),
@@ -34,11 +38,12 @@ val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
 )
 
 
-/** Hint-variable descriptions
+/**
+ * Hint-variable descriptions
  * source: http://www.cs.cmu.edu/afs/cs/academic/class/15740-f97/public/doc/mips-isa.pdf
  * page A-117
  * Reference: MIPS-instruction with prefix 'PREF'
- **/
+ */
 enum class Hint (val value: Int) {
   LOAD(0),
   STORE(1),
@@ -96,7 +101,9 @@ enum class Hint (val value: Int) {
  *
  * This method creates bi-directional parametrized routines for
  * Instruction instantiation using the format of the instruction and a
- * "abstract" String representation of the "mnemonic pattern".
+ * "abstract" String representation of the "mnemonic pattern", i.e.
+ *
+ * "iname rd, rs, rt" is the "abstract" "mnemonic pattern"
  *
  * This text will first provide one example of how to interpret two
  * R-format instruction and an I-format instruction to showcase the
@@ -135,6 +142,9 @@ enum class Hint (val value: Int) {
  * array with 6 elements (all defaulting to zero) like so,
  *
  *     arr = [op, $t2, $t3, $t1, 0, funct]
+ *                               ^
+ *                               |
+ *                         default value
  *
  * Note that the actual values for the opcode and funct field are
  * retrieved elsewhere. Since the shamt parameter is not part of the
@@ -146,11 +156,13 @@ enum class Hint (val value: Int) {
  * Derived from the mnemonic pattern we know what constraints need to be
  * placed on the respective fields, in this example we have that shamt
  * has to be 0, to wit we can evaluate the legality of a given numeric
- * representation of the instruction.
+ * representation of the instruction. It is because of this property we
+ * present the two operations (instantiation from a string and a number)
+ * as a cohesive unit.
  *
- * As stated earlier, the opcode and funct field are accessible as
- * delegates supplied by another object and so the entire 32-bit number
- * can be evaluated.
+ * As stated earlier, the "opcode" and "funct" field are accessible as
+ * delegates supplied by another object and with that the entire 32-bit number
+ * can be decompiled.
  *
  * Example 2 (R-format):
  * =====================
@@ -165,6 +177,9 @@ enum class Hint (val value: Int) {
  * and the opcode and funct field is retrievable elsewhere we get that
  *
  *     arr = [op, $t1, $t2, 0, 0, funct]
+ *                          ^  ^
+ *                          |  |
+ *                     default values
  *
  * Example 3 (I-format):
  * =====================
@@ -207,42 +222,68 @@ interface ParametrizedInstructionRoutine {
 }
 
 fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
-  /* We standardize the pattern to ensure consistency not out of necessity */
+  /*
+   * We standardize the pattern to ensure consistency not out of necessity.
+   * That way we do not have to worry about fudging up our definitions
+   * by writing say "iname rt,offset" instead of "iname rt, offset".
+   */
   val standardizedPattern = standardizeMnemonic(pattern)
-  /* We create an array of the tokens in the standardized array */
+
+  /*
+   * We create an array of the tokens in the standardized array, in the
+   * above example we get that fields = ["rt", "offset"]
+   */
   val fields = standardizedPattern.tokenize(includeIname = false)
 
   return object : ParametrizedInstructionRoutine {
-    /**
-     * For instructions expressed using the mnemonic-pattern "iname rd, rs, rt"
-     * we get that the contents of the tokens array will contain
-     * the _values_ of rd, rs, and rt, like so:
-     *
-     * tokens=[rd, rs, rt]
-     *
-     * however, the arguments rd, rs, rt do not appear in the same
-     * order as they have to when represented numerically so we
-     * use the "fields" array which tells us what values we are observing
-     * inside the tokens array together with "fieldNameToIndexMap"
-     * to place the values at the correct places.
-     **/
     override fun invoke(prototype: Instruction,
                         mnemonicRepresentation: String): Instruction
     {
-      evaluateIfTheMnemonicRepresentationIsWellFormed(mnemonicRepresentation, standardizedPattern, format)
       val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
+      throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
+      val expectedNumberOfCommas = standardizedPattern.countCommas()
+      throwIfIncorrectNumberOfCommas(expectedNumberOfCommas, mnemonicRepresentation)
+      val expectedNumberOfArguments = standardizedPattern.replace(",", "").split(" ").size - 1
+      throwIfIncorrectNumberOfArgs(expectedNumberOfArguments, standardizedMnemonic)
+      throwIfInvalidParentheses(standardizedMnemonic, format)
+
       checkArgument(prototype.iname == standardizedMnemonic.iname())
 
+      /*
+       * For instructions expressed using the mnemonic-pattern "iname rd, rs, rt"
+       * we get that the contents of the tokens array will contain
+       * the _values_ of rd, rs, and rt, (and _not_ the string literals
+       * "rd", "rs, "rt") like so:
+       *
+       *       tokens=[rd, rs, rt]
+       *
+       * however, the arguments rd, rs, rt do not appear in the same
+       * order as they have to when represented numerically so we
+       * use the "fields" array which tells us what values we are observing
+       * inside the "tokens" array together with "fieldNameToIndexMap"
+       * to place the values at the correct places.
+       */
       val tokens: Array<String> = standardizedMnemonic.tokenize(includeIname = false)
       val opcode = prototype.opcode
       val n = IntArray(format.noOfFields)
       n[0] = opcode
-      if (format == Format.R || prototype.type == Type.J) {
+      if (format == Format.R || prototype== Instruction.JALR) {
         n[5] = prototype.funct!!
       }
-      if (prototype.rt != null) {
-        /* Will be set when op-code 1 */
-        n[fieldNameToIndexMap["rt"]!!] = prototype.rt!!
+
+      if (prototype.opcode == 1) {
+        assert(prototype.rt != null)
+        /* The prototype will have its rt field set whenever
+         * its opcode is equal to 1. This is the case for
+         * branch-instructions such as BLTZL, BGEZ but also
+         * trap instructions!
+         *
+         * For instance, BLTZL: op=1, rt=2
+         *              BGEZ:   op=1, rt=1
+         *              TGEI:   op=1, rt=8
+         */
+        val index = indexOf("rt")!!
+        n[index] = prototype.rt!!
       }
 
       // TODO: Why? return value is not captured does this happen in-place?
@@ -284,18 +325,6 @@ private fun shouldFieldBeZero(fieldName: String, fields: Array<String>): Boolean
 
 private fun fieldIsNotZero(fieldName: String, machineCode: Long): Boolean {
   return fieldNameToMethodCallMap[fieldName]!!.invoke(machineCode) != 0
-}
-
-private fun evaluateIfTheMnemonicRepresentationIsWellFormed(mnemonicRepresentation: String,
-                                                    standardizedPattern: String,
-                                                    format: Format) {
-  val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
-  throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
-  val expectedNumberOfCommas = standardizedPattern.countCommas()
-  throwIfIncorrectNumberOfCommas(expectedNumberOfCommas, mnemonicRepresentation)
-  val expectedNumberOfArguments = standardizedPattern.replace(",", "").split(" ").size - 1
-  throwIfIncorrectNumberOfArgs(expectedNumberOfArguments, standardizedMnemonic)
-  throwIfInvalidParentheses(standardizedMnemonic, format)
 }
 
 private fun errorCheckPrototype(machineCode: Long,
