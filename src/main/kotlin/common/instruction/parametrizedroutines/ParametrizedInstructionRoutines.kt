@@ -23,8 +23,8 @@ val fieldNameToIndexMap = mapOf(
   "hint" to 2
 )
 
-fun indexOf(fieldName: String): Int? {
-  return fieldNameToIndexMap[fieldName]
+fun indexOf(fieldName: String): Int {
+  return fieldNameToIndexMap[fieldName]!!
 }
 
 val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
@@ -285,7 +285,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
          *              BGEZ:   op=1, rt=1
          *              TGEI:   op=1, rt=8
          */
-        val index = indexOf("rt")!!
+        val index = indexOf("rt")
         n[index] = prototype.rt!!
       }
 
@@ -399,13 +399,13 @@ private fun formatMachineCodeToMnemonic(prototype: Instruction,
 private fun formatMnemonic(tokens: Array<String>, n: IntArray, prototype: Instruction, fields: Array<String>): Array<String> {
   for (i in 1..tokens.size - 1) {
     // from 1 so that we can skip the iname
-    val destinationIndex: Int = fieldNameToIndexMap[fields[i]]!!
+    val destinationIndex: Int = indexOf(fields[i])
     when(fields[i]) {
       "target"-> n[destinationIndex] = Register.offsetFromOffset(tokens[i])
       "offset"-> n[destinationIndex] = Register.offsetFromOffset(tokens[i])
       "address"-> {
         n[destinationIndex] = Register.offsetFromOffset(tokens[i])
-        n[fieldNameToIndexMap["rs"]!!] = Register.registerFromOffset(tokens[i]).asInt()
+        n[indexOf("rs")] = Register.registerFromOffset(tokens[i]).asInt()
       }
       "hint"-> {
         val hint = Register.offsetFromOffset(tokens[i])
