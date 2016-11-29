@@ -1,7 +1,6 @@
 package common.instruction.parametrizedroutines
 
 import common.hardware.Register
-import common.instruction.Format
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -144,19 +143,6 @@ fun throwExceptionIfContainsIllegalCharacters(standardizedMnemonic: String) {
 }
 
 
-/**
- * Check if String contains parentheses when excepted.
- * For example can not Format.J or Format.J contain parentheses but
- * Format.I can, however Format.I is not exclusively with parentheses.
- */
-fun throwIfInvalidParentheses(standardizedMnemonic: String, format : Format) {
-  if (format == Format.R || format == Format.J) {
-    if (standardizedMnemonic.containsParentheses()) {
-      throw IllegalCharactersInMnemonicException(
-        standardizedMnemonic, "<parentheses>")
-    }
-  }
-}
 
 /**
  * Check if given String contains the excepted number of commas.
@@ -193,30 +179,10 @@ fun standardizeMnemonic(mnemonic: String): String {
   return mnemonic.replace(",", ", ").replace(Regex("\\s+"), " ").trim()
 }
 
-/**
- * Check if given String contains correct number of arguments. Arguments is
- * how many parameters an instruction has been given.
- * Example:
- * add $t1, $t2, $t3   (3)
- * jr $t1             (1)
- * break              (0)
- */
-fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : String) {
-  // -1 for the instruction name
-  val withoutCommas = standardizedMnemonic.removeCommas()
-  val actualArgc = withoutCommas.split(" ").size - 1
 
-  if (expectedArgc == actualArgc) { return }
-
-  val err = "\"%s\": Expected %d arguments. Got: %d".format(
-    standardizedMnemonic, expectedArgc, actualArgc)
-  throw IllegalArgumentException("Wrong number of arguments: " + err)
-}
 
 fun String.remove(substring: String) = this.replace(substring, "")
 fun String.removeCommas() = this.remove(",")
-
-
 
 
 

@@ -4,21 +4,21 @@ import com.google.common.base.Preconditions.checkArgument
 import common.hardware.Register
 import common.instruction.*
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
+import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import common.instruction.extensions.*
 import decompiler.MachineCodeDecoder
-import io.atlassian.fugue.Either
 import java.util.*
 
-val fieldNameToIndexMap: HashMap<String, Int> = hashMapOf(
-  Pair("rs", 1),
-  Pair("rt", 2),
-  Pair("rd", 3),
-  Pair("shamt", 4),
-  Pair("funct", 5),
-  Pair("offset", 3),
-  Pair("address", 3),
-  Pair("target", 1),
-  Pair("hint", 2)
+val fieldNameToIndexMap = mapOf(
+  "rs" to 1,
+  "rt" to 2,
+  "rd" to 3,
+  "shamt" to 4,
+  "funct" to 5,
+  "offset" to 3,
+  "address" to 3,
+  "target" to 1,
+  "hint" to 2
 )
 
 fun indexOf(fieldName: String): Int? {
@@ -245,8 +245,9 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
       throwIfIncorrectNumberOfCommas(expectedNumberOfCommas, mnemonicRepresentation)
       val expectedNumberOfArguments = standardizedPattern.replace(",", "").split(" ").size - 1
       throwIfIncorrectNumberOfArgs(expectedNumberOfArguments, standardizedMnemonic)
-      throwIfInvalidParentheses(standardizedMnemonic, format)
-
+      if (!isAllowedToContainParentheses(format) && standardizedMnemonic.containsParentheses()) {
+        throw IllegalCharactersInMnemonicException(standardizedMnemonic, "parentheses")
+      }
       checkArgument(prototype.iname == standardizedMnemonic.iname())
 
       /*
@@ -412,6 +413,30 @@ private fun formatMnemonic(tokens: Array<String>, n: IntArray, prototype: Instru
     }
   }
   return tokens
+}
+
+fun isAllowedToContainParentheses(format : Format) : Boolean {
+  return (format == Format.I)
+}
+
+/**
+ * Check if given String contains correct number of arguments. Arguments is
+ * how many parameters an instruction has been given.
+ * Example:
+ * add $t1, $t2, $t3   (3)
+ * jr $t1             (1)
+ * break              (0)
+ */
+fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : String) {
+  // -1 for the instruction name
+  val withoutCommas = standardizedMnemonic.removeCommas()
+  val actualArgc = withoutCommas.split(" ").size - 1
+
+  if (expectedArgc == actualArgc) { return }
+
+  val err = "\"%s\": Expected %d arguments. Got: %d".format(
+        standardizedMnemonic, expectedArgc, actualArgc)
+  throw IllegalArgumentException("Wrong number of arguments: " + err)
 }
 
 @JvmField val INAME = from(Format.R, "iname")
