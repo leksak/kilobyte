@@ -304,6 +304,7 @@ private fun errorCheckPrototype(machineCode: Long,
   val errors = ArrayList<String>()
   when (format) {
     Format.R -> {
+      // TODO: Can definitely be refactored
       if (shouldFieldBeZero("shamt", fields) && fieldIsNotZero("shamt", machineCode)) {
         errors.add("Expected shamt to be zero. Got ${machineCode.shamt()}")
       }
@@ -383,8 +384,6 @@ private fun formatMnemonic(tokens: Array<String>, n: IntArray, prototype: Instru
   }
   return tokens
 }
-
-
 
 @JvmField val INAME = from(Format.R, "iname")
 @JvmField val INAME_RS = from(Format.R, "iname rs")
