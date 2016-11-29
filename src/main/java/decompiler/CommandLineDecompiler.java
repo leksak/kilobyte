@@ -54,10 +54,11 @@ public class CommandLineDecompiler implements Decompiler {
       }
     } catch (ParseException e) {
       decompiler.printUsage(); // TODO: Test this live.
-      throw new IllegalArgumentException("Parsing the command-line failed. Error: " + e.getMessage());
+      System.err.println("Parsing the command-line failed. Error: " + e.getMessage());
+      return;
     }
 
-    if (line.hasOption("header-less")) {
+    if (line.hasOption("headerless")) {
       decompiler.headerlessFlag = true;
     }
 

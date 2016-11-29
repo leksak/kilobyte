@@ -165,7 +165,7 @@ data class Instruction private constructor(
     return this.pattern.invoke(this, mnemonicRepresentation)
   }
 
-  operator fun invoke(machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
+  operator fun invoke(machineCode: Long): DecompiledInstruction {
     return this.pattern.invoke(this, machineCode)
   }
 
@@ -1427,31 +1427,17 @@ data class Instruction private constructor(
       return inameToPrototype[symbolicRepresentation.iname()]!!(symbolicRepresentation)
     }
 
-    @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun unsafeFrom(machineCode: Long): Instruction {
-      val inst = from(Integer.toUnsignedLong(machineCode.toInt()))
-
-      try {
-        // Attempt to get the left projection and return it.
-        return inst.left().get()
-      } catch (e : NoSuchElementException) {
-        throw NoSuchElementException("Attempted to get an instruction from $machineCode" +
-          " but got " + inst.right().get())
-      }
-    }
-
-    @Throws(NoSuchInstructionException::class)
-    @JvmStatic fun from(machineCode: Long): Either<Instruction, PartiallyValidInstruction> {
-      val opcode: Int = machineCode.opcode().toInt()
+    @JvmStatic fun decompile(machineCode : Long) : DecompiledInstruction {
+      val opcode: Int = machineCode.opcode()
       if (opcode < 0 || opcode > 62) {
-        throw NoSuchInstructionException(machineCode)
+        return DecompiledInstruction.UnknownInstruction(machineCode)
       }
       // Check if the entire number is 0s, then we have a nop instruction
       // Once again, nop and sll clashes on the (opcode, funct) tuple so
       // we have to treat one of them as a special-case. Nop seemed easiest
       // to handle as a special case.
       if (machineCode == Integer.toUnsignedLong(0)) {
-        return Either.left(NOP)
+        return DecompiledInstruction.Valid(NOP)
       }
 
       val prototype: Instruction?
@@ -1466,10 +1452,14 @@ data class Instruction private constructor(
       }
 
       if (prototype == null) {
-        throw NoSuchInstructionException(machineCode)
+        return DecompiledInstruction.UnknownInstruction(machineCode)
       }
 
       return prototype.pattern.invoke(prototype, machineCode)
+    }
+
+    @JvmStatic fun from(machineCode: Long): Instruction {
+      return decompile(machineCode).asInstruction()
     }
 
     @JvmStatic fun allExamples(): Iterable<Example> {

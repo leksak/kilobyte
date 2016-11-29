@@ -10,12 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PartiallyValidInstructionTests {
-  void assertIsPartiallyValidInstruction(Either<Instruction, PartiallyValidInstruction> e) {
-    assertTrue(e.isRight(), "Expected a partially valid instruction. Got: " + e);
+  void assertIsPartiallyValidInstruction(DecompiledInstruction inst) {
+    assertTrue(inst.isPartiallyValid(), "Expected a partially valid instruction. Got: " + inst);
   }
 
   void assertIsPartiallyValidInstruction(long machineCode) throws NoSuchInstructionException {
-    assertIsPartiallyValidInstruction(Instruction.from(machineCode));
+    assertIsPartiallyValidInstruction(DecompiledInstruction.from(machineCode));
   }
 
   @Test
@@ -25,7 +25,7 @@ class PartiallyValidInstructionTests {
     // JALR is expressed on the form "iname rd, rs".
     long numberWithNonZeroRT = Instruction.JALR.getNumericRepresentation();
     numberWithNonZeroRT |= (4 << 16); // Add 4 in the "rt" field.
-    assertIsPartiallyValidInstruction(Instruction.from(numberWithNonZeroRT));
+    assertIsPartiallyValidInstruction(numberWithNonZeroRT);
   }
 
   @Nested

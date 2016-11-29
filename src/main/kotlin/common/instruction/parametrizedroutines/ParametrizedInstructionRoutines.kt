@@ -202,8 +202,7 @@ enum class Hint (val value: Int) {
  * meaning that rs=$s2, rt=$t0, and the offset=24.
  */
 interface ParametrizedInstructionRoutine {
-  fun invoke(prototype: Instruction, machineCode: Long):
-        Either<Instruction, PartiallyValidInstruction>
+  fun invoke(prototype: Instruction, machineCode: Long): DecompiledInstruction
   fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction
 }
 
@@ -263,8 +262,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
     /**
      * When in machineCode, we trust.
      **/
-    override fun invoke(prototype: Instruction, machineCode: Long):
-          Either<Instruction, PartiallyValidInstruction>
+    override fun invoke(prototype: Instruction, machineCode: Long): DecompiledInstruction
     {
       val mnemonicRepresentation = formatMachineCodeToMnemonic(prototype,
                                                                machineCode,
@@ -272,9 +270,9 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
       val inst = prototype(mnemonicRepresentation, machineCode)
       val errors = errorCheckPrototype(machineCode, format, fields)
       if (errors.isNotEmpty()) {
-        return Either.right(PartiallyValidInstruction(inst, errors))
+        return DecompiledInstruction.PartiallyValid(inst, errors)
       }
-      return Either.left(inst)
+      return DecompiledInstruction.Valid(inst)
     }
   }
 

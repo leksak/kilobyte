@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.expectThrows;
 
 class InstructionTests {
@@ -34,13 +35,13 @@ class InstructionTests {
     @Test
     void INAME_RS() throws Exception {
       assertThat(Instruction.JR, is(equalTo(Instruction.from("jr $t1"))));
-      assertThat(Instruction.JR, is(equalTo(Instruction.unsafeFrom(0x01200008))));
+      assertThat(Instruction.JR, is(equalTo(Instruction.from(0x01200008))));
     }
 
     @Test
     void INAME_RD_RS() throws Exception {
       assertThat(Instruction.JALR, is(equalTo(Instruction.from("jalr $t1, $t2"))));
-      assertThat(Instruction.JALR, is(equalTo(Instruction.unsafeFrom(0x01404809))));
+      assertThat(Instruction.JALR, is(equalTo(Instruction.from(0x01404809))));
     }
   }
 
@@ -48,7 +49,7 @@ class InstructionTests {
   @Test
   @DisplayName("Creating an instruction from 0x00 yields \"NOP\"")
   void gettingTheNOPInstructionFromAllZeroes() throws NoSuchInstructionException {
-    Instruction actual = Instruction.unsafeFrom(0x00);
+    Instruction actual = Instruction.from(0x00);
     assertEquals(Instruction.NOP, actual);
   }
 
@@ -59,15 +60,15 @@ class InstructionTests {
       String mnemonic = e.getMnemonicExample();
       long numeric = e.getNumericExample();
       Instruction fromMnemonic = Instruction.from(mnemonic);
-      Instruction fromNumeric = Instruction.unsafeFrom(numeric);
+      Instruction fromNumeric = Instruction.from(numeric);
       assertEquals(fromMnemonic, fromNumeric);
     }
   }
 
   @Test
-  @DisplayName("A \"NoSuchInstructionException\" is thrown when expected")
+  @DisplayName("There is no instruction matching \"0xFFFFFF\"")
   void testNoSuchInstructionExceptionIsThrownOnUnknown32BitInteger() {
-    expectThrows(NoSuchInstructionException.class, () -> Instruction.unsafeFrom(0xFFFFFF));
+    assertTrue(Instruction.decompile(0xFFFFFF).isUnknown());
   }
 
 
@@ -76,7 +77,7 @@ class InstructionTests {
     Instruction mnemonic = Instruction.from("jr $t1");
     assertEquals(Instruction.JR, mnemonic, "Failed to translate from the mnemonic representation");
 
-    Instruction instructionNumeric = Instruction.unsafeFrom(0x01200008);
+    Instruction instructionNumeric = Instruction.from(0x01200008);
     assertEquals(Instruction.JR, instructionNumeric, "Failed to translate from the numeric representation");
 
     assertEquals(mnemonic, instructionNumeric);
@@ -87,7 +88,7 @@ class InstructionTests {
     Instruction mnemonic = Instruction.from("madd $t1, $t2");
     assertEquals(Instruction.MADD, mnemonic, "Failed to translate from the mnemonic representation");
 
-    Instruction instructionNumeric = Instruction.unsafeFrom(0x712A0000);
+    Instruction instructionNumeric = Instruction.from(0x712A0000);
     assertEquals(Instruction.MADD, instructionNumeric, "Failed to translate from the numeric representation");
 
     assertEquals(mnemonic, instructionNumeric);
@@ -98,7 +99,7 @@ class InstructionTests {
     Instruction mnemonic = Instruction.from("sw $ra, 4($sp)");
     assertEquals(Instruction.SW, mnemonic, "Failed to translate from the mnemonic representation");
 
-    Instruction instructionNumeric = Instruction.unsafeFrom(0xAFBF0004);
+    Instruction instructionNumeric = Instruction.from(0xAFBF0004);
     assertEquals(Instruction.SW, instructionNumeric, "Failed to translate from the numeric representation");
 
     assertEquals(mnemonic, instructionNumeric);
@@ -109,7 +110,7 @@ class InstructionTests {
     Instruction mnemonic = Instruction.from("pref 1, 2($sp)");
     assertEquals(Instruction.PREF, mnemonic, "Failed to translate from the mnemonic representation");
 
-    Instruction instructionNumeric = Instruction.unsafeFrom(0xCFA10002);
+    Instruction instructionNumeric = Instruction.from(0xCFA10002);
     assertEquals(Instruction.PREF, instructionNumeric, "Failed to translate from the numeric representation");
 
     assertEquals(mnemonic, instructionNumeric);
@@ -121,7 +122,7 @@ class InstructionTests {
     Instruction mnemonic = Instruction.from(s);
     assertEquals(Instruction.PREF, mnemonic, "Failed to translate from the mnemonic representation \"" + s + "\"");
 
-    Instruction instructionNumeric = Instruction.unsafeFrom(0xCFA10002);
+    Instruction instructionNumeric = Instruction.from(0xCFA10002);
     assertEquals(Instruction.PREF, instructionNumeric, "Failed to translate from the numeric representation");
 
     assertEquals(mnemonic, instructionNumeric);
@@ -134,9 +135,9 @@ class InstructionTests {
     void testAddi() throws NoSuchInstructionException {
       String sourceNeg = "addi $sp, $sp, -8"; // From the course website
       long instructionNeg = 0x23bdfff8; // 8 29 29 -8 (-8 = 65528 when unsigned)
-      assertEquals(Instruction.from(sourceNeg), Instruction.unsafeFrom(instructionNeg));
+      assertEquals(Instruction.from(sourceNeg), Instruction.from(instructionNeg));
 
-      Instruction instructionPos = Instruction.unsafeFrom(0x23bd0008); // 8 29 29 8
+      Instruction instructionPos = Instruction.from(0x23bd0008); // 8 29 29 8
       Instruction sourcePos = Instruction.from("addi $sp, $sp, 8");
       assertEquals(instructionPos, sourcePos);
 
@@ -199,7 +200,7 @@ class InstructionTests {
     void test(Object[] instruction) throws NoSuchInstructionException {
       long machineCode = (long) (int) instruction[0];
       String assemblyCode = (String) instruction[4];
-      assertThat(Instruction.unsafeFrom(machineCode), is(equalTo(Instruction.from(assemblyCode))));
+      assertThat(Instruction.from(machineCode), is(equalTo(Instruction.from(assemblyCode))));
     }
   }
 }
