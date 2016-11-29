@@ -1,46 +1,10 @@
-package common.instruction.parametrizedroutines
+package common.instruction.mnemonic
 
 import common.hardware.Register
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import common.instruction.exceptions.MalformedMnemonicException
-import org.apache.commons.lang3.StringUtils
 import java.util.*
 import java.util.regex.Pattern
-
-/**
- * Returns true of the given String contains parentheses.
- */
-fun String.containsParentheses() = this.matches(Regex(".*[()].*"))
-
-/**
- * Returns the number of commas of given String.
- */
-fun String.countCommas(): Int = StringUtils.countMatches(this, ",")
-
-/**
- * Returns true if given String contains a newline-character.
- */
-fun String.containsNewlineCharacter(): Boolean = {
-  this.contains(System.getProperty("line.separator"))
-}.invoke()
-
-/**
- * Will tokenize a mnemonic String so it can return an array of tokens.
- * Produces an array of the tokens in the pattern, for an example
- * we get that "iname rd, rs, rt".tokenize() yields ["rd", "rs", "rt"]
- *
- * @param includeIname exclude the "iname" in the return
- */
-fun String.tokenize(includeIname: Boolean = true): Array<String> = {
-  var a = this.trim().replace(",", " ").replace(Regex("\\s+"), " ").split(" ").toTypedArray()
-  if (!includeIname) {
-    // Remove the iname
-    a = Arrays.copyOfRange(a, 1, a.size)
-  }
-  a
-}.invoke()
-
-fun String.iname(): String = this.tokenize()[0]
 
 /**
  * Will compare two given Strings that will be compared formatting. Since the
@@ -51,8 +15,8 @@ fun String.iname(): String = this.tokenize()[0]
  * numbers be done in different bases such as hexadecimal or decimal.
  */
 fun mnemonicEquals(s1: String, s2: String): Boolean {
-  val tokens1 = s1.tokenize(includeIname = false)
-  val tokens2 = s2.tokenize(includeIname = false)
+  val tokens1 = s1.tokenize()
+  val tokens2 = s2.tokenize()
   if (tokens1.size != tokens2.size) {
     return false
   }
@@ -103,6 +67,8 @@ fun mnemonicEquals(s1: String, s2: String): Boolean {
   return true
 }
 
+fun String.iname(): String = this.tokenize()[0]
+
 fun throwExceptionIfContainsIllegalCharacters(standardizedMnemonic: String) {
   // Throw an exception if the passed string contains a new line character
   if (standardizedMnemonic.containsNewlineCharacter()) {
@@ -139,11 +105,9 @@ fun throwExceptionIfContainsIllegalCharacters(standardizedMnemonic: String) {
       }
     }
     throw IllegalCharactersInMnemonicException(
-      standardizedMnemonic, illegalCharacters)
+          standardizedMnemonic, illegalCharacters)
   }
 }
-
-
 
 /**
  * Check if given String contains the excepted number of commas.
@@ -180,11 +144,3 @@ fun throwIfIncorrectNumberOfCommas(expectedNumberOfCommas: Int, standardizedMnem
 fun standardizeMnemonic(mnemonic: String): String {
   return mnemonic.replace(",", ", ").replace(Regex("\\s+"), " ").trim()
 }
-
-
-
-fun String.remove(substring: String) = this.replace(substring, "")
-fun String.removeCommas() = this.remove(",")
-
-
-

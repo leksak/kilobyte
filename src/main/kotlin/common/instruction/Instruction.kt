@@ -5,6 +5,8 @@ import common.instruction.exceptions.NoSuchInstructionException
 import common.instruction.extensions.funct
 import common.instruction.extensions.opcode
 import common.instruction.extensions.rt
+import common.instruction.mnemonic.iname
+import common.instruction.mnemonic.mnemonicEquals
 import common.instruction.parametrizedroutines.*
 
 import java.util.*

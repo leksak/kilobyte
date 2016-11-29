@@ -7,6 +7,7 @@ import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import common.instruction.exceptions.MalformedMnemonicException
 import common.instruction.extensions.*
+import common.instruction.mnemonic.*
 import decompiler.MachineCodeDecoder
 import java.util.*
 
@@ -232,9 +233,9 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 
   /*
    * We create an array of the tokens in the standardized array, in the
-   * above example we get that fields = ["rt", "offset"]
+   * above example we get that fields = ["iname", "rt", "offset"]
    */
-  val fields = standardizedPattern.tokenize(includeIname = false)
+  val fields = standardizedPattern.tokenize()
 
   return object : ParametrizedInstructionRoutine {
     override fun invoke(prototype: Instruction,
@@ -265,7 +266,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
        * inside the "tokens" array together with "fieldNameToIndexMap"
        * to place the values at the correct places.
        */
-      val tokens: Array<String> = standardizedMnemonic.tokenize(includeIname = false)
+      val tokens: Array<String> = standardizedMnemonic.tokenize()
       val opcode = prototype.opcode
       val n = IntArray(format.noOfFields)
       n[0] = opcode
@@ -294,7 +295,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
       if (prototype == Instruction.JAL) {
         // The jump instruction (jal) specifies an absolute memory address
         // (in bytes) to jump to, but is coded without its last two bits.
-        n[1] = (MachineCodeDecoder.decode(tokens[0]) shr 2).toInt()
+        n[1] = (MachineCodeDecoder.decode(tokens[1]) shr 2).toInt()
       }
 
       val d = DecomposedRepresentation.fromIntArray(n, *format.lengths).asLong()
@@ -396,7 +397,8 @@ private fun formatMachineCodeToMnemonic(prototype: Instruction,
 }
 
 private fun formatMnemonic(tokens: Array<String>, n: IntArray, prototype: Instruction, fields: Array<String>): Array<String> {
-  tokens.indices.forEach { i ->
+  for (i in 1..tokens.size - 1) {
+    // from 1 so that we can skip the iname
     val destinationIndex: Int = fieldNameToIndexMap[fields[i]]!!
     when(fields[i]) {
       "target"-> n[destinationIndex] = Register.offsetFromOffset(tokens[i])
