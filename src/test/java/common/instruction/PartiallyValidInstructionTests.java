@@ -1,7 +1,5 @@
 package common.instruction;
 
-import common.instruction.exceptions.NoSuchInstructionException;
-import io.atlassian.fugue.Either;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,7 +12,7 @@ class PartiallyValidInstructionTests {
     assertTrue(inst.isPartiallyValid(), "Expected a partially valid instruction. Got: " + inst);
   }
 
-  void assertIsPartiallyValidInstruction(long machineCode) throws NoSuchInstructionException {
+  void assertIsPartiallyValidInstruction(long machineCode) {
     assertIsPartiallyValidInstruction(DecompiledInstruction.from(machineCode));
   }
 
@@ -39,7 +37,7 @@ class PartiallyValidInstructionTests {
 
     @Test
     @DisplayName("mflo is partially legal when rs,rt,shamt or any combination thereof is not zero")
-    void mfloTests() throws NoSuchInstructionException {
+    void mfloTests() {
       assertAll(
             () -> assertIsPartiallyValidInstruction(mflo | rs),
             () -> assertIsPartiallyValidInstruction(mflo | rt),
@@ -53,7 +51,7 @@ class PartiallyValidInstructionTests {
 
     @Test
     @DisplayName("mfhi is partially legal when rs,rt,shamt or any combination thereof is not zero")
-    void mfhiTests() throws NoSuchInstructionException {
+    void mfhiTests() {
       assertAll(
             () -> assertIsPartiallyValidInstruction(mfhi | rs),
             () -> assertIsPartiallyValidInstruction(mfhi | rt),
@@ -77,7 +75,7 @@ class PartiallyValidInstructionTests {
 
     @Test
     @DisplayName("mtlo is partially legal when rt,rd,shamt or any combination thereof is not zero")
-    void mtloTests() throws NoSuchInstructionException {
+    void mtloTests() {
       assertAll(
             () -> assertIsPartiallyValidInstruction(mtlo | rd),
             () -> assertIsPartiallyValidInstruction(mtlo | rt),
@@ -91,7 +89,7 @@ class PartiallyValidInstructionTests {
 
     @Test
     @DisplayName("mthi is partially legal when rt,rd,shamt or any combination thereof is not zero")
-    void mthiTests() throws NoSuchInstructionException {
+    void mthiTests() {
       assertAll(
             () -> assertIsPartiallyValidInstruction(mthi | rd),
             () -> assertIsPartiallyValidInstruction(mthi | rt),

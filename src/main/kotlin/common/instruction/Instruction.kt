@@ -7,7 +7,6 @@ import common.instruction.extensions.opcode
 import common.instruction.extensions.rt
 import common.instruction.parametrizedroutines.*
 
-import io.atlassian.fugue.Either
 import java.util.*
 
 /**
@@ -1418,7 +1417,6 @@ data class Instruction private constructor(
       }
     }
 
-    @Throws(NoSuchInstructionException::class)
     @JvmStatic fun from(symbolicRepresentation: String): Instruction {
       val iname = symbolicRepresentation.iname()
       if (!inameToPrototype.containsKey(iname)) {
