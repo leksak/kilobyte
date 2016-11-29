@@ -1,6 +1,7 @@
 package common.instruction;
 
 import common.instruction.exceptions.IllegalCharactersInMnemonicException;
+import common.instruction.exceptions.MalformedMnemonicException;
 import org.junit.jupiter.api.Test;
 
 import java.util.StringJoiner;
@@ -49,7 +50,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatNopCannotBeInstantiatedWithTooManyArguments() {
     String faultyNopRepresentation = "nop foo";
-    Throwable e = expectThrows(IllegalArgumentException.class, () ->
+    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyNopRepresentation));
     success(e);
   }
@@ -57,7 +58,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatNopCannotBeInstantiatedWithTrailingCharacters() {
     String faultyNopRepresentation = "nop,";
-    Throwable e = expectThrows(IllegalArgumentException.class, () ->
+    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyNopRepresentation));
     success(e);
   }
@@ -65,7 +66,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatAddCannotBeInstantiatedWithTooManyArguments() {
     String faultyAddRepresentation = "add $t1, $t2, $t3, $t1";
-    Throwable e = expectThrows(IllegalArgumentException.class, () ->
+    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyAddRepresentation));
     success(e);
   }
@@ -73,7 +74,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatAddCannotContainParentheses() {
     String faultyAddRepresentation = "add $t1, $t2, $t3()";
-    Throwable e = expectThrows(IllegalArgumentException.class, () ->
+    Throwable e = expectThrows(IllegalCharactersInMnemonicException.class, () ->
           Instruction.from(faultyAddRepresentation));
     success(e);
   }
@@ -96,7 +97,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatAddCannotBeInstantiatedWithTooFewArguments() {
     String faultyAddRepresentation = "add $t1, $t2";
-    Throwable e = expectThrows(IllegalArgumentException.class, () ->
+    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyAddRepresentation));
     success(e);
   }
@@ -104,7 +105,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatAddCannotBeInstantiatedWithTooManyCommas() {
     String faultyAddRepresentation = "add $t1, $t2,, $t3";
-    Throwable e = expectThrows(IllegalArgumentException.class, () ->
+    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyAddRepresentation));
     success(e);
   }
@@ -112,7 +113,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatAddCannotBeInstantiatedWithTooFewCommas() {
     String faultyAddRepresentation = "add $t1, $t2 $t3";
-    Throwable e = expectThrows(IllegalArgumentException.class, () ->
+    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyAddRepresentation));
     success(e);
   }

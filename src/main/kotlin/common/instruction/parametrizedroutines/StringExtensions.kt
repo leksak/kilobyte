@@ -2,6 +2,7 @@ package common.instruction.parametrizedroutines
 
 import common.hardware.Register
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
+import common.instruction.exceptions.MalformedMnemonicException
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 import java.util.regex.Pattern
@@ -156,9 +157,10 @@ fun throwIfIncorrectNumberOfCommas(expectedNumberOfCommas: Int, standardizedMnem
   val actualNumberOfCommas = standardizedMnemonic.countCommas()
 
   if (actualNumberOfCommas != expectedNumberOfCommas) {
-    val err = "\"%s\": Wrong number of commas: Expected: %d. Got: %d".format(
-      standardizedMnemonic, expectedNumberOfCommas, actualNumberOfCommas)
-    throw IllegalArgumentException(err)
+    val expected = expectedNumberOfCommas
+    val actual = actualNumberOfCommas
+    val err = "Wrong number of commas: Expected: $expected. Got: $actual"
+    throw MalformedMnemonicException(standardizedMnemonic, err)
   }
 }
 

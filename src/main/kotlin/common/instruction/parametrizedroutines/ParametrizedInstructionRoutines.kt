@@ -5,6 +5,7 @@ import common.hardware.Register
 import common.instruction.*
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
+import common.instruction.exceptions.MalformedMnemonicException
 import common.instruction.extensions.*
 import decompiler.MachineCodeDecoder
 import java.util.*
@@ -246,7 +247,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
       val expectedNumberOfArguments = standardizedPattern.replace(",", "").split(" ").size - 1
       throwIfIncorrectNumberOfArgs(expectedNumberOfArguments, standardizedMnemonic)
       if (!isAllowedToContainParentheses(format) && standardizedMnemonic.containsParentheses()) {
-        throw IllegalCharactersInMnemonicException(standardizedMnemonic, "parentheses")
+        throw IllegalCharactersInMnemonicException(standardizedMnemonic, "<parentheses>")
       }
       checkArgument(prototype.iname == standardizedMnemonic.iname())
 
@@ -434,9 +435,8 @@ fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : Strin
 
   if (expectedArgc == actualArgc) { return }
 
-  val err = "\"%s\": Expected %d arguments. Got: %d".format(
-        standardizedMnemonic, expectedArgc, actualArgc)
-  throw IllegalArgumentException("Wrong number of arguments: " + err)
+  val err = "Wrong number of arguments. Expected $expectedArgc arguments. Got: $actualArgc"
+  throw MalformedMnemonicException(standardizedMnemonic, err)
 }
 
 @JvmField val INAME = from(Format.R, "iname")
