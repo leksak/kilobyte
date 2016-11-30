@@ -41,11 +41,11 @@ object MachineCodeDecoder {
     s = s.toLowerCase()
 
     /*
-       * Check that all characters match either hexadecimal, decimal
-       * or binary strings.
-       */
+     * Check that all characters match either hexadecimal, decimal
+     * or binary strings.
+     */
     if (!s.matches("-?([0-9]+)|(0[x][0-9a-f]+)|(0[b][0-1]+)|(0[d])?[0-9]+".toRegex())) {
-      throw NumberFormatException() // TODO: Add error message
+      throw NumberFormatException("Could not interpret \"$str\" as a number")
     }
 
     if (s.length <= 1) {
@@ -87,16 +87,31 @@ object MachineCodeDecoder {
       // "0x014b4820" becomes "014b4820"
       //
       // Remove the prefix from the string, substring() takes the
-      // tail starting from the second character.
+      // tail starting _behind_ the second character.
       s = s.substring(2)
     }
+    if (s.startsWith('-')) {
+      return Integer.parseInt(s, base).toLong()
+    }
 
-    return Integer.parseInt(s, base).toLong()
+    // parseUnsignedInt lets us handle "large" numbers such as 0xafbf0004
+    return Integer.parseUnsignedInt(s, base).toLong()
+
   }
 
   @JvmStatic fun decode(s: String, base: Int): Int {
     return Integer.parseInt(decode(s).toString(), base)
   }
 
-  @JvmStatic fun decode(numbers: List<String>) : List<Long> = numbers.map { decode(it) }
+  @Throws(NumberFormatException::class)
+  @JvmStatic fun decode(numbers: List<String>) : List<Long> {
+    val successfullyDecoded : MutableList<Long> = ArrayList()
+    numbers.map { it -> try {
+      successfullyDecoded.add(decode(it))
+    } catch (e: NumberFormatException) {
+      println("Failed to decode \"$it\". Cause: ${e.message}")
+    }
+    }
+    return successfullyDecoded
+  }
 }

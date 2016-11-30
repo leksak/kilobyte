@@ -24,4 +24,9 @@ public class MachineCodeDecoderTests {
       assertEquals(0x71014802, MachineCodeDecoder.decode("0D1895909378"));
     });
   }
+
+  @Test
+  void testThatLargeNumbersCanBeDecodedAsWell() {
+    assertEquals(0xafbf0004, MachineCodeDecoder.decode("0xafbf0004"), "Failed to decode \"0xafbf0004\", i.e. [sw $ra, 4($sp)]");
+  }
 }

@@ -3,17 +3,16 @@ package decompiler;
 import com.google.common.collect.Lists;
 import common.instruction.DecompiledInstruction;
 import common.instruction.Instruction;
+import kotlin.collections.EmptyList;
 import lombok.Value;
 import lombok.experimental.NonFinal;
+import lombok.val;
 import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Value
 public class CommandLineDecompiler {
@@ -105,13 +104,41 @@ public class CommandLineDecompiler {
   }
 
   private static void outputTable(boolean printTableHeader, List<DecompiledInstruction> decompiledInstructions) {
-    String formatString = "%-12s %-3s %-16s %-22s %-18s";
-    Object[] header = {"Instruction", "Fmt", "Decomposition", "Decomp hex", "Source"};
+    String formatString = "%-12s  |  %-6s  |  %-16s  |  %-22s  |  %-20s   |  %s";
+    Object[] header = {"Machine Code", "Format", "Decomposition", "Decomp hex", "Source", "Errors"};
 
     if (printTableHeader) {
       System.out.println(String.format(formatString, header));
-      for (DecompiledInstruction d : decompiledInstructions) {
-        System.out.println(d.toString());
+    }
+
+    for (DecompiledInstruction d : decompiledInstructions) {
+      String unpretty = d.toString();
+      String[] split = unpretty.split("\\s+");
+      String machineCode = split[0];
+      String format = split[1];
+      int firstOpeningBracket = unpretty.indexOf('[');
+      int firstClosingBracket = unpretty.indexOf(']', firstOpeningBracket);
+      int secondOpeningBracket = unpretty.indexOf('[', firstClosingBracket);
+      int secondClosingBracket = unpretty.indexOf(']', secondOpeningBracket);
+      String decimalDecomp = unpretty.substring(firstOpeningBracket, firstClosingBracket + 1);
+      String hexDecomp = unpretty.substring(secondOpeningBracket, secondClosingBracket + 1);
+
+      List<String> errors = Collections.emptyList();
+      String source;
+
+      if (d.isPartiallyValid()) {
+        errors = d.errors();
+        source = unpretty.substring(secondClosingBracket + 2, unpretty.indexOf("error"));
+      } else {
+        source = unpretty.substring(secondClosingBracket + 2);
+      }
+
+      if (errors.isEmpty()) {
+        System.out.println(String.format(formatString, machineCode, format, decimalDecomp, hexDecomp, source, ""));
+      } else {
+        StringJoiner sj = new StringJoiner("\", \"", "[\"", "\"]");
+        errors.forEach(sj::add);
+        System.out.println(String.format(formatString, machineCode, format, decimalDecomp, hexDecomp, source, " error(s)=" + sj.toString()));
       }
     }
   }

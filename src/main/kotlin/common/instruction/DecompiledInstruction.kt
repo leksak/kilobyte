@@ -43,6 +43,11 @@ sealed class DecompiledInstruction {
     return false
   }
 
+  fun errors() : List<String> {
+    when (this) { is PartiallyValid -> return errors }
+    return emptyList()
+  }
+
   companion object {
     @JvmStatic fun from(machineCode: Long): DecompiledInstruction = Instruction.decompile(machineCode)
   }
