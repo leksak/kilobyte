@@ -2,7 +2,9 @@ package common.instruction.parametrizedroutines
 
 import com.google.common.base.Preconditions.checkArgument
 import common.hardware.Register
-import common.instruction.*
+import common.instruction.DecompiledInstruction
+import common.instruction.Format
+import common.instruction.Instruction
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import common.instruction.exceptions.MalformedMnemonicException

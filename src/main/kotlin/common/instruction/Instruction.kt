@@ -1371,7 +1371,7 @@ data class Instruction private constructor(
         "64-bit value from effective memory doubleword address.",
       format = Format.I,
       pattern = INAME_RT_ADDRESS)
-    
+
     // Lookup table
     // You can take the name of an Instruction and create
     // an Instruction of the same sort, i.e.

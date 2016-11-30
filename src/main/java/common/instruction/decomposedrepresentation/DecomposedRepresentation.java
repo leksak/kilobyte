@@ -5,8 +5,6 @@ import lombok.Value;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 @Value
 public class DecomposedRepresentation {
   int[] decomposition;

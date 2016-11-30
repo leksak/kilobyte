@@ -7,9 +7,6 @@ import java.util.Arrays;
 
 import static common.instruction.decomposedrepresentation.DecomposedRepresentation.fromIntArray;
 import static common.instruction.decomposedrepresentation.DecomposedRepresentation.fromNumber;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

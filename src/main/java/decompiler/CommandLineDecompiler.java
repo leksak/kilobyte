@@ -3,10 +3,7 @@ package decompiler;
 import com.google.common.collect.Lists;
 import common.instruction.DecompiledInstruction;
 import common.instruction.Instruction;
-import kotlin.collections.EmptyList;
 import lombok.Value;
-import lombok.experimental.NonFinal;
-import lombok.val;
 import org.apache.commons.cli.*;
 
 import java.io.File;

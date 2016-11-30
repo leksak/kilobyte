@@ -1,9 +1,11 @@
 package decompiler;
 
 import com.google.common.base.Preconditions.checkArgument
-
-import java.io.*
-import java.util.ArrayList
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.io.Reader
+import java.util.*
 
 object MachineCodeDecoder {
   @JvmStatic fun decode(f: File): List<Long> {

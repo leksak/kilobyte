@@ -1,7 +1,7 @@
 package common.instruction
 
 import common.instruction.extensions.opcode
-import java.util.StringJoiner
+import java.util.*
 
 sealed class DecompiledInstruction {
   class Valid(val instruction: Instruction) : DecompiledInstruction()
