@@ -33,10 +33,6 @@ compileTestJava {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    
-    // Primarily used for functional "monads" such as Either. Java
-    // doesn't have real monads.
-    compile 'io.atlassian.fugue:fugue:4.3.0'
 
     // Used to remove a lot of Java boilerplate
     compile group: 'org.projectlombok', name: 'lombok', version: '1.16.8'
