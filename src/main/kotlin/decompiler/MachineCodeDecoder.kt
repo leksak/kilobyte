@@ -97,4 +97,6 @@ object MachineCodeDecoder {
   @JvmStatic fun decode(s: String, base: Int): Int {
     return Integer.parseInt(decode(s).toString(), base)
   }
+
+  @JvmStatic fun decode(numbers: List<String>) : List<Long> = numbers.map { decode(it) }
 }

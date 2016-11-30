@@ -389,7 +389,7 @@ private fun formatMachineCodeToMnemonic(prototype: Instruction,
       }
     }
 
-    if (i != fields.indices.last) {
+    if (i != fields.indices.first && i != fields.indices.last) {
       mnemonicRepresentation += ", "
     }
   }
