@@ -104,8 +104,8 @@ public class CommandLineDecompiler {
   }
 
   private static void outputTable(boolean printTableHeader, List<DecompiledInstruction> decompiledInstructions) {
-    String formatString = "%-12s  |  %-6s  |  %-16s  |  %-22s  |  %-20s   |  %s";
-    Object[] header = {"Machine Code", "Format", "Decomposition", "Decomposition hex", "Source", "Errors"};
+    String formatString = "%-12s  |  %-6s  |  %-16s  |  %-25s  |  %-20s  |  %s";
+    Object[] header = {"Machine Code", "Format", "Decomposition", "Decomposition hexadecimal", "Source", "Errors"};
 
     if (printTableHeader) {
       System.out.println(String.format(formatString, header));
