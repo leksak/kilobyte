@@ -15,9 +15,9 @@ import java.util.*;
 public class CommandLineDecompiler {
   static Options options = new Options()
         .addOption("h", "help", false, "print this message")
-        .addOption("n", "number(s)", true, "disassemble 32-bit word(s) from stdin")
-        .addOption("headerless", "suppress table header")
-        .addOption("printsupported", "print all supported instructions");
+        .addOption("n", true, "disassemble the given 32-bit word")
+        .addOption("S", "suppress", false, "suppress table header")
+        .addOption(null, "printsupported", false, "print all supported instructions");
 
   static CommandLineParser parser = new DefaultParser();
   static HelpFormatter formatter = new HelpFormatter();
@@ -28,6 +28,7 @@ public class CommandLineDecompiler {
 
   private static void printUsage() {
     formatter.printHelp("MachineCodeDecoder [OPTION] [file|number]...", options);
+    System.out.println("If no argument is given then numbers are read from stdin");
   }
 
   private static DecompiledInstruction decompile(Long number) {
@@ -46,7 +47,6 @@ public class CommandLineDecompiler {
     return Lists.transform(numbers, CommandLineDecompiler::decompile);
   }
 
-
   private CommandLineDecompiler() {
     // Intentionally left empty
   }
@@ -55,7 +55,6 @@ public class CommandLineDecompiler {
     CommandLine line;
     try {
       line = parse(args);
-
       if (line.hasOption("help")) {
         printUsage();
         return;
