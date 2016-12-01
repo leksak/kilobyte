@@ -69,3 +69,16 @@ gradle-app.setting
 
 /*.log
 *_minted*-report
+
+
+*-blx.bib
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.pdf
+*.run.xml
+*.toc
+*texput.log
+
