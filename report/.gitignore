@@ -23,10 +23,8 @@
 /simulator/titlepage.tex
 /simulator/instruction-encoding.tex
 /decompiler/titlepage.tex
-/decompiler/.#usage-and-compilation.tex
 /decompiler/fancyhdr-settings.tex
 /decompiler/top-level-parser.tex
-/decompiler/r-decomposed.tex
 /decompiler/instruction-encoding.tex
 /decompiler/mips-risc-and-cisc.tex
 /decompiler/mips-register-naming-and-usage-convention.tex
@@ -38,7 +36,6 @@
 /decompiler/preamble.tex
 /decompiler/parser.tex
 /decompiler/r-decomposed.tikz
-/decompiler/mul-decomposed.tex
 /decompiler/registers.tex
 /decompiler/mnemonic-decoding.tex
 /decompiler/references.bib

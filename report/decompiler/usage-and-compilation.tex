@@ -11,7 +11,7 @@ The source code may be downloaded at the following two addresses,
 \end{center}
 
 Or viewed in the following folder
-\texttt{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}filip/edu/kilobyte}
+\tt{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}filip/edu/kilobyte}
 on the institution's network.
 
 For the duration of this report the directory created by cloning
@@ -35,13 +35,13 @@ $ gradle fatJar
 You will require Gradle 2.9, which is available for
 \href{http://gradle.org/gradle-download/}{download here}, or
 executable through
-\texttt{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}filip/bin/gradle}
+\tt{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}filip/bin/gradle}
 on the institution's network.
 
-In the \texttt{build/libs} directory you will now find a file named
-\texttt{kilobyte-all-1.0-SNAPSHOT.jar} which you can run using \texttt{java -jar
+In the \tt{build/libs} directory you will now find a file named
+\tt{kilobyte-all-1.0-SNAPSHOT.jar} which you can run using \tt{java -jar
   kilobyte-all-1.0-SNAPSHOT.jar} given that you have Java 8 shown when running
-\texttt{java -version}.
+\tt{java -version}.
 
 \subsubsection{Compiling and running tests}
 
@@ -86,16 +86,16 @@ Test run finished after 258 ms
 The program allows us multiple means of interaction which are listed
 when the program is passed the "-h" or "--help" flag which outputs the following
 The program supplies two means of interfacing with it, by calling
-the program with 0 arguments or the \texttt{-h} flag we can get the
+the program with 0 arguments or the \tt{-h} flag we can get the
 user guide supplied with the software
 
 \begin{lstlisting}[style=plain]
-$ java -jar build/libs/kilobyte-all-1.0-SNAPSHOT.jar --help
-usage: Decompiler [OPTION] [file|number]...
- -h,--help              print this message
- -suppress              suppress table header
- -n,--number(s) <arg>   disassemble 32-bit word(s) from stdin
- -printsupported        print all supported instructions
+$ usage: Decompiler [OPTION] [file|number]...
+    --examples       prints an example for each supported instructions
+ -h,--help           print this message
+ -n,--number <arg>   disassemble 32-bit word(s) from stdin
+ -S,--suppress       suppress the table header
+    --supported      prints all supported instructions
 \end{lstlisting}
 
 \subsubsection{Decompiling source code from files}
@@ -119,7 +119,7 @@ be in base 16 if it is prefixed by \tt{0x}. Between the two numbers
 a blank-line appears to showcase that the decompiler is robust
 enough to ignore such lines.
 
-We can inspect the contents of these files using \texttt{cat}
+We can inspect the contents of these files using \tt{cat}
 as shown in Listing.~\ref{listing:sample-input-files}.
 
 \begin{figure}
@@ -192,7 +192,7 @@ Machine Code  |  Format  |  Decomposition     |  Decomposition hexadecimal  |  S
 \subsubsection{Decompiling input numbers}
 
 Additionally, the software provides a secondary means of use, through
-the \texttt{-n} flag which stands for \emph{number} so that the argument
+the \tt{-n} flag which stands for \emph{number} so that the argument
 immediately following the flag.
 
 Notice in Listing.~\ref{listing:parsing-numbers-from-input-arguments}
@@ -203,9 +203,9 @@ base 16 (as long as numbers in base 16 are prefixed by \tt{0x}).
 \thispagestyle{empty}
 \begin{lstlisting}[style=plain,
     basicstyle=\small,
-    caption=Parsing numbers from input arguments using the \texttt{-n} flag,
+    caption=Parsing numbers from input arguments using the \tt{-n} flag,
     label=listing:parsing-numbers-from-input-arguments]
-$ java -jar build/libs/kilobyte-all-1.0-SNAPSHOT.jar -n 599654392 -n 0xafbf0004 -suppress
+$ java -jar build/libs/kilobyte-all-1.0-SNAPSHOT.jar -n 599654392 -n 0xafbf0004 --suppress
 0x23bdfff8    |  I       |  [8 29 29 65528]   |  [8 0x1d 0x1d 0xfff8]       |  addi $sp, $sp, 65528      |  
 0xafbf0004    |  I       |  [43 29 31 4]      |  [0x2b 0x1d 0x1f 4]         |  sw $ra, 4($sp)            |
 \end{lstlisting}
@@ -223,14 +223,15 @@ a \tt{sub} instruction \emph{but} the \tt{shamt} field is not set to
 When an instruction is partially legal the violating fields are outputted
 on the following line, see Listing.~\ref{listing:partially-valid-instructions}.
 
-\begin{minipage}{\linewidth}
-\begin{lstlisting}[basicstyle=\small, 
-    language=bash, 
+\begin{landscape}
+\thispagestyle{empty}
+\begin{lstlisting}[basicstyle=\small,
+    style=plain,
     caption=Error print-outs for partially valid instructions,
     label=listing:partially-valid-instructions,
   backgroundcolor=\color{mintedbackground}]
-$  java -jar build/libs/kilobyte-all-1.0-SNAPSHOT.jar -n 0x00012122
-Machine Code  |  Format  |  Decomposition     |  Decomposition hexadecimal  |  Source                    |  Errors
+$  java -jar build/libs/kilobyte-all-1.0-SNAPSHOT.jar -n 0x00012122 --suppress
 0x00012122    |  R       |  [0 0 1 4 4 34]    |  [0 0 1 4 4 0x22]           |  sub $a0, $zero, $at       |   error(s)=["Expected shamt to be zero. Got 4"]
 \end{lstlisting}
-\end{minipage}
+\end{landscape}
+

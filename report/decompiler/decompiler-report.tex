@@ -29,7 +29,230 @@
 
 \input{kotlin.tex}
 
+\clearpage
+
+\section{List of supported instructions}
+
+The decompiler has support for all of the following instructions,
+
+\begin{multicols}{4}
+\begin{itemize}
+\item add
+\item addu
+\item addi
+\item addiu
+\item and
+\item andi
+\item clo
+\item clz
+\item div
+\item divu
+\item mult
+\item multu
+\item mul
+\item madd
+\item maddu
+\item msub
+\item msubu
+\item nor
+\item or
+\item ori
+\item sll
+\item sllv
+\item sra
+\item srav
+\item srl
+\item srlv
+\item sub
+\item subu
+\item xor
+\item xori
+\item lui
+\item slt
+\item sltu
+\item slti
+\item sltiu
+\item beq
+\item beql
+\item bgez
+\item bgezl
+\item bgezal
+\item bgczall
+\item bgtz
+\item bgtzl
+\item blez
+\item bltzal
+\item bltzall
+\item bltz
+\item bltzl
+\item bne
+\item bnel
+\item j
+\item jal
+\item jalr
+\item jr
+\item teq
+\item teqi
+\item tne
+\item tnei
+\item tge
+\item tgeu
+\item tgei
+\item tgeiu
+\item tlt
+\item tltu
+\item tlti
+\item tltiu
+\item nop
+\item blezl
+\item lb
+\item lbu
+\item lh
+\item lhu
+\item lw
+\item lwc1
+\item lwc2
+\item lwl
+\item lwr
+\item ll
+\item sb
+\item sh
+\item sw
+\item swc1
+\item swc2
+\item sdc1
+\item sdc2
+\item swl
+\item sc
+\item mfhi
+\item mflo
+\item mthi
+\item mtlo
+\item movn
+\item movz
+\item pref
+\item ldc1
+\item ldc2
+\end{itemize}
+\end{multicols}
 \end{appendix}
+
+\section{Example decompilations}
+
+Here we present a sample decompilation for each of the instructions
+listed in the previous section.
+
+\lstMakeShortInline=
+
+	\begin{tabular}{lcl}
+      \toprule
+      Hex & & Mnemonic \\
+      \midrule
+\tt{0x14b4820}	& $\longrightarrow$		& =add $t1, $t2, $t3= \\
+\tt{0x14b4821}	& $\longrightarrow$		& =addu $t1, $t2, $t3= \\
+\tt{0x21490004}	& $\longrightarrow$		& =addi $t1, $10, 4= \\
+\tt{0x25490004}	& $\longrightarrow$		& =addiu $t1, $t2, 4= \\
+\tt{0x14b4824}	& $\longrightarrow$		& =and $t1, $t2, $t3= \\
+\tt{0x31490004}	& $\longrightarrow$		& =andi $t1, $t2, 4= \\
+\tt{0x71404821}	& $\longrightarrow$		& =clo $t1, $t2= \\
+\tt{0x71404820}	& $\longrightarrow$		& =clz $t1, $t2= \\
+\tt{0x12a001a}	& $\longrightarrow$		& =div $t1, $t2= \\
+\tt{0x12a001b}	& $\longrightarrow$		& =divu $t1, $t2= \\
+\tt{0x12a0018}	& $\longrightarrow$		& =mult $t1, $t2= \\
+\tt{0x12a0019}	& $\longrightarrow$		& =multu $t1, $t2= \\
+\tt{0x70821002}	& $\longrightarrow$		& =mul $v0, $a0, $v0= \\
+\tt{0x712a0000}	& $\longrightarrow$		& =madd $t1, $t2= \\
+\tt{0x712a0001}	& $\longrightarrow$		& =maddu $t1, $t2= \\
+\tt{0x712a0004}	& $\longrightarrow$		& =msub $t1, $t2= \\
+\tt{0x712a0005}	& $\longrightarrow$		& =msubu $t1, $t2= \\
+\tt{0x14b4827}	& $\longrightarrow$		& =nor $t1, $t2, $t3= \\
+\tt{0x14b4825}	& $\longrightarrow$		& =or $t1, $t2, $t3= \\
+\tt{0x35490004}	& $\longrightarrow$		& =ori $t1, $t2, 4= \\
+\tt{0x14a4800}	& $\longrightarrow$		& =sll $t1, $t2, $10= \\
+\tt{0x14b4804}	& $\longrightarrow$		& =sllv $t1, $t2, $t3= \\
+\tt{0x14a4803}	& $\longrightarrow$		& =sra $t1, $t2, $10= \\
+\tt{0x14b4807}	& $\longrightarrow$		& =srav $t1, $t2, $t3= \\
+\tt{0x14a4802}	& $\longrightarrow$		& =srl $t1, $t2, $10= \\
+\tt{0x14b4806}	& $\longrightarrow$		& =srlv $t1, $t2, $t3= \\
+\tt{0x14b4822}	& $\longrightarrow$		& =sub $t1, $t2, $t3= \\
+\tt{0x14b4823}	& $\longrightarrow$		& =subu $t1, $t2, $t3= \\
+\tt{0x14b4826}	& $\longrightarrow$		& =xor $t1, $t2, $t3= \\
+\tt{0x39490004}	& $\longrightarrow$		& =xori $t1, $t2, 4= \\
+\tt{0x3c090004}	& $\longrightarrow$		& =lui $t1, 4= \\
+\tt{0x14b482a}	& $\longrightarrow$		& =slt $t1, $t2, $t3= \\
+\tt{0x14b482b}	& $\longrightarrow$		& =sltu $t1, $t2, $t3= \\
+\tt{0x29490004}	& $\longrightarrow$		& =slti $t1, $t2, 4= \\
+\tt{0x2d490004}	& $\longrightarrow$		& =sltiu $t1, $t2, 4= \\
+\tt{0x112a0004}	& $\longrightarrow$		& =beq $t1, $t2, 4= \\
+\tt{0x512a0006}	& $\longrightarrow$		& =beql $t1, $t2, 6= \\
+\tt{0x5210005}	& $\longrightarrow$		& =bgez $t1, 5= \\
+\tt{0x5230005}	& $\longrightarrow$		& =bgezl $t1, 5= \\
+\tt{0x531000a}	& $\longrightarrow$		& =bgezal $t1, 10= \\
+\tt{0x533000a}	& $\longrightarrow$		& =bgczall $t1, 10= \\
+\tt{0x1d200004}	& $\longrightarrow$		& =bgtz $t1, 4= \\
+\tt{0x5d200006}	& $\longrightarrow$		& =bgtzl $t1, 6= \\
+\tt{0x19200004}	& $\longrightarrow$		& =blez $t1, 4= \\
+\tt{0x530000a}	& $\longrightarrow$		& =bltzal $t1, 10= \\
+\tt{0x532000a}	& $\longrightarrow$		& =bltzall $t1, 10= \\
+\tt{0x5200005}	& $\longrightarrow$		& =bltz $t1, 5= \\
+\tt{0x5220005}	& $\longrightarrow$		& =bltzl $t1, 5= \\
+\bottomrule 
+    \end{tabular}
+
+	\begin{tabular}{lcl}
+      \toprule
+      Hex & & Mnemonic \\
+      \midrule
+\tt{0x152a0004}	& $\longrightarrow$		& =bne $t1, $t2, 4= \\
+\tt{0x552a0006}	& $\longrightarrow$		& =bnel $t1, $t2, 6= \\      
+\tt{0x8000004}	& $\longrightarrow$		& =j 4= \\
+\tt{0xc100000}	& $\longrightarrow$		& =jal 0x00400000= \\
+\tt{0x1404809}	& $\longrightarrow$		& =jalr $t1, $t2= \\
+\tt{0x1200008}	& $\longrightarrow$		& =jr $t1= \\
+\tt{0x12a0034}	& $\longrightarrow$		& =teq $t1, $t2= \\
+\tt{0x52c0005}	& $\longrightarrow$		& =teqi $t1, 5= \\
+\tt{0x12a0036}	& $\longrightarrow$		& =tne $t1, $t2= \\
+\tt{0x52e0005}	& $\longrightarrow$		& =tnei $t1, 5= \\
+\tt{0x12a0030}	& $\longrightarrow$		& =tge $t1, $t2= \\
+\tt{0x12a0031}	& $\longrightarrow$		& =tgeu $t1, $t2= \\
+\tt{0x5280005}	& $\longrightarrow$		& =tgei $t1, 5= \\
+\tt{0x5290005}	& $\longrightarrow$		& =tgeiu $t1, 5= \\
+\tt{0x12a0032}	& $\longrightarrow$		& =tlt $t1, $t2= \\
+\tt{0x12a0033}	& $\longrightarrow$		& =tltu $t1, $t2= \\
+\tt{0x52a0005}	& $\longrightarrow$		& =tlti $t1, 5= \\
+\tt{0x52b0005}	& $\longrightarrow$		& =tltiu $t1, 5= \\
+\tt{0x0}	& $\longrightarrow$		& =nop= \\
+\tt{0x59200006}	& $\longrightarrow$		& =blezl $t1, 6= \\
+\tt{0x81490007}	& $\longrightarrow$		& =lb $t1, 7($t2)= \\
+\tt{0x9149000b}	& $\longrightarrow$		& =lbu $t1, 11($t2)= \\
+\tt{0x85490008}	& $\longrightarrow$		& =lh $t1, 8($t2)= \\
+\tt{0x9549000c}	& $\longrightarrow$		& =lhu $t1, 12($t2)= \\
+\tt{0x8d49000a}	& $\longrightarrow$		& =lw $t1, 10($t2)= \\
+\tt{0xc7bf0004}	& $\longrightarrow$		& =lwc1 $ra, 4($sp)= \\
+\tt{0xcbbf0004}	& $\longrightarrow$		& =lwc2 $ra, 4($sp)= \\
+\tt{0x89490009}	& $\longrightarrow$		& =lwl $t1, 9($t2)= \\
+\tt{0x9949000d}	& $\longrightarrow$		& =lwr $t1, 13($t2)= \\
+\tt{0xc3bf0004}	& $\longrightarrow$		& =ll $ra, 4($sp)= \\
+\tt{0xa1490004}	& $\longrightarrow$		& =sb $t1, 4($t2)= \\
+\tt{0xa5490004}	& $\longrightarrow$		& =sh $t1, 4($t2)= \\
+\tt{0xafbf0004}	& $\longrightarrow$		& =sw $ra, 4($sp)= \\
+\tt{0xe7a90004}	& $\longrightarrow$		& =swc1 $t1, 4($sp)= \\
+\tt{0xeba90004}	& $\longrightarrow$		& =swc2 $t1, 4($sp)= \\
+\tt{0xf7a90004}	& $\longrightarrow$		& =sdc1 $t1, 4($sp)= \\
+\tt{0xfba90004}	& $\longrightarrow$		& =sdc2 $t1, 4($sp)= \\
+\tt{0xa9490004}	& $\longrightarrow$		& =swl $t1, 4($t2)= \\
+\tt{0xe3a90004}	& $\longrightarrow$		& =sc $t1, 4($sp)= \\
+\tt{0x4810}	& $\longrightarrow$		& =mfhi $t1= \\
+\tt{0x4812}	& $\longrightarrow$		& =mflo $t1= \\
+\tt{0x1200011}	& $\longrightarrow$		& =mthi $t1= \\
+\tt{0x1200013}	& $\longrightarrow$		& =mtlo $t1= \\
+\tt{0x14b480b}	& $\longrightarrow$		& =movn $t1, $t2, $t3= \\
+\tt{0x14b480a}	& $\longrightarrow$		& =movz $t1, $t2, $t3= \\
+\tt{0xcfa10002}	& $\longrightarrow$		& =pref 1, 2($sp)= \\
+\tt{0xd7a90004}	& $\longrightarrow$		& =ldc1 $t1, 4($sp)= \\
+\tt{0xdba90004}	& $\longrightarrow$		& =ldc2 $t1, 4($sp)= \\
+\bottomrule 
+    \end{tabular}
 
 \clearpage
 

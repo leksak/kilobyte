@@ -17,8 +17,9 @@ public class CommandLineDecompiler {
   static Options options = new Options()
         .addOption("h", "help", false, "print this message")
         .addOption("n", "number", true, "disassemble 32-bit word(s) from stdin")
-        .addOption(null, "suppress", false, "suppress the table header")
-        .addOption(null, "printsupported", false, "print all supported instructions");
+        .addOption("S", "suppress", false, "suppress the table header")
+        .addOption(null, "supported", false, "prints all supported instructions")
+        .addOption(null, "examples", false, "prints an example for each supported instructions.");
 
   static CommandLineParser parser = new DefaultParser();
   static HelpFormatter formatter = new HelpFormatter();
@@ -42,6 +43,7 @@ public class CommandLineDecompiler {
   private static void printSupportedInstructions() {
     Instruction.printInstructionSet(false);
   }
+  private static void printExamples() { Instruction.printAllExamples(); }
 
   private static List<DecompiledInstruction> decompile(List<Long> numbers) {
     return Lists.transform(numbers, CommandLineDecompiler::decompile);
@@ -67,8 +69,13 @@ public class CommandLineDecompiler {
       return;
     }
 
-    if (line.hasOption("printsupported")) {
+    if (line.hasOption("supported") || line.hasOption("S")) {
       printSupportedInstructions();
+      return;
+    }
+
+    if (line.hasOption("examples")) {
+      printExamples();
       return;
     }
 

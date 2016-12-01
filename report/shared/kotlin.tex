@@ -25,34 +25,52 @@ postfix after the type name. Operations on nullable objects need
 special care from developers; a null-check must be performed before
 using the value. Kotlin provides special operators for this.
 
-\subsubsection{Sum types}
+\subsection{Closing remarks}
 
-% TODO: Should we continue using io.atlassian.fugue.Either or go for
-% a sum type with valid and partially valid instruction
+Beyond the advantages mentioned above there are additional benefits
+such as sum types, named arguments, functions that can be defined
+outside of a class. All of these together has provided us with a
+positive programming experience and allowed us to succinctly formulate
+parts of our solution. Below is an example of how we define an
+Instruction within the code-base.
 
-\subsubsection{Singletons and class-less functions}
-
-Want a singleton? Create an object:
-
-object ThisIsASingleton {
-    val companyName: String = "JetBrains"
-  }
-
-  \subsubsection{Named arguments}
-
-\subsection{Kotlin --- applied}
-
-\begin{lstlisting}[style=java]
+\begin{figure}
+\begin{lstlisting}[language=java, style=plain, caption=Kotlin --- applied]
 @JvmField val ADD = Instruction(
-      iname = "add",
-      opcode = 0,
-      funct = 0x20,
-      mnemonicRepresentation = "add \$t1, \$t2, \$t3",
-      numericRepresentation = 0x014b4820,
-      description = "Addition with overflow,. Put the" +
-            " sum of registers rs and rt into register" +
-            " rd. Is only valid if shamt is 0.",
-      format = Format.R,
-      pattern = ParametrizedInstructionRoutine.INAME_RD_RS_RT)
+  iname = "add",
+  opcode = 0,
+  funct = 32,
+  mnemonicRepresentation = "add \$t1, \$t2, \$t3",
+  numericRepresentation = 0x014b4820,
+  description = "Addition with overflow,. Put the" +
+    " sum of registers rs and rt into register" +
+    " rd. Is only valid if shamt is 0.",
+  format = Format.R,
+  pattern = INAME_RD_RS_RT)
+\end{lstlisting}
+\end{figure}
+
+Compare this with the corresponding definition shown in
+Listing.~\ref{listing:MARS-instruction-definition} from the
+Mars\cite{MARS-simulator} project,
+
+\begin{lstlisting}[
+language=java,
+style=plain,
+caption=MARS-simulator instruction definition,
+label=listing:MARS-instruction-definition]
+instructionList.add(
+  new BasicInstruction("nop",
+    "Null operation : machine code is all zeroes",
+    BasicInstructionFormat.R_FORMAT,
+    "000000 00000 00000 00000 00000 000000",
+    new SimulationCode()
+      {
+         public void simulate(ProgramStatement statement) throws ProcessingException
+           {
+             // Hey I like this so far!
+           }
+      }));
 \end{lstlisting}
 
+which is subjectively more verbose than our presented counter-part.

@@ -102,6 +102,12 @@
   backgroundcolor=\color{background},
 }{}
 
+\lstdefinestyle{mips_inline}{
+  language={[mips]Assembler},
+  keywordstyle=\color{keyword},       % Keyword coloring
+  identifierstyle=\lst@ifdisplaystyle\color{registers}\fi,
+}{}
+
 \lstdefinestyle{plain}{
   frame=trbl,
   framesep=4pt,
@@ -132,6 +138,7 @@
 \renewcommand\dateseparator{-} % Separate date tokens with a "-"
 
 \usepackage{booktabs}
+\usepackage{multicol}
 
 % Use fancy document headers
 \usepackage{fancyhdr}

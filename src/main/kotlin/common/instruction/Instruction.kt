@@ -1473,6 +1473,16 @@ data class Instruction private constructor(
       return primordialSet.map { it.example }
     }
 
+    @JvmStatic fun printAllExamples() {
+      primordialSet.forEach { prototype ->
+        run {
+          val mnemonic = prototype.mnemonicRepresentation
+          val numeric = Integer.toHexString(prototype.numericRepresentation.toInt())
+          println("\"$mnemonic\" 0x$numeric")
+        }
+      }
+    }
+
     /**
      * Prints the names of all the instructions contained in this set.
      * Useful for technical documentation.
