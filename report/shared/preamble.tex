@@ -37,6 +37,8 @@
 % Allows us to use syntax highlighting on included files an
 % in an inline fashion.
 \usepackage{minted}
+\definecolor{mintedbackground}{rgb}{0.95,0.95,0.95}
+\usepackage{pdflscape}
 
 % Ignore syntax errors - the minted lexer is not perfect (MATLAB only)
 \makeatletter
@@ -97,6 +99,12 @@
   framesep=4pt,
   keywordstyle=\color{keyword},       % Keyword coloring
   identifierstyle=\lst@ifdisplaystyle\color{registers}\fi,
+  backgroundcolor=\color{background},
+}{}
+
+\lstdefinestyle{plain}{
+  frame=trbl,
+  framesep=4pt,
   backgroundcolor=\color{background},
 }{}
 

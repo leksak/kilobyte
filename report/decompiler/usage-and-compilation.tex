@@ -1,0 +1,236 @@
+\section{Usage and compilation}
+
+We will now describe how to compile and use the supplied software, so
+that you may experiment with it later when the solution is described.
+
+The source code may be downloaded at the following two addresses,
+
+\begin{center}
+\url{https://github.com/leksak/kilobyte.git} \\
+\url{git@github.com:leksak/kilobyte.git}
+\end{center}
+
+Or viewed in the following folder
+\texttt{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}filip/edu/kilobyte}
+on the institution's network.
+
+For the duration of this report the directory created by cloning
+the repository is referred to as the \emph{root directory}.
+
+\section{Compilation and usage}
+
+In this section the compilation of the software is described as
+is the usage of the software
+
+\subsection{Compilation}
+
+Navigate to the root directory of the project.
+
+Whilst there execute the following command to compile the program:
+
+\begin{minted}[bgcolor=mintedbackground]{bash}
+$ gradle fatJar
+\end{minted}
+
+You will require Gradle 2.9, which is available for
+\href{http://gradle.org/gradle-download/}{download here}, or
+executable through
+\texttt{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}filip/bin/gradle}
+on the institution's network.
+
+In the \texttt{build/libs} directory you will now find a file named
+\texttt{kilobyte-all-1.0-SNAPSHOT.jar} which you can run using \texttt{java -jar
+  kilobyte-all-1.0-SNAPSHOT.jar} given that you have Java 8 shown when running
+\texttt{java -version}.
+
+\subsubsection{Compiling and running tests}
+
+Navigate to the root directory and hilst there execute the following
+command to compile and run the tests:
+
+\begin{minted}[bgcolor=mintedbackground]{bash}
+$ gradle test
+\end{minted}
+
+In figure~\ref{fig:tests} the output yielded by the tests is shown.
+
+\begin{landscape}
+\thispagestyle{empty}
+\cfoot{}
+\begin{figure}[htpb]
+\begin{lstlisting}[style=plain]
+$ ~filip/bin/gradle test             
+[...removed output...]
+Test run finished after 258 ms
+[        11 containers found      ]
+[         0 containers skipped    ]
+[        11 containers started    ]
+[         0 containers aborted    ]
+[        11 containers successful ]
+[         0 containers failed     ]
+[        26 tests found           ]
+[         1 tests skipped         ]
+[        25 tests started         ]
+[         0 tests aborted         ]
+[        25 tests successful      ]
+[         0 tests failed          ]
+[...removed output...]
+\end{lstlisting}
+\caption{Test results}
+\label{fig:tests}
+\end{figure}
+\end{landscape}
+
+\subsection{Usage}
+
+The program allows us multiple means of interaction which are listed
+when the program is passed the "-h" or "--help" flag which outputs the following
+The program supplies two means of interfacing with it, by calling
+the program with 0 arguments or the \texttt{-h} flag we can get the
+user guide supplied with the software
+
+\begin{lstlisting}[style=plain]
+$ java -jar build/libs/kilobyte-all-1.0-SNAPSHOT.jar --help
+usage: Decompiler [OPTION] [file|number]...
+ -h,--help              print this message
+ -suppress              suppress table header
+ -n,--number(s) <arg>   disassemble 32-bit word(s) from stdin
+ -printsupported        print all supported instructions
+\end{lstlisting}
+
+\subsubsection{Decompiling source code from files}
+
+The default setting is that the software interprets its given input
+arguments as a filenames, relative to the directory from which you
+execute the \tt{.jar} file. In the root directory of the project three
+example files are included.
+
+\tt{sample-program.hex} showcases the tabulated output for several
+instructions, as well as how error messages for partially legal
+instructions are written out.
+
+\tt{sample-decimal.hex} showcases that the program is capable
+of handling instructions in base 10. 
+
+\tt{sample-mingled-bases.hex} demonstrates that the program does not
+expect the file to be written consistently in either base 10 or base
+16 but evaluates this on a per-line basis. A number is interpreted to
+be in base 16 if it is prefixed by \tt{0x}. Between the two numbers
+a blank-line appears to showcase that the decompiler is robust
+enough to ignore such lines.
+
+We can inspect the contents of these files using \texttt{cat}
+as shown in Listing.~\ref{listing:sample-input-files}.
+
+\begin{figure}
+\begin{lstlisting}[style=plain,
+    caption=Sample input files,
+    label=listing:sample-input-files]
+$ cat sample-decimal.hex 
+599654392
+
+$ cat sample-mingled.hex
+599654392
+
+0xafbf0004
+
+$ cat sample-program.hex
+0x23bdfff8
+0xafbf0004
+0xafa40000
+0x28880001
+0x11000003
+0x20020001
+0x23bd0008
+0x03e00008
+0x2084ffff
+0x0c100000
+0x8fa40000
+0x8fbf0004
+0x23bd0008
+0x70821002
+0x03e00008
+0x00012122
+\end{lstlisting}
+\end{figure}
+
+Similarly we may observe the output of our decompiler in
+Listing.~\ref{listing:tabularized-output}, where the
+files are passed as a series of arguments.
+
+\begin{landscape}
+\thispagestyle{empty}
+\begin{lstlisting}[style=plain,
+    basicstyle=\footnotesize,
+    caption=Tabularized output,
+    label=listing:tabularized-output,
+][htpb]
+java -jar build/libs/kilobyte-all-1.0-SNAPSHOT.jar sample-program.hex sample-mingled-bases.hex sample-decimal.hex
+Machine Code  |  Format  |  Decomposition     |  Decomposition hexadecimal  |  Source                    |  Errors
+0x23bdfff8    |  I       |  [8 29 29 65528]   |  [8 0x1d 0x1d 0xfff8]       |  addi $sp, $sp, 65528      |  
+0xafbf0004    |  I       |  [43 29 31 4]      |  [0x2b 0x1d 0x1f 4]         |  sw $ra, 4($sp)            |  
+0xafa40000    |  I       |  [43 29 4 0]       |  [0x2b 0x1d 4 0]            |  sw $a0, 0($sp)            |  
+0x28880001    |  I       |  [10 4 8 1]        |  [0xa 4 8 1]                |  slti $t0, $a0, 1          |  
+0x11000003    |  I       |  [4 8 0 3]         |  [4 8 0 3]                  |  beq $t0, $zero, 3         |  
+0x20020001    |  I       |  [8 0 2 1]         |  [8 0 2 1]                  |  addi $v0, $zero, 1        |  
+0x23bd0008    |  I       |  [8 29 29 8]       |  [8 0x1d 0x1d 8]            |  addi $sp, $sp, 8          |  
+0x03e00008    |  R       |  [0 31 0 0 0 8]    |  [0 0x1f 0 0 0 8]           |  jr $ra                    |  
+0x2084ffff    |  I       |  [8 4 4 65535]     |  [8 4 4 0xffff]             |  addi $a0, $a0, 65535      |  
+0x0c100000    |  J       |  [3 0]             |  [3 0]                      |  jal 1048576               |  
+0x8fa40000    |  I       |  [35 29 4 0]       |  [0x23 0x1d 4 0]            |  lw $a0, 0($sp)            |  
+0x8fbf0004    |  I       |  [35 29 31 4]      |  [0x23 0x1d 0x1f 4]         |  lw $ra, 4($sp)            |  
+0x23bd0008    |  I       |  [8 29 29 8]       |  [8 0x1d 0x1d 8]            |  addi $sp, $sp, 8          |  
+0x70821002    |  R       |  [28 4 2 2 0 2]    |  [0x1c 4 2 2 0 2]           |  mul $v0, $a0, $v0         |  
+0x03e00008    |  R       |  [0 31 0 0 0 8]    |  [0 0x1f 0 0 0 8]           |  jr $ra                    |  
+0x00012122    |  R       |  [0 0 1 4 4 34]    |  [0 0 1 4 4 0x22]           |  sub $a0, $zero, $at       |   error(s)=["Expected shamt to be zero. Got 4"]
+0x23bdfff8    |  I       |  [8 29 29 65528]   |  [8 0x1d 0x1d 0xfff8]       |  addi $sp, $sp, 65528      |  
+0xafbf0004    |  I       |  [43 29 31 4]      |  [0x2b 0x1d 0x1f 4]         |  sw $ra, 4($sp)            |  
+0x23bdfff8    |  I       |  [8 29 29 65528]   |  [8 0x1d 0x1d 0xfff8]       |  addi $sp, $sp, 65528      | 
+\end{lstlisting}
+\end{landscape}
+
+\subsubsection{Decompiling input numbers}
+
+Additionally, the software provides a secondary means of use, through
+the \texttt{-n} flag which stands for \emph{number} so that the argument
+immediately following the flag.
+
+Notice in Listing.~\ref{listing:parsing-numbers-from-input-arguments}
+that it does not matter whether or not the number is in base 10 or
+base 16 (as long as numbers in base 16 are prefixed by \tt{0x}).
+
+\begin{landscape}
+\thispagestyle{empty}
+\begin{lstlisting}[style=plain,
+    basicstyle=\small,
+    caption=Parsing numbers from input arguments using the \texttt{-n} flag,
+    label=listing:parsing-numbers-from-input-arguments]
+$ java -jar build/libs/kilobyte-all-1.0-SNAPSHOT.jar -n 599654392 -n 0xafbf0004 -suppress
+0x23bdfff8    |  I       |  [8 29 29 65528]   |  [8 0x1d 0x1d 0xfff8]       |  addi $sp, $sp, 65528      |  
+0xafbf0004    |  I       |  [43 29 31 4]      |  [0x2b 0x1d 0x1f 4]         |  sw $ra, 4($sp)            |
+\end{lstlisting}
+\end{landscape}
+
+Lastly, note that the software handles partially valid instructions,
+i.e. instructions that may be correctly identified but validates some
+condition. For instance, the number \tt{0x00012122} corresponds to the
+\tt{sub} instruction. The number decomposes into bitfields according
+to the format of the instruction (viz. the R-format), and the opcode
+and funct field hold the correct values to identify the instruction as
+a \tt{sub} instruction \emph{but} the \tt{shamt} field is not set to
+4, which it has to be according to the instruction specification.
+
+When an instruction is partially legal the violating fields are outputted
+on the following line, see Listing.~\ref{listing:partially-valid-instructions}.
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[basicstyle=\small, 
+    language=bash, 
+    caption=Error print-outs for partially valid instructions,
+    label=listing:partially-valid-instructions,
+  backgroundcolor=\color{mintedbackground}]
+$  java -jar build/libs/kilobyte-all-1.0-SNAPSHOT.jar -n 0x00012122
+Machine Code  |  Format  |  Decomposition     |  Decomposition hexadecimal  |  Source                    |  Errors
+0x00012122    |  R       |  [0 0 1 4 4 34]    |  [0 0 1 4 4 0x22]           |  sub $a0, $zero, $at       |   error(s)=["Expected shamt to be zero. Got 4"]
+\end{lstlisting}
+\end{minipage}

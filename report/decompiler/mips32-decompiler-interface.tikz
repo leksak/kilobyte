@@ -1,7 +1,7 @@
 \begin{tikzpicture}[>=stealth]
-  \node [draw] (compiler) {Instruction.fromInteger};
+  \node [draw] (compiler) {CommandLineDecompiler.decompile()};
   \node [above=of compiler] (input) {32-bit integer (int)};
-  \node [below=of compiler] (output) {Instruction};
+  \node [below=of compiler] (output) {DecompiledInstruction};
   \draw [->] (input) -- (compiler);
   \draw [->] (compiler) -- (output);
 \end{tikzpicture}

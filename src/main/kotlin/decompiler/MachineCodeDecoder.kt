@@ -19,6 +19,7 @@ object MachineCodeDecoder {
     var line: String? = br.readLine()
     while (line != null) {
       if (line.isEmpty()) {
+        line = br.readLine()
         continue
       }
 
