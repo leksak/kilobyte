@@ -12,6 +12,9 @@ do
     ln -s --force "../$f" "simulator/$destination"  > /dev/null 2>&1
 done
 
+rm .gitignore
+touch .gitignore
+
 # Let's add our symlinks to the .gitignore file. 
 find -type l | cut -c 2- >> .gitignore
 

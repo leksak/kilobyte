@@ -7,6 +7,7 @@ import lombok.Value;
 import org.apache.commons.cli.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -15,10 +16,10 @@ import java.util.*;
 public class CommandLineDecompiler {
   static Options options = new Options()
         .addOption("h", "help", false, "print this message")
-        .addOption("n", true, "disassemble the given 32-bit word")
-        .addOption("S", "suppress", false, "suppress table header")
-        .addOption(null, "printsupported", false, "print all supported instructions");
-
+        .addOption("n", "number", true, "disassemble 32-bit word(s) from stdin")
+        .addOption("S", "suppress", false, "suppress the table header")
+        .addOption(null, "supported", false, "prints all supported instructions")
+        .addOption(null, "examples", false, "prints an example for each supported instructions.");
   static CommandLineParser parser = new DefaultParser();
   static HelpFormatter formatter = new HelpFormatter();
 
@@ -27,7 +28,7 @@ public class CommandLineDecompiler {
   }
 
   private static void printUsage() {
-    formatter.printHelp("MachineCodeDecoder [OPTION] [file|number]...", options);
+    formatter.printHelp("CommandLineDecompiler[OPTION] [file|number]...", options);
     System.out.println("If no argument is given then numbers are read from stdin");
   }
 
@@ -42,6 +43,7 @@ public class CommandLineDecompiler {
   private static void printSupportedInstructions() {
     Instruction.printInstructionSet(false);
   }
+  private static void printExamples() { Instruction.printAllExamples(); }
 
   private static List<DecompiledInstruction> decompile(List<Long> numbers) {
     return Lists.transform(numbers, CommandLineDecompiler::decompile);
@@ -65,14 +67,19 @@ public class CommandLineDecompiler {
       return;
     }
 
-    if (line.hasOption("printsupported")) {
+    if (line.hasOption("supported") || line.hasOption("S")) {
       printSupportedInstructions();
+      return;
+    }
+
+    if (line.hasOption("examples")) {
+      printExamples();
       return;
     }
 
     boolean printTableHeader = true;
 
-    if (line.hasOption("headerless")) {
+    if (line.hasOption("suppress")) {
       printTableHeader = false;
     }
 
@@ -88,7 +95,12 @@ public class CommandLineDecompiler {
       // Passed a list of files.
       for (String arg : argv) {
         // Decode the contents of each file
-        decompiledInstructions.addAll(CommandLineDecompiler.decompile(new File(arg)));
+        File f = new File(arg);
+        if (f.isFile()) {
+          decompiledInstructions.addAll(CommandLineDecompiler.decompile(f));
+        } else {
+          System.err.println("File not found: \"" + arg + "\"");
+        }
       }
     } else if (argv.length == 0) {
       // Decompile from standard in
@@ -100,7 +112,7 @@ public class CommandLineDecompiler {
   }
 
   private static void outputTable(boolean printTableHeader, List<DecompiledInstruction> decompiledInstructions) {
-    String formatString = "%-12s  |  %-6s  |  %-16s  |  %-25s  |  %-20s  |  %s";
+    String formatString = "%-12s  |  %-6s  |  %-16s  |  %-25s  |  %-24s  |  %s";
     Object[] header = {"Machine Code", "Format", "Decomposition", "Decomposition hexadecimal", "Source", "Errors"};
 
     if (printTableHeader) {

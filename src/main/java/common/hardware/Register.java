@@ -133,7 +133,6 @@ public enum Register {
     return Integer.valueOf(offsetSplitter(mnemonic, true));
   }
 
-
   /**
    * Will, if given the address-part('NUMBER($REG)') of a mnemonic-string and
    * will return either the NUMBER representation in base 10 or it will return

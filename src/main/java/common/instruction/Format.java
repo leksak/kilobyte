@@ -8,7 +8,6 @@ public enum Format {
   public final int[] lengths;
   public final int noOfFields;
 
-  
   Format(int... lengths) {
     this.lengths = lengths;
     noOfFields = lengths.length;

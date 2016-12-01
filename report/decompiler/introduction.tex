@@ -68,18 +68,21 @@ not themselves identical.
 In this assignment the decompiler must be able to translate from the
 machine-readable language of 32-bit numbers representing MIPS32
 instructions to the human-readable target language described in the
-introduction.
+introduction. See \ref{fig:mipsdecompiler}
 
 \begin{figure}[H]
   \centering
   \input{mips32-decompiler.tikz}
-  \caption{A decompiler}
-  \label{fig:decompiler}
+  \caption{Our MIPS32-decompiler}
+  \label{fig:mipsdecompiler}
 \end{figure}
+
+\ref{fig:entrypointdecompiler} describes the programs entry-point into the
+decompilation of an instruction.
 
 \begin{figure}[H]
   \centering
   \input{mips32-decompiler-interface.tikz}
-  \caption{A decompiler}
-  \label{fig:decompiler}
+  \caption{Entry point for our decompiler}
+  \label{fig:entrypointdecompiler}
 \end{figure}

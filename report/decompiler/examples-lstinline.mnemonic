@@ -1,0 +1,96 @@
+=add $t1, $t2, $t3=
+=addu $t1, $t2, $t3=
+=addi $t1, $10, 4=
+=addiu $t1, $t2, 4=
+=and $t1, $t2, $t3=
+=andi $t1, $t2, 4=
+=clo $t1, $t2=
+=clz $t1, $t2=
+=div $t1, $t2=
+=divu $t1, $t2=
+=mult $t1, $t2=
+=multu $t1, $t2=
+=mul $v0, $a0, $v0=
+=madd $t1, $t2=
+=maddu $t1, $t2=
+=msub $t1, $t2=
+=msubu $t1, $t2=
+=nor $t1, $t2, $t3=
+=or $t1, $t2, $t3=
+=ori $t1, $t2, 4=
+=sll $t1, $t2, $10=
+=sllv $t1, $t2, $t3=
+=sra $t1, $t2, $10=
+=srav $t1, $t2, $t3=
+=srl $t1, $t2, $10=
+=srlv $t1, $t2, $t3=
+=sub $t1, $t2, $t3=
+=subu $t1, $t2, $t3=
+=xor $t1, $t2, $t3=
+=xori $t1, $t2, 4=
+=lui $t1, 4=
+=slt $t1, $t2, $t3=
+=sltu $t1, $t2, $t3=
+=slti $t1, $t2, 4=
+=sltiu $t1, $t2, 4=
+=beq $t1, $t2, 4=
+=beql $t1, $t2, 6=
+=bgez $t1, 5=
+=bgezl $t1, 5=
+=bgezal $t1, 10=
+=bgczall $t1, 10=
+=bgtz $t1, 4=
+=bgtzl $t1, 6=
+=blez $t1, 4=
+=bltzal $t1, 10=
+=bltzall $t1, 10=
+=bltz $t1, 5=
+=bltzl $t1, 5=
+=bne $t1, $t2, 4=
+=bnel $t1, $t2, 6=
+=j 4=
+=jal 0x00400000=
+=jalr $t1, $t2=
+=jr $t1=
+=teq $t1, $t2=
+=teqi $t1, 5=
+=tne $t1, $t2=
+=tnei $t1, 5=
+=tge $t1, $t2=
+=tgeu $t1, $t2=
+=tgei $t1, 5=
+=tgeiu $t1, 5=
+=tlt $t1, $t2=
+=tltu $t1, $t2=
+=tlti $t1, 5=
+=tltiu $t1, 5=
+=nop=
+=blezl $t1, 6=
+=lb $t1, 7($t2)=
+=lbu $t1, 11($t2)=
+=lh $t1, 8($t2)=
+=lhu $t1, 12($t2)=
+=lw $t1, 10($t2)=
+=lwc1 $ra, 4($sp)=
+=lwc2 $ra, 4($sp)=
+=lwl $t1, 9($t2)=
+=lwr $t1, 13($t2)=
+=ll $ra, 4($sp)=
+=sb $t1, 4($t2)=
+=sh $t1, 4($t2)=
+=sw $ra, 4($sp)=
+=swc1 $t1, 4($sp)=
+=swc2 $t1, 4($sp)=
+=sdc1 $t1, 4($sp)=
+=sdc2 $t1, 4($sp)=
+=swl $t1, 4($t2)=
+=sc $t1, 4($sp)=
+=mfhi $t1=
+=mflo $t1=
+=mthi $t1=
+=mtlo $t1=
+=movn $t1, $t2, $t3=
+=movz $t1, $t2, $t3=
+=pref 1, 2($sp)=
+=ldc1 $t1, 4($sp)=
+=ldc2 $t1, 4($sp)=
