@@ -17,7 +17,7 @@ public class Simulator {
   PC programCounter = new PC();
 
   @Getter
-  InstructionMemory instructionMemory = new InstructionMemory();
+  InstructionMemory instructionMemory = InstructionMemory.init();
   ImmutableSet<Instruction> supportedInstructions = ImmutableSet.of(
         ADD,
         SUB,
@@ -66,7 +66,7 @@ public class Simulator {
   }
 
   public void loadProgram(List<Instruction> instructions) {
-    instructionMemory.putAll(instructions);
+    instructionMemory.addAll(instructions);
   }
 
   public void execute(Instruction i) {

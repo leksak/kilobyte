@@ -1,4 +1,5 @@
 package simulator;
 
-public class Observer {
+public interface Observer<T> {
+  void notify(Observable<T> o);
 }
