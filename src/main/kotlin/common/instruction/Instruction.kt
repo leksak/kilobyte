@@ -1482,17 +1482,6 @@ data class Instruction private constructor(
         }
       }
     }
-
-    /**
-     * Prints the names of all the instructions contained in this set.
-     * Useful for technical documentation.
-     *
-     * @param onlyExecutables Set to true to only print the functions
-     *                        which are executable. (not yet supported)
-     */
-    @JvmStatic fun printInstructionSet(onlyExecutables: Boolean = false) {
-      primordialSet.forEach { prototype -> println(prototype.iname) }
-    }
   }
 }
 
