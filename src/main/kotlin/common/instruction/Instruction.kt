@@ -457,9 +457,7 @@ data class Instruction private constructor(
           numericRepresentation = 0x014A4803,
           description = "Shift right arithmetic : Set \$t1 to result of " +
                 "sign-extended shifting \$t2 right by number of bits " +
-                "specified by immediateShift right arithmetic : Set \$t1 to " +
-                "result of sign-extended shifting \$t2 right by number of " +
-                "bits specified by immediate",
+                "specified by immediate",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
 
