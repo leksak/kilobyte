@@ -50,6 +50,10 @@ sealed class DecompiledInstruction {
 
   companion object {
     @JvmStatic fun from(machineCode: Long): DecompiledInstruction = Instruction.decompile(machineCode)
+
+    @JvmStatic fun printAllInstructions() {
+      Instruction.primordialSet.forEach(::println)
+    }
   }
 }
 

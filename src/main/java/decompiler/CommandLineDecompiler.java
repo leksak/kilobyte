@@ -41,8 +41,9 @@ public class CommandLineDecompiler {
   }
 
   private static void printSupportedInstructions() {
-    Instruction.printInstructionSet(false);
+    DecompiledInstruction.printAllInstructions();
   }
+  
   private static void printExamples() { Instruction.printAllExamples(); }
 
   private static List<DecompiledInstruction> decompile(List<Long> numbers) {
