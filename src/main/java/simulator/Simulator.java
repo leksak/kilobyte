@@ -5,7 +5,8 @@ import common.instruction.Instruction;
 import lombok.Getter;
 import lombok.Value;
 
-import java.io.File;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static common.instruction.Instruction.*;
@@ -40,20 +41,41 @@ public class Simulator {
     throw new UnsupportedOperationException();
   }
 
-  public void loadProgram(File f) {
+  public void loadProgram(String filename) throws IOException {
+    loadProgram(new File(filename));
+  }
 
+  public void loadProgram(File f) throws IOException {
+    loadProgram(new FileReader(f));
+  }
+
+  public void loadProgram(Reader r) throws IOException {
+    BufferedReader br = new BufferedReader(r);
+
+    List<Instruction> instructions = new ArrayList<>();
+    String line;
+    while ((line = br.readLine()) != null) {
+      if (line.isEmpty()) {
+        continue;
+      }
+
+      instructions.add(Instruction.from(line));
+    }
+
+    loadProgram(instructions);
   }
 
   public void loadProgram(List<Instruction> instructions) {
-
+    instructionMemory.putAll(instructions);
   }
 
   public void execute(Instruction i) {
-
+    
   }
 
   public void execute(String s) {
-
+    // Executes a single instruction
+    execute(Instruction.from(s));
   }
 
   /**
@@ -63,6 +85,4 @@ public class Simulator {
   public void printSupportedInstructions() {
     supportedInstructions.forEach(System.out::println);
   }
-
-
 }
