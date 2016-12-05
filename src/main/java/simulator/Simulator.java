@@ -37,10 +37,6 @@ public class Simulator {
         NOP
   );
 
-  public Object next() {
-    throw new UnsupportedOperationException();
-  }
-
   public void loadProgram(String filename) throws IOException {
     loadProgram(new File(filename));
   }
@@ -69,8 +65,13 @@ public class Simulator {
     instructionMemory.addAll(instructions);
   }
 
+  public void next() {
+    // Fetch the next instruction from memory.
+    Instruction i = instructionMemory.read(programCounter);
+  }
+
   public void execute(Instruction i) {
-    
+
   }
 
   public void execute(String s) {

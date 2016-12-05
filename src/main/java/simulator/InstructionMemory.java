@@ -57,6 +57,10 @@ public class InstructionMemory {
     return instructions[address / 4];
   }
 
+  public Instruction read(PC programCounter) {
+    return fromAddress(programCounter.getCurrentAddress());
+  }
+
   public void add(Instruction i) {
     if (index >= 250) {
       throw new IllegalStateException("Ran out of InstructionMemory");
