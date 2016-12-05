@@ -3,8 +3,6 @@ package simulator;
 import com.google.common.collect.ImmutableSet;
 import common.hardware.Register;
 
-import static common.hardware.Register.$t0;
-
 public class RegisterFile {
   private ImmutableSet<Register> registers = ImmutableSet.copyOf(Register.values());
 
