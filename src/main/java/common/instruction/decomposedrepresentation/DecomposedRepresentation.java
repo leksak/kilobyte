@@ -106,7 +106,7 @@ public class DecomposedRepresentation {
    *                                  {@code start} does not satisfy {@code 0 <= start <= 31} or if
    *                                  {@code start + numberOfBits > 32}.
    */
-  public static int getNBits(long number, int start, int numberOfBits) {
+  private static int getNBits(long number, int start, int numberOfBits) {
     if (start > 31 || start < 0) {
       throw new IllegalArgumentException(start > 31 ?
             "The supplied index \"start\" must satisfy start <= 31" :
@@ -125,7 +125,7 @@ public class DecomposedRepresentation {
     return Integer.parseInt(requestedBits, 2);
   }
 
-  public static String asBitPattern(long number) {
+  private static String asBitPattern(long number) {
     String binaryString = Long.toBinaryString(number);
     int length = binaryString.length();
     String pad = "";
