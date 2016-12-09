@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.StringJoiner;
 
-import static org.junit.jupiter.api.Assertions.expectThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestExceptionsOnInvalidInput {
   static final String ANSI_GREEN = "\u001B[32m";
@@ -51,7 +51,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatNopCannotBeInstantiatedWithTooManyArguments() {
     String faultyNopRepresentation = "nop foo";
-    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
+    Throwable e = assertThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyNopRepresentation));
     success(e);
   }
@@ -59,7 +59,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatNopCannotBeInstantiatedWithTrailingCharacters() {
     String faultyNopRepresentation = "nop,";
-    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
+    Throwable e = assertThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyNopRepresentation));
     success(e);
   }
@@ -67,7 +67,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatAddCannotBeInstantiatedWithTooManyArguments() {
     String faultyAddRepresentation = "add $t1, $t2, $t3, $t1";
-    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
+    Throwable e = assertThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyAddRepresentation));
     success(e);
   }
@@ -75,14 +75,14 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatAddCannotContainParentheses() {
     String faultyAddRepresentation = "add $t1, $t2, $t3()";
-    Throwable e = expectThrows(IllegalCharactersInMnemonicException.class, () ->
+    Throwable e = assertThrows(IllegalCharactersInMnemonicException.class, () ->
           Instruction.from(faultyAddRepresentation));
     success(e);
   }
 
   @Test
   void testThatExceptionIsThrownWhenThereAreIllegalCharacters() throws Exception {
-    Throwable e = expectThrows(IllegalCharactersInMnemonicException.class, () ->
+    Throwable e = assertThrows(IllegalCharactersInMnemonicException.class, () ->
           Instruction.from("add $t1, $t2, $t3!#$sp"));
     success(e);
   }
@@ -98,7 +98,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatAddCannotBeInstantiatedWithTooFewArguments() {
     String faultyAddRepresentation = "add $t1, $t2";
-    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
+    Throwable e = assertThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyAddRepresentation));
     success(e);
   }
@@ -106,7 +106,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatAddCannotBeInstantiatedWithTooManyCommas() {
     String faultyAddRepresentation = "add $t1, $t2,, $t3";
-    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
+    Throwable e = assertThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyAddRepresentation));
     success(e);
   }
@@ -114,7 +114,7 @@ public class TestExceptionsOnInvalidInput {
   @Test
   void testThatAddCannotBeInstantiatedWithTooFewCommas() {
     String faultyAddRepresentation = "add $t1, $t2 $t3";
-    Throwable e = expectThrows(MalformedMnemonicException.class, () ->
+    Throwable e = assertThrows(MalformedMnemonicException.class, () ->
           Instruction.from(faultyAddRepresentation));
     success(e);
   }

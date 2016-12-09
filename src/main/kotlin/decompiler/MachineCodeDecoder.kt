@@ -1,4 +1,4 @@
-package decompiler;
+package decompiler
 
 import com.google.common.base.Preconditions.checkArgument
 import java.io.BufferedReader
