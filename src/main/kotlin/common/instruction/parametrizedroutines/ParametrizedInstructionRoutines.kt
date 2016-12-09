@@ -1,7 +1,9 @@
 package common.instruction.parametrizedroutines
 
 import com.google.common.base.Preconditions.checkArgument
+import common.extensions.*
 import common.hardware.Register
+import common.hardware.RegisterFile
 import common.instruction.DecompiledInstruction
 import common.instruction.Format
 import common.instruction.Instruction
@@ -373,15 +375,15 @@ private fun formatMachineCodeToMnemonic(prototype: Instruction,
     // The fields are given in order, so we can just concatenate
     // the strings.
     when(fields[i]) {
-      "rd" -> mnemonicRepresentation += Register.fromInt(machineCode.rd()).toString()
-      "rt" -> mnemonicRepresentation += Register.fromInt(machineCode.rt()).toString()
-      "rs" -> mnemonicRepresentation += Register.fromInt(machineCode.rs()).toString()
+      "rd" -> mnemonicRepresentation += RegisterFile[machineCode.rd()]
+      "rt" -> mnemonicRepresentation += RegisterFile[machineCode.rt()]
+      "rs" -> mnemonicRepresentation += RegisterFile[machineCode.rs()]
       "offset" -> mnemonicRepresentation += machineCode.offset().toString()
       "target" -> mnemonicRepresentation += machineCode.target().toString()
       "address" -> {mnemonicRepresentation += machineCode.offset().toString()
         if (!fields.contains("rs") && iname != "lui") {
           mnemonicRepresentation += "("
-          mnemonicRepresentation += Register.fromInt(machineCode.rs()).toString()
+          mnemonicRepresentation += RegisterFile[machineCode.rs()]
           mnemonicRepresentation += ")"
         }
       }
@@ -403,18 +405,18 @@ private fun formatMnemonic(tokens: Array<String>, n: IntArray, prototype: Instru
     // from 1 so that we can skip the iname
     val destinationIndex: Int = indexOf(fields[i])
     when(fields[i]) {
-      "target"-> n[destinationIndex] = Register.offsetFromOffset(tokens[i])
-      "offset"-> n[destinationIndex] = Register.offsetFromOffset(tokens[i])
+      "target"-> n[destinationIndex] = tokens[i].getOffset()
+      "offset"-> n[destinationIndex] = tokens[i].getOffset()
       "address"-> {
-        n[destinationIndex] = Register.offsetFromOffset(tokens[i])
-        n[indexOf("rs")] = Register.registerFromOffset(tokens[i]).asInt()
+        n[destinationIndex] = tokens[i].getOffset()
+        n[indexOf("rs")] = RegisterFile.asInt(tokens[i].getRegister())
       }
       "hint"-> {
-        val hint = Register.offsetFromOffset(tokens[i])
+        val hint = tokens[i].getOffset()
         n[destinationIndex] = hint
         prototype.hint = Hint.from(hint)
       }
-      else -> n[destinationIndex] = Register.fromString(tokens[i]).asInt()
+      else -> n[destinationIndex] = RegisterFile.asInt(tokens[i])
     }
   }
   return tokens

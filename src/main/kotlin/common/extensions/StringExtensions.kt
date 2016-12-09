@@ -1,5 +1,8 @@
-package common.instruction.mnemonic
+package common.extensions
 
+
+import common.hardware.RegisterFile
+import decompiler.MachineCodeDecoder
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -27,7 +30,8 @@ fun String.removeCommas() = this.remove(",")
  * All leading and trailing whitespace is trimmed. All whitespace
  * within the String are ignored in the tokenization process. For
  * an example we get that "iname rd, rs, rt".tokenize() yields
- * ["iname", "rd", "rs", "rt"]
+ * ["iname", "rd", "rs", "rt"] and that "10($t0)".tokenize("(") yields
+ * ["10", "$t0"]
  *
  * @param delimiter the character that delimits tokens
  */
@@ -35,7 +39,5 @@ fun String.tokenize(delimiter: String = ","): Array<String> = {
   this.trim().replace(delimiter, " ").replace(Regex("\\s+"), " ").split(" ").toTypedArray()
 }.invoke()
 
-
-
-
-
+fun String.getOffset() : Int = MachineCodeDecoder.decode(this.remove(")").tokenize("(")[0]).toInt()
+fun String.getRegister() : String = RegisterFile[this.remove(")").tokenize("(")[1]]

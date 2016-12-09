@@ -85,5 +85,6 @@ class RegisterFile {
 
     @JvmStatic operator fun get(mnemonic: String) : String = rf[mnemonic].toString()
     @JvmStatic operator fun get(index: Int) : String = rf[index].toString()
+    @JvmStatic fun asInt(mnemonic: String) : Int = rf[mnemonic].asInt
   }
 }

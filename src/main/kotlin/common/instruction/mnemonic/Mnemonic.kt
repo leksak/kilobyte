@@ -1,8 +1,10 @@
 package common.instruction.mnemonic
 
+import common.extensions.*
 import common.hardware.Register
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import common.instruction.exceptions.MalformedMnemonicException
+import decompiler.MachineCodeDecoder
 import java.util.*
 import java.util.regex.Pattern
 
@@ -15,8 +17,13 @@ import java.util.regex.Pattern
  * numbers be done in different bases such as hexadecimal or decimal.
  */
 fun mnemonicEquals(s1: String, s2: String): Boolean {
-  val tokens1 = s1.tokenize()
-  val tokens2 = s2.tokenize()
+  val standard1 = standardizeMnemonic(s1)
+  val standard2 = standardizeMnemonic(s2)
+
+  if (standard1 == standard2) return true
+
+  val tokens1 = standard1.tokenize()
+  val tokens2 = standard2.tokenize()
   if (tokens1.size != tokens2.size) {
     return false
   }
@@ -24,43 +31,37 @@ fun mnemonicEquals(s1: String, s2: String): Boolean {
     val tok1 = tokens1[i]
     val tok2 = tokens2[i]
 
-    val tok1DenotesRegister = tok1.startsWith("\$")
-    val tok2DenotesRegister = tok2.startsWith("\$")
+    // If the strings are equal then we can move on to the next token
+    if (tok1 == tok2) continue
 
-    // Both have to either denote a register or not simultaneously
-    if (tok1DenotesRegister && tok2DenotesRegister) {
-      // Both denote a register, do they denote the same register?
-      if (!Register.equals(tok1, tok2)) { return false }
-    } else {
-      // Either one denotes a register and the other does not or
-      // they are both not registers.
-      if (tok1DenotesRegister.xor(tok2DenotesRegister)) {
-        // True if one is a register and the other is not hence the
-        // two representations are not equal!
+    // Are they both registers?
+    val isReg1 = tok1.startsWith("\$")
+    val isReg2 = tok2.startsWith("\$")
+
+    // Is one a register but the other one isn't?
+    // If so, then the mnemonics are not equal
+    if (isReg1 xor isReg2) return false
+
+    // Are both registers?
+    if (isReg1 and isReg2) {
+      // Are they the same register? If not the mnemonics are not equal
+      if (!Register.equals(tok1, tok2)) {
         return false
       }
+      continue
+    } else {
+      // Either we are looking at a "pure" number (but the two tokens may be in different bases
+      // such as tok1=0x01 and tok2=1 or we may have tokens on the form "4($t0)", where
+      // one token is "0x04($t0)" and the other "4($8)"
+      if (tok1.contains('(') and tok2.contains('(')) {
+        // Both strings are on the form "offset(reg)"
+        val offset1 = tok1.getOffset() // getOffset handles translating bases
+        val offset2 = tok2.getOffset()
+        if (offset1 != offset2) return false
 
-      if (tok1 != tok2) {
-        // The tokens isn't register nor equal, however they can be
-        // address-format equal.
-        //TODO: Will this be too arbitrary?
-        try {
-          if (Register.offsetFromOffset(tok1) == Register.offsetFromOffset(tok1)) {
-            if (Register.registerFromOffset(tok1) == Register.registerFromOffset(tok1)) {
-              //The tokens is address and equal.
-              continue
-            }
-          }
-        } catch (e: IllegalArgumentException) {
-          //Since it is not a number to start with, it cant be number equal
-          // or a address-String.
-          return false
-        } catch (e : StringIndexOutOfBoundsException) {
-          //this means that the string only was different numeric-base.
-          continue
-        }
-        // Neither string is a register so compare them for simple equality
-        return false
+        val reg1 = tok1.getRegister() // Handles symbolic difference like $t0 and $t8
+        val reg2 = tok2.getRegister()
+        if (reg1 != reg2) return false
       }
     }
   }

@@ -1,6 +1,7 @@
 package simulator;
 
 import com.google.common.collect.ImmutableSet;
+import common.hardware.RegisterFile;
 import common.instruction.Instruction;
 import lombok.Getter;
 import lombok.Value;
@@ -15,6 +16,8 @@ import static common.instruction.Instruction.*;
 public class Simulator {
   @Getter
   PC programCounter = new PC();
+  @Getter
+  RegisterFile rf = new RegisterFile();
 
   @Getter
   InstructionMemory instructionMemory = InstructionMemory.init();
