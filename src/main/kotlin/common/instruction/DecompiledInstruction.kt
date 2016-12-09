@@ -8,7 +8,7 @@ sealed class DecompiledInstruction {
   class PartiallyValid(val instruction: Instruction, val errors: List<String>) : DecompiledInstruction()
   class UnknownInstruction(val machineCode: Long) : DecompiledInstruction()
 
-  override fun toString() : String {
+  override fun toString(): String {
     when (this) {
       is Valid -> return instruction.toString()
       is PartiallyValid -> {
@@ -23,28 +23,33 @@ sealed class DecompiledInstruction {
     }
   }
 
-  fun asInstruction() : Instruction {
-    when (this) { is Valid -> return instruction }
+  fun asInstruction(): Instruction {
+    when (this) { is Valid -> return instruction
+    }
     throw IllegalStateException("\"asInstruction\" called on a non-valid instruction")
   }
 
-  fun isValid() : Boolean {
-    when (this) { is Valid -> return true }
+  fun isValid(): Boolean {
+    when (this) { is Valid -> return true
+    }
     return false
   }
 
-  fun isUnknown() : Boolean {
-    when (this) { is UnknownInstruction -> return true }
+  fun isUnknown(): Boolean {
+    when (this) { is UnknownInstruction -> return true
+    }
     return false
   }
 
-  fun isPartiallyValid() : Boolean {
-    when (this) { is PartiallyValid -> return true }
+  fun isPartiallyValid(): Boolean {
+    when (this) { is PartiallyValid -> return true
+    }
     return false
   }
 
-  fun errors() : List<String> {
-    when (this) { is PartiallyValid -> return errors }
+  fun errors(): List<String> {
+    when (this) { is PartiallyValid -> return errors
+    }
     return emptyList()
   }
 

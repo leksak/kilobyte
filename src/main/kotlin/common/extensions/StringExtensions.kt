@@ -39,5 +39,5 @@ fun String.tokenize(delimiter: String = ","): Array<String> = {
   this.trim().replace(delimiter, " ").replace(Regex("\\s+"), " ").split(" ").toTypedArray()
 }.invoke()
 
-fun String.getOffset() : Int = MachineCodeDecoder.decode(this.remove(")").tokenize("(")[0]).toInt()
-fun String.getRegister() : String = RegisterFile[this.remove(")").tokenize("(")[1]]
+fun String.getOffset(): Int = MachineCodeDecoder.decode(this.remove(")").tokenize("(")[0]).toInt()
+fun String.getRegister(): String = RegisterFile[this.remove(")").tokenize("(")[1]]

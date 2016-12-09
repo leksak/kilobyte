@@ -1,20 +1,18 @@
 package simulator
 
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.Test
-
 import common.hardware.RegisterFile
-
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 
 @Disabled
 class SimulatorTest {
   internal lateinit var s: Simulator
   internal lateinit var rf: RegisterFile
-  
+
   @BeforeEach
   internal fun initCreateSimulator() {
     s = Simulator()

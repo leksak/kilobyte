@@ -2,7 +2,6 @@ package common.instruction.parametrizedroutines
 
 import com.google.common.base.Preconditions.checkArgument
 import common.extensions.*
-import common.hardware.Register
 import common.hardware.RegisterFile
 import common.instruction.DecompiledInstruction
 import common.instruction.Format
@@ -11,20 +10,23 @@ import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import common.instruction.exceptions.MalformedMnemonicException
 import common.instruction.extensions.*
-import common.instruction.mnemonic.*
+import common.instruction.mnemonic.iname
+import common.instruction.mnemonic.standardizeMnemonic
+import common.instruction.mnemonic.throwExceptionIfContainsIllegalCharacters
+import common.instruction.mnemonic.throwIfIncorrectNumberOfCommas
 import decompiler.MachineCodeDecoder
 import java.util.*
 
 val fieldNameToIndexMap = mapOf(
-  "rs" to 1,
-  "rt" to 2,
-  "rd" to 3,
-  "shamt" to 4,
-  "funct" to 5,
-  "offset" to 3,
-  "address" to 3,
-  "target" to 1,
-  "hint" to 2
+      "rs" to 1,
+      "rt" to 2,
+      "rd" to 3,
+      "shamt" to 4,
+      "funct" to 5,
+      "offset" to 3,
+      "address" to 3,
+      "target" to 1,
+      "hint" to 2
 )
 
 fun indexOf(fieldName: String): Int {
@@ -32,15 +34,15 @@ fun indexOf(fieldName: String): Int {
 }
 
 val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
-  Pair("rs", Long::rs),
-  Pair("rt", Long::rt),
-  Pair("rd", Long::rd),
-  Pair("shamt", Long::shamt),
-  Pair("funct", Long::funct),
-  Pair("offset", Long::offset),
-  Pair("target", Long::target),
-  Pair("address", Long::offset),
-  Pair("hint", Long::hint)
+      Pair("rs", Long::rs),
+      Pair("rt", Long::rt),
+      Pair("rd", Long::rd),
+      Pair("shamt", Long::shamt),
+      Pair("funct", Long::funct),
+      Pair("offset", Long::offset),
+      Pair("target", Long::target),
+      Pair("address", Long::offset),
+      Pair("hint", Long::hint)
 )
 
 
@@ -50,7 +52,7 @@ val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
  * page A-117
  * Reference: MIPS-instruction with prefix 'PREF'
  */
-enum class Hint (val value: Int) {
+enum class Hint(val value: Int) {
   LOAD(0),
   STORE(1),
   LOAD_STREAMED(3),
@@ -63,37 +65,37 @@ enum class Hint (val value: Int) {
   }
 
   fun description(value: Int): String {
-    when(value) {
-      LOAD.value->return "Data is expected to be loaded (not modified). " +
-        "Fetch data as if for a load"
+    when (value) {
+      LOAD.value -> return "Data is expected to be loaded (not modified). " +
+            "Fetch data as if for a load"
 
-      STORE.value->return "Data is expected to be stored or modified. " +
-        "Fetch data as if for a store."
-      LOAD_STREAMED.value->return "Data is expected to be loaded (not " +
-        "modified) but not reused extensively; " +
-        "it will “stream” through cache. Fetch " +
-        "data as if for a load and place it in " +
-        "the cache so that it will not displace " +
-        "data prefetched as 'retained'."
-      STORE_STREAMED.value->return "Data is expected to be stored or modified " +
-        "but not reused extensively; it will " +
-        "'stream' through cache. Fetch data as if " +
-        "for a store and place it in the cache so " +
-        "that it will not displace data " +
-        "prefetched as 'retained'."
-      LOAD_RETAINED.value->return "Data is expected to be loaded (not " +
-        "modified) and reused extensively; it " +
-        "should be “retained” in the cache. Fetch " +
-        "data as if for a load and place it in the " +
-        "cache so that it will not be displaced by " +
-        "data prefetched as “streamed”"
-      STORE_RETAINED.value->return "Data is expected to be stored or " +
-        "modified and reused extensively; it " +
-        "should be “retained” in the cache. " +
-        "Fetch data as if for a store and place " +
-        "it in the cache so that will not be " +
-        "displaced by data prefetched as “streamed”."
-      else->return "Not yet defined."
+      STORE.value -> return "Data is expected to be stored or modified. " +
+            "Fetch data as if for a store."
+      LOAD_STREAMED.value -> return "Data is expected to be loaded (not " +
+            "modified) but not reused extensively; " +
+            "it will “stream” through cache. Fetch " +
+            "data as if for a load and place it in " +
+            "the cache so that it will not displace " +
+            "data prefetched as 'retained'."
+      STORE_STREAMED.value -> return "Data is expected to be stored or modified " +
+            "but not reused extensively; it will " +
+            "'stream' through cache. Fetch data as if " +
+            "for a store and place it in the cache so " +
+            "that it will not displace data " +
+            "prefetched as 'retained'."
+      LOAD_RETAINED.value -> return "Data is expected to be loaded (not " +
+            "modified) and reused extensively; it " +
+            "should be “retained” in the cache. Fetch " +
+            "data as if for a load and place it in the " +
+            "cache so that it will not be displaced by " +
+            "data prefetched as “streamed”"
+      STORE_RETAINED.value -> return "Data is expected to be stored or " +
+            "modified and reused extensively; it " +
+            "should be “retained” in the cache. " +
+            "Fetch data as if for a store and place " +
+            "it in the cache so that will not be " +
+            "displaced by data prefetched as “streamed”."
+      else -> return "Not yet defined."
     }
   }
 }
@@ -243,8 +245,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
 
   return object : ParametrizedInstructionRoutine {
     override fun invoke(prototype: Instruction,
-                        mnemonicRepresentation: String): Instruction
-    {
+                        mnemonicRepresentation: String): Instruction {
       val standardizedMnemonic = standardizeMnemonic(mnemonicRepresentation)
       throwExceptionIfContainsIllegalCharacters(standardizedMnemonic)
       val expectedNumberOfCommas = standardizedPattern.countCommas()
@@ -274,7 +275,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
       val opcode = prototype.opcode
       val n = IntArray(format.noOfFields)
       n[0] = opcode
-      if (format == Format.R || prototype== Instruction.JALR) {
+      if (format == Format.R || prototype == Instruction.JALR) {
         n[5] = prototype.funct!!
       }
 
@@ -310,11 +311,10 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
     /**
      * When in machineCode, we trust.
      **/
-    override fun invoke(prototype: Instruction, machineCode: Long): DecompiledInstruction
-    {
+    override fun invoke(prototype: Instruction, machineCode: Long): DecompiledInstruction {
       val mnemonicRepresentation = formatMachineCodeToMnemonic(prototype,
-                                                               machineCode,
-                                                               fields)
+            machineCode,
+            fields)
       val inst = prototype(mnemonicRepresentation, machineCode)
       val errors = errorCheckPrototype(machineCode, format, fields)
       if (errors.isNotEmpty()) {
@@ -360,7 +360,7 @@ private fun errorCheckPrototype(machineCode: Long,
     }
     else -> {
       throw IllegalStateException("Attempted to instantiate " +
-        "a instruction from an unknown format. Format: $format")
+            "a instruction from an unknown format. Format: $format")
     }
   }
   return errors
@@ -374,13 +374,14 @@ private fun formatMachineCodeToMnemonic(prototype: Instruction,
   for (i in fields.indices) {
     // The fields are given in order, so we can just concatenate
     // the strings.
-    when(fields[i]) {
+    when (fields[i]) {
       "rd" -> mnemonicRepresentation += RegisterFile[machineCode.rd()]
       "rt" -> mnemonicRepresentation += RegisterFile[machineCode.rt()]
       "rs" -> mnemonicRepresentation += RegisterFile[machineCode.rs()]
       "offset" -> mnemonicRepresentation += machineCode.offset().toString()
       "target" -> mnemonicRepresentation += machineCode.target().toString()
-      "address" -> {mnemonicRepresentation += machineCode.offset().toString()
+      "address" -> {
+        mnemonicRepresentation += machineCode.offset().toString()
         if (!fields.contains("rs") && iname != "lui") {
           mnemonicRepresentation += "("
           mnemonicRepresentation += RegisterFile[machineCode.rs()]
@@ -404,14 +405,14 @@ private fun formatMnemonic(tokens: Array<String>, n: IntArray, prototype: Instru
   for (i in 1..tokens.size - 1) {
     // from 1 so that we can skip the iname
     val destinationIndex: Int = indexOf(fields[i])
-    when(fields[i]) {
-      "target"-> n[destinationIndex] = tokens[i].getOffset()
-      "offset"-> n[destinationIndex] = tokens[i].getOffset()
-      "address"-> {
+    when (fields[i]) {
+      "target" -> n[destinationIndex] = tokens[i].getOffset()
+      "offset" -> n[destinationIndex] = tokens[i].getOffset()
+      "address" -> {
         n[destinationIndex] = tokens[i].getOffset()
         n[indexOf("rs")] = RegisterFile.asInt(tokens[i].getRegister())
       }
-      "hint"-> {
+      "hint" -> {
         val hint = tokens[i].getOffset()
         n[destinationIndex] = hint
         prototype.hint = Hint.from(hint)
@@ -422,7 +423,7 @@ private fun formatMnemonic(tokens: Array<String>, n: IntArray, prototype: Instru
   return tokens
 }
 
-fun isAllowedToContainParentheses(format : Format) : Boolean {
+fun isAllowedToContainParentheses(format: Format): Boolean {
   return (format == Format.I)
 }
 
@@ -434,12 +435,14 @@ fun isAllowedToContainParentheses(format : Format) : Boolean {
  * jr $t1             (1)
  * break              (0)
  */
-fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic : String) {
+fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic: String) {
   // -1 for the instruction name
   val withoutCommas = standardizedMnemonic.removeCommas()
   val actualArgc = withoutCommas.split(" ").size - 1
 
-  if (expectedArgc == actualArgc) { return }
+  if (expectedArgc == actualArgc) {
+    return
+  }
 
   val err = "Wrong number of arguments. Expected $expectedArgc arguments. Got: $actualArgc"
   throw MalformedMnemonicException(standardizedMnemonic, err)

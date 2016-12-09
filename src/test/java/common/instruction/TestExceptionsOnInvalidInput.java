@@ -21,6 +21,7 @@ public class TestExceptionsOnInvalidInput {
   static String yellow(String s) {
     return ANSI_YELLOW + s + ANSI_RESET;
   }
+
   static String blue(String s) {
     return ANSI_BLUE + s + ANSI_RESET;
   }

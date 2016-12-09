@@ -1,7 +1,6 @@
 package common.hardware
 
 
-
 /**
  * Within the MIPS32 architecture there are 32 general-purpose registers,
  * all of which are defined in this enum. The registers when written out,

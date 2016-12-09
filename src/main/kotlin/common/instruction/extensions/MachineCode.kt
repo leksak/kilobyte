@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions.checkArgument
 
 /* Convenience functions */
 fun Long.opcode() = this.bits(31, 26)
+
 fun Long.rs() = this.bits(25, 21)
 fun Long.rt() = this.bits(20, 16)
 fun Long.rd() = this.bits(15, 11)

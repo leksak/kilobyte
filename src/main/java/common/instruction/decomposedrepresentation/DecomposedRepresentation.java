@@ -16,7 +16,6 @@ public class DecomposedRepresentation {
     for (int i = 0; i < decomposition.length; i++) {
       this.decomposition[i] = (int) Integer.toUnsignedLong(decomposition[i]) & 0xffff;
     }
-
   }
 
   @Override
@@ -27,14 +26,14 @@ public class DecomposedRepresentation {
   /**
    * Decomposes the given number into chunks that have the specified lengths.
    * The sum of the supplied lengths must be equal to 32.
-   *
+   * <p>
    * For an example: The number 0x71014802 when decomposed into chunks
    * of lengths (6,5,5,5,5,6) yields the representation [0x1c, 8, 1, 9, 0, 2]
-   *
+   * <p>
    * To get the aforementioned decomposition call the method like so:
    * <pre>{@code fromNumber(0x71014802, 6, 5, 5, 5, 5, 6)</pre>
    *
-   * @param number the numerical representation of the number to decompose.
+   * @param number  the numerical representation of the number to decompose.
    * @param lengths the length of each chunk if {@code number} was in base 2.
    * @return the decomposed representation of {@code number} into chunks
    * where each chunk matches (in order) the supplied lengths.
@@ -57,7 +56,9 @@ public class DecomposedRepresentation {
     return new DecomposedRepresentation(number, decomposition);
   }
 
-  public long asLong() { return numericalRepresentation; }
+  public long asLong() {
+    return numericalRepresentation;
+  }
 
   public static DecomposedRepresentation fromIntArray(int[] bitfields, int... lengths) {
     if (Arrays.stream(lengths).sum() != 32) {
@@ -93,10 +94,10 @@ public class DecomposedRepresentation {
 
   /**
    * Get the decomposed representation as an int array.
-   *
+   * <p>
    * For an example, decomposing the number 0x71014802 into (6, 5, 5
    * For an example, the decomposition
-   *
+   * <p>
    * <pre>{@code d = fromNumber(0x71014802, 6, 5, 5, 5, 5, 6)}</pre>
    *
    * satisfies
@@ -110,9 +111,9 @@ public class DecomposedRepresentation {
   /**
    * Returns a string representation where each chunk is represented in
    * its hexadecimal form.
-   *
+   * <p>
    * For an example, the decomposition
-   *
+   * <p>
    * <pre>{@code d = fromNumber(0x71014802, 6, 5, 5, 5, 5, 6)}</pre>
    *
    * is represented as the string "[0x1c 8 1 9 0 2]".
@@ -136,9 +137,9 @@ public class DecomposedRepresentation {
   /**
    * Returns a string representation where each chunk is represented in
    * its decimal form.
-   *
+   * <p>
    * For an example, the decomposition
-   *
+   * <p>
    * <pre>{@code d = fromNumber(0x71014802, 6, 5, 5, 5, 5, 6)}</pre>
    *
    * is represented as the string "[28 8 1 9 0 2]".
@@ -152,7 +153,9 @@ public class DecomposedRepresentation {
     return sj.toString();
   }
 
-  public long toNumericalRepresentation() { return numericalRepresentation; }
+  public long toNumericalRepresentation() {
+    return numericalRepresentation;
+  }
 
   /**
    * Given a 32-bit {@code number} and an index, {@code start}, specifying at what
@@ -160,22 +163,22 @@ public class DecomposedRepresentation {
    * bits from the supplied {@code number}. {@code start = 0} starts yanking
    * bits from the 32nd (MSB) bit. Valid ranges of {@code start} ranges from
    * 0-31.
-   *
+   * <p>
    * For instance, consider the number
-   *
+   * <p>
    * n = 0b1110001000000010100100000000010 (= 0x71014802)
-   *
+   * <p>
    * Then, retrieving the leftmost six bits may be done by calling,
-   *
+   * <p>
    * leftMostSixBits = getNBits(n, 0, 6) => leftMostSixBits = 28 = 0x1c
    *
-   * @param number the number to yank bits from.
-   * @param start the starting bit index from which to retrieve bits.
+   * @param number       the number to yank bits from.
+   * @param start        the starting bit index from which to retrieve bits.
    * @param numberOfBits the amount of bits to retrieve.
    * @return a numeric representation of the retrieved bits.
    * @throws IllegalArgumentException if
-   * {@code start} does not satisfy {@code 0 <= start <= 31} or if
-   * {@code start + numberOfBits > 32}.
+   *                                  {@code start} does not satisfy {@code 0 <= start <= 31} or if
+   *                                  {@code start + numberOfBits > 32}.
    */
   public static int getNBits(long number, int start, int numberOfBits) {
     if (start > 31 || start < 0) {
@@ -185,27 +188,27 @@ public class DecomposedRepresentation {
     }
 
     if (start + numberOfBits > 32) {
-        throw new IllegalArgumentException(
-              "The argument pair \"start\" and \"numberOfBits\" must " +
-                    "satisfy the condition (start + numberOfBits <= 32). " +
-                    "Got start: " + start + " numberOfBits: " + numberOfBits);
-      }
-
-      String s = asBitPattern(number);
-      String requestedBits = s.substring(start, start + numberOfBits);
-      return Integer.parseInt(requestedBits, 2);
+      throw new IllegalArgumentException(
+            "The argument pair \"start\" and \"numberOfBits\" must " +
+                  "satisfy the condition (start + numberOfBits <= 32). " +
+                  "Got start: " + start + " numberOfBits: " + numberOfBits);
     }
 
-    public static String asBitPattern(long number) {
-      String binaryString = Long.toBinaryString(number);
-      int length = binaryString.length();
-      String pad = "";
-      if (length <= 32) {
-        pad = new String(new char[32-length]).replace("\0",
-              "0");
-      }
-      return pad + binaryString;
+    String s = asBitPattern(number);
+    String requestedBits = s.substring(start, start + numberOfBits);
+    return Integer.parseInt(requestedBits, 2);
+  }
+
+  public static String asBitPattern(long number) {
+    String binaryString = Long.toBinaryString(number);
+    int length = binaryString.length();
+    String pad = "";
+    if (length <= 32) {
+      pad = new String(new char[32 - length]).replace("\0",
+            "0");
     }
+    return pad + binaryString;
+  }
 
   @Override
   public boolean equals(Object o) {

@@ -107,13 +107,14 @@ object MachineCodeDecoder {
   }
 
   @Throws(NumberFormatException::class)
-  @JvmStatic fun decode(numbers: List<String>) : List<Long> {
-    val successfullyDecoded : MutableList<Long> = ArrayList()
-    numbers.map { it -> try {
-      successfullyDecoded.add(decode(it))
-    } catch (e: NumberFormatException) {
-      println("Failed to decode \"$it\". Cause: ${e.message}")
-    }
+  @JvmStatic fun decode(numbers: List<String>): List<Long> {
+    val successfullyDecoded: MutableList<Long> = ArrayList()
+    numbers.map { it ->
+      try {
+        successfullyDecoded.add(decode(it))
+      } catch (e: NumberFormatException) {
+        println("Failed to decode \"$it\". Cause: ${e.message}")
+      }
     }
     return successfullyDecoded
   }

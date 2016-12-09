@@ -7,7 +7,6 @@ import lombok.Value;
 import org.apache.commons.cli.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -44,7 +43,9 @@ public class CommandLineDecompiler {
     DecompiledInstruction.printAllInstructions();
   }
 
-  private static void printExamples() { Instruction.printAllExamples(); }
+  private static void printExamples() {
+    Instruction.printAllExamples();
+  }
 
   private static List<DecompiledInstruction> decompile(List<Long> numbers) {
     return Lists.transform(numbers, CommandLineDecompiler::decompile);

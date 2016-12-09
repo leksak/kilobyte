@@ -4,7 +4,6 @@ import common.extensions.*
 import common.hardware.Register
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import common.instruction.exceptions.MalformedMnemonicException
-import decompiler.MachineCodeDecoder
 import java.util.*
 import java.util.regex.Pattern
 
