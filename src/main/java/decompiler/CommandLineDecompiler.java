@@ -22,6 +22,10 @@ public class CommandLineDecompiler {
   static CommandLineParser parser = new DefaultParser();
   static HelpFormatter formatter = new HelpFormatter();
 
+  private CommandLineDecompiler() {
+    // Intentionally left empty
+  }
+
   private static CommandLine parse(String... args) throws ParseException {
     return parser.parse(options, args);
   }
@@ -49,10 +53,6 @@ public class CommandLineDecompiler {
 
   private static List<DecompiledInstruction> decompile(List<Long> numbers) {
     return Lists.transform(numbers, CommandLineDecompiler::decompile);
-  }
-
-  private CommandLineDecompiler() {
-    // Intentionally left empty
   }
 
   public static void main(String[] args) throws IOException {

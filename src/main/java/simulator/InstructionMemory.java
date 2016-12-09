@@ -12,15 +12,14 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 @Value
 public class InstructionMemory {
-  @NonFinal
-  int index = 0;
-
   // Each instruction is 32 bits, or 4 bytes. An int is 32 bits.
   // We need to support a minimum of 1000 bytes of instruction memory.
   // Hence, we need to be able to store _at least_ 250 instructions.
   @Getter(AccessLevel.PRIVATE)
   int SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS;
   Instruction[] instructions;
+  @NonFinal
+  int index = 0;
 
   private InstructionMemory() {
     // Intentionally left empty
