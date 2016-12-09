@@ -1470,10 +1470,10 @@ data class Instruction private constructor(
     }
 
     @JvmStatic fun printAllExamples() {
-      primordialSet.forEach { (_, _, mnemonic, numericRepresentation) ->
+      primordialSet.forEach { prototype ->
         run {
-          val numeric = Integer.toHexString(numericRepresentation.toInt())
-          println("\"$mnemonic\" 0x$numeric")
+          val numeric = Integer.toHexString(prototype.numericRepresentation.toInt())
+          println("\"${prototype.mnemonicRepresentation}\" 0x$numeric")
         }
       }
     }
