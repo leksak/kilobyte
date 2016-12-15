@@ -5,6 +5,14 @@ import com.google.common.base.Preconditions.checkArgument
 
 
 class RegisterFile {
+  /**
+   * Each RegisterFile has its own set of registers avoiding any problems
+   * that may arise by having shared state through the use of static constructs
+   * such as an object.
+   *
+   * This "feature" allows us to take intermediate snapshots of the simulator
+   * which affords us the possibility of undo-ing instructions.
+   */
   val registers = arrayOf(
         // Registers 0 through 3
         Register(0, "\$zero", "Constant 0"),
@@ -82,8 +90,22 @@ class RegisterFile {
   companion object {
     val rf: RegisterFile = RegisterFile()
 
+    /**
+     * Returns the symbolic version of the supplied register meaning that
+     * get($0) yields $zero and get($zero) yields $zero.
+     */
     @JvmStatic operator fun get(mnemonic: String): String = rf[mnemonic].toString()
+
+    /**
+     * Returns the string representation of the register at the given index, i.e.
+     * get(0) is equal to $zero.
+     */
     @JvmStatic operator fun get(index: Int): String = rf[index].toString()
-    @JvmStatic fun asInt(mnemonic: String): Int = rf[mnemonic].asInt
+
+    /**
+     * Interprets the given String and returns the index of that register,
+     * i.e. indexOf($t0) == 8
+     */
+    @JvmStatic fun indexOf(mnemonic: String): Int = rf[mnemonic].index
   }
 }

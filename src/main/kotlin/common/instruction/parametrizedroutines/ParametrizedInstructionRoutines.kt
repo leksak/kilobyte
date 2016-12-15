@@ -410,14 +410,14 @@ private fun formatMnemonic(tokens: Array<String>, n: IntArray, prototype: Instru
       "offset" -> n[destinationIndex] = tokens[i].getOffset()
       "address" -> {
         n[destinationIndex] = tokens[i].getOffset()
-        n[indexOf("rs")] = RegisterFile.asInt(tokens[i].getRegister())
+        n[indexOf("rs")] = RegisterFile.indexOf(tokens[i].getRegister())
       }
       "hint" -> {
         val hint = tokens[i].getOffset()
         n[destinationIndex] = hint
         prototype.hint = Hint.from(hint)
       }
-      else -> n[destinationIndex] = RegisterFile.asInt(tokens[i])
+      else -> n[destinationIndex] = RegisterFile.indexOf(tokens[i])
     }
   }
   return tokens

@@ -10,7 +10,7 @@ package common.hardware
  * through {@code $31}. Or, using their equivalent mnemonic
  * representations, for instance {@code $t1}.
  */
-class Register(val asInt: Int, val name: String, val description: String) {
+class Register(val index: Int, val name: String, val description: String) {
   var value: Int = 0
 
   override fun toString(): String {

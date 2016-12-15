@@ -25,7 +25,7 @@ class SimulatorTest {
     rf["\$t3"].value = 2
 
     s.execute("add \$t1, \$t2, \$t3")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(3)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(3)))
   }
 
   @Test
@@ -34,7 +34,7 @@ class SimulatorTest {
     rf["\$t3"].value = 3
 
     s.execute("sub \$t1, \$t2, \$t3")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(2)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(2)))
   }
 
   @Test
@@ -46,7 +46,7 @@ class SimulatorTest {
 
     // t1 = t2 & t3 = 00101_2 (5_10)
     s.execute("and \$t1, \$t2, \$t3")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(5)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(5)))
   }
 
   @Test
@@ -60,7 +60,7 @@ class SimulatorTest {
     // t1 = t2 | t3 = 00111_2 (7_10)
 
     s.execute("or \$t1, \$t2, \$t3")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(7)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(7)))
   }
 
   @Test
@@ -86,7 +86,7 @@ class SimulatorTest {
 
     // t1 = t2 < t3 = 1_2 (true)
     s.execute("slt \$t1, \$t2, \$t3")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(1)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(1)))
   }
 
   @Test
@@ -97,7 +97,7 @@ class SimulatorTest {
 
     // t1 = t2 < t3 = 0_2 (false)
     s.execute("slt \$t1, \$t2, \$t3")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(0)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(0)))
   }
 
   @Test
@@ -108,7 +108,7 @@ class SimulatorTest {
 
     // t1 = t2 < t3 = 0_2 (false)
     s.execute("slt \$t1, \$t2, \$t3")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(0)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(0)))
   }
 
   @Test
@@ -119,7 +119,7 @@ class SimulatorTest {
 
     //t1 == 5 + 4 == 9_10
     s.execute("addi \$t1, $10, 4")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(9)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(9)))
   }
 
   @Test
@@ -130,7 +130,7 @@ class SimulatorTest {
 
     //t1 == 9(01001) OR 4(00100) == 13(01101)
     s.execute("ori \$t1, \$t2, 4")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(13)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(13)))
   }
 
   @Test
@@ -144,7 +144,7 @@ class SimulatorTest {
 
     //t1 == t2 << t0 (4 << 1) == 8
     s.execute("srl \$t1, \$t2, \$t0")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(8)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(8)))
   }
 
   @Test
@@ -158,7 +158,7 @@ class SimulatorTest {
 
     //t1 == t2 << t0 (4 << 2) == 16
     s.execute("srl \$t1, \$t2, \$t0")
-    assertThat(rf["\$t1"].asInt, `is`(equalTo(16)))
+    assertThat(rf["\$t1"].index, `is`(equalTo(16)))
   }
 
 
