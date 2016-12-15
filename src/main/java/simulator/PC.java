@@ -25,12 +25,12 @@ public class PC implements Observable<PC> {
   }
 
   @Override
-  public void addObserver(Observer<PC> o) {
-    observers.add(o);
+  public Collection<Observer<PC>> observers() {
+    return observers;
   }
 
   @Override
-  public Collection<Observer<PC>> observers() {
-    return observers;
+  public PC reify() {
+    return this;
   }
 }

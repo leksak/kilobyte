@@ -40,33 +40,7 @@ public class Simulator {
         NOP
   );
 
-  public void loadProgram(String filename) throws IOException {
-    loadProgram(new File(filename));
-  }
 
-  public void loadProgram(File f) throws IOException {
-    loadProgram(new FileReader(f));
-  }
-
-  public void loadProgram(Reader r) throws IOException {
-    BufferedReader br = new BufferedReader(r);
-
-    List<Instruction> instructions = new ArrayList<>();
-    String line;
-    while ((line = br.readLine()) != null) {
-      if (line.isEmpty()) {
-        continue;
-      }
-
-      instructions.add(Instruction.from(line));
-    }
-
-    loadProgram(instructions);
-  }
-
-  public void loadProgram(List<Instruction> instructions) {
-    instructionMemory.addAll(instructions);
-  }
 
   public void next() {
     // Fetch the next instruction from memory.
