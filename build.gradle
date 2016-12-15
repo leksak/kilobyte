@@ -2,22 +2,32 @@ group 'callisto'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.0.5-2'
+    ext.kotlin_version = '1.1-M03'
+    ext.dokka_version = '0.9.11'
 
     repositories {
         mavenCentral()
+        jcenter() // Required for Dokka
+        maven {
+            // Required for kotlin_version 1.1-M03
+            url 'https://dl.bintray.com/kotlin/kotlin-eap-1.1'
+        }
     }
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M3'
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
     }
 }
 
+apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'application'
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'project-report'
+apply plugin: 'org.jetbrains.dokka'
 
 test {
     reports {
@@ -30,6 +40,11 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        // Required for kotlin_version 1.1-M03
+        // Required both here and in the buildscript!
+        url 'https://dl.bintray.com/kotlin/kotlin-eap-1.1'
+    }
     flatDir dirs: "${rootDir}/lib"
 }
 
