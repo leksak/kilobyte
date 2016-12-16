@@ -1,16 +1,16 @@
 package simulator;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Value
 public class PC implements Observable<PC> {
-  Set<Observer<PC>> observers = new HashSet<>();
+  List<Observer<PC>> observers = new LinkedList<>();
 
   @NonFinal
   @Getter
@@ -25,8 +25,13 @@ public class PC implements Observable<PC> {
   }
 
   @Override
-  public Collection<Observer<PC>> observers() {
-    return observers;
+  public void addObserver(Observer<PC> o) {
+    observers.add(o);
+  }
+
+  @Override
+  public ImmutableCollection<Observer<PC>> observers() {
+    return ImmutableList.copyOf(observers);
   }
 
   @Override

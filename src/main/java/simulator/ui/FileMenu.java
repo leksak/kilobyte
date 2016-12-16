@@ -1,5 +1,7 @@
 package simulator.ui;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import common.annotations.InstantiateOnEDT;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -43,7 +45,7 @@ class FileMenu extends JMenu implements Observable<FileMenu>  {
 
   private FileMenu(JFrame frame, Runnable closeOperation) {
     super("File");
-    
+
     exit.setMnemonic(VK_Q);
     exit.setAccelerator(KeyStroke.getKeyStroke(VK_Q, CTRL_MASK));
     exit.setToolTipText("Exit Application");
@@ -87,7 +89,12 @@ class FileMenu extends JMenu implements Observable<FileMenu>  {
   }
 
   @Override
-  public Collection<Observer<FileMenu>> observers() {
-    return observers;
+  public void addObserver(Observer<FileMenu> o) {
+    observers.add(o);
+  }
+
+  @Override
+  public ImmutableCollection<Observer<FileMenu>> observers() {
+    return ImmutableList.copyOf(observers);
   }
 }

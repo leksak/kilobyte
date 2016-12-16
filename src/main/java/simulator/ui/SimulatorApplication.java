@@ -26,13 +26,14 @@ public class SimulatorApplication implements Observer<FileMenu> {
         // Clicking on exit in the file-menu closes the application
         () -> dispatchEvent(WINDOW_CLOSING)
   );
+  RegisterMenu registerMenu = new RegisterMenu();
 
   SimulatorApplication() {
     applicationFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
     fileMenu.addObserver(this);
     //SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu);
-    SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu);
+    SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, registerMenu);
     applicationFrame.setJMenuBar(menuBar);
 
     applicationFrame.pack();
@@ -72,10 +73,8 @@ public class SimulatorApplication implements Observer<FileMenu> {
       SimulatorApplication app = new SimulatorApplication();
 
       // Contains Run/Pause/Step/Reset
-      JMenu simulatorMenu = new JMenu("Simulator");
+      //JMenu simulatorMenu = new JMenu("Simulator");
 
-      // Allows toggling between bases
-      JMenu registersMenu = new JMenu("Registers");
 
       app.setVisible();
     });

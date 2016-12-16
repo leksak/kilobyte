@@ -7,7 +7,7 @@ import java.awt.*;
 
 @InstantiateOnEDT
 public class SimulatorMenuBar extends JMenuBar {
-  SimulatorMenuBar(FileMenu fileMenu) {
+  SimulatorMenuBar(FileMenu fileMenu, RegisterMenu registerMenu) {
     super();
 
     Toolkit tk = Toolkit.getDefaultToolkit();
@@ -17,6 +17,7 @@ public class SimulatorMenuBar extends JMenuBar {
     run.setToolTipText("Start the simulator");
 
     add(fileMenu);
+    add(registerMenu);
     add(run);
   }
 }
