@@ -5,7 +5,7 @@ import javax.swing.ImageIcon
 
 object Icon {
   private const val DIRECTORY_PATH = "/icons/iconic/raster"
-  private const val PLAY_PATH = "$DIRECTORY_PATH/green/play_18x24.png"
+  private const val PLAY_PATH = "$DIRECTORY_PATH/green/play_9x12.png"
 
   private var playIcon : ImageIcon? = null
 

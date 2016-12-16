@@ -43,9 +43,7 @@ class FileMenu extends JMenu implements Observable<FileMenu>  {
 
   private FileMenu(JFrame frame, Runnable closeOperation) {
     super("File");
-
-    //this.setMnemonic(VK_F);
-
+    
     exit.setMnemonic(VK_Q);
     exit.setAccelerator(KeyStroke.getKeyStroke(VK_Q, CTRL_MASK));
     exit.setToolTipText("Exit Application");
