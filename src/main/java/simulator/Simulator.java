@@ -6,10 +6,6 @@ import common.instruction.Instruction;
 import lombok.Getter;
 import lombok.Value;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
 import static common.instruction.Instruction.*;
 
 @Value

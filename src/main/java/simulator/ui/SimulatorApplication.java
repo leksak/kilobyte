@@ -21,14 +21,21 @@ public class SimulatorApplication implements Observer<FileMenu> {
   ProgramView programView = new ProgramView();
   FileMenu fileMenu = FileMenu.withCloseAction(applicationFrame,
         // Clicking on exit in the file-menu closes the application
-        () -> dispatchEvent(WINDOW_CLOSING)
+        () -> dispatchEvent(WINDOW_CLOSING),
+        f -> {
+          try {
+            programView.display(Program.from(f));
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
   );
   RegisterMenu registerMenu = new RegisterMenu();
 
   SimulatorApplication() {
     applicationFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-    fileMenu.addObserver(this);
+    //fileMenu.addObserver(this);
     //SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu);
     SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, registerMenu);
     applicationFrame.setJMenuBar(menuBar);

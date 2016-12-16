@@ -15,6 +15,8 @@ import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static java.awt.event.ActionEvent.CTRL_MASK;
 import static java.awt.event.KeyEvent.VK_L;
@@ -28,8 +30,8 @@ import static javax.swing.JFileChooser.APPROVE_OPTION;
 @NotThreadSafe // Doesn't store listeners in a thread-safe manner b/c overhead
 @Value
 @EqualsAndHashCode(callSuper = true)
-class FileMenu extends JMenu implements Observable<FileMenu> {
-  List<Observer<FileMenu>> observers = new ArrayList<>();
+class FileMenu extends JMenu{
+  // List<Observer<FileMenu>> observers = new ArrayList<>();
 
   @NonFinal
   File currentlySelectedFile = null;
@@ -39,7 +41,7 @@ class FileMenu extends JMenu implements Observable<FileMenu> {
   JMenuItem load = new JMenuItem("Load");
   JFileChooser fileChooser = new JFileChooser();
 
-  private FileMenu(JFrame frame, Runnable closeOperation) {
+  private FileMenu(JFrame frame, Runnable closeOperation, Consumer<File> callOnFileLoad) {
     super("File");
 
     exit.setMnemonic(VK_Q);
@@ -58,7 +60,8 @@ class FileMenu extends JMenu implements Observable<FileMenu> {
 
       if (ret == APPROVE_OPTION) {
         currentlySelectedFile = fileChooser.getSelectedFile();
-        notifyObservers(); // Still on the EDT!
+        //notifyObservers(); // Still on the EDT!
+        callOnFileLoad.accept(currentlySelectedFile);
       }
     });
 
@@ -75,22 +78,7 @@ class FileMenu extends JMenu implements Observable<FileMenu> {
    * @param closeOperation the runnable that closes the application
    * @return the FileMenu for use by the application
    */
-  static FileMenu withCloseAction(JFrame frame, Runnable closeOperation) {
-    return new FileMenu(frame, closeOperation);
-  }
-
-  @Override
-  public FileMenu reify() {
-    return this;
-  }
-
-  @Override
-  public void addObserver(Observer<FileMenu> o) {
-    observers.add(o);
-  }
-
-  @Override
-  public ImmutableCollection<Observer<FileMenu>> observers() {
-    return ImmutableList.copyOf(observers);
+  static FileMenu withCloseAction(JFrame frame, Runnable closeOperation, Consumer<File> callOnFileLoad) {
+    return new FileMenu(frame, closeOperation, callOnFileLoad);
   }
 }
