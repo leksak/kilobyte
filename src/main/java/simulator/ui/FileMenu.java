@@ -11,12 +11,14 @@ import simulator.Observer;
 
 import javax.swing.*;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import static java.awt.event.ActionEvent.CTRL_MASK;
+import static java.awt.event.KeyEvent.*;
 import static java.awt.event.KeyEvent.VK_L;
 import static java.awt.event.KeyEvent.VK_Q;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
@@ -41,6 +43,8 @@ class FileMenu extends JMenu implements Observable<FileMenu>  {
 
   private FileMenu(JFrame frame, Runnable closeOperation) {
     super("File");
+
+    //this.setMnemonic(VK_F);
 
     exit.setMnemonic(VK_Q);
     exit.setAccelerator(KeyStroke.getKeyStroke(VK_Q, CTRL_MASK));

@@ -1,18 +1,17 @@
 package simulator.ui;
 
-import com.google.common.collect.ImmutableList;
-import common.annotations.CallOnEDT;
 import common.annotations.InstantiateOnEDT;
+import common.annotations.InvokeLaterNotNecessary;
 import common.instruction.Instruction;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import simulator.program.Program;
 
 import javax.swing.*;
-import java.util.List;
 
 @InstantiateOnEDT
 @Value
+@EqualsAndHashCode(callSuper = true)
 class ProgramView extends JPanel {
   DefaultListModel<Instruction> programModel = new DefaultListModel<>();
 
@@ -24,9 +23,13 @@ class ProgramView extends JPanel {
     this.add(programFrontend);
   }
 
-  @CallOnEDT
+  @InvokeLaterNotNecessary
   public void display(Program p) {
-    programModel.clear(); // Clear the old instructions - if any
-    p.getInstructions().forEach(programModel::addElement);
+    SwingUtilities.invokeLater(() -> {
+      programModel.clear(); // Clear the old instructions - if any
+
+      // Adding the elements has to happen on the
+      p.getInstructions().forEach(programModel::addElement);
+    });
   }
 }

@@ -1,6 +1,7 @@
 package simulator.ui;
 
 import common.annotations.InstantiateOnEDT;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import simulator.Observable;
 import simulator.Observer;
@@ -30,8 +31,8 @@ public class SimulatorApplication implements Observer<FileMenu> {
     applicationFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
     fileMenu.addObserver(this);
-    JMenuBar menuBar = new JMenuBar();
-    menuBar.add(fileMenu);
+    //SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu);
+    SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu);
     applicationFrame.setJMenuBar(menuBar);
 
     applicationFrame.pack();
@@ -82,7 +83,7 @@ public class SimulatorApplication implements Observer<FileMenu> {
 
   @Override
   public void notify(Observable<FileMenu> o) {
-
+    // We are on the EDT
     File selectedFile = o.reify().getCurrentlySelectedFile();
 
     try {
