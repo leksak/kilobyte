@@ -15,14 +15,15 @@ import java.util.List;
 @Value
 class ProgramView extends JPanel {
   DefaultListModel<Instruction> programModel = new DefaultListModel<>();
+
   JList<Instruction> programFrontend = new JList<>();
 
   public ProgramView() {
     super();
     programFrontend.setModel(programModel);
+    this.add(programFrontend);
   }
 
-  // Should only be called once per program
   @CallOnEDT
   public void display(Program p) {
     programModel.clear(); // Clear the old instructions - if any
