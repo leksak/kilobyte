@@ -1,9 +1,11 @@
 package simulator.ui;
 
+import common.annotations.InstantiateOnEDT;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
+import net.jcip.annotations.NotThreadSafe;
 import simulator.Observable;
 import simulator.Observer;
 
@@ -22,6 +24,8 @@ import static javax.swing.JFileChooser.APPROVE_OPTION;
 /**
  * Has to be instantiated on the EDT
  */
+@InstantiateOnEDT
+@NotThreadSafe // Doesn't store listeners in a thread-safe manner b/c overhead
 @Value
 @EqualsAndHashCode(callSuper = true)
 class FileMenu extends JMenu implements Observable<FileMenu>  {
@@ -46,12 +50,15 @@ class FileMenu extends JMenu implements Observable<FileMenu>  {
     load.setMnemonic(VK_L);
     load.setAccelerator(KeyStroke.getKeyStroke(VK_L, CTRL_MASK));
     load.setToolTipText("Load File");
+
     load.addActionListener(event -> {
+      // This event happens on the event dispatch thread.
+
       int ret = fileChooser.showOpenDialog(frame);
 
       if (ret == APPROVE_OPTION) {
         currentlySelectedFile = fileChooser.getSelectedFile();
-        notifyObservers();
+        notifyObservers(); // Still on the EDT!
       }
     });
 

@@ -1,5 +1,6 @@
 package simulator.ui;
 
+import common.annotations.InstantiateOnEDT;
 import lombok.Value;
 import simulator.Observable;
 import simulator.Observer;
@@ -14,9 +15,7 @@ import java.io.IOException;
 
 import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 
-/**
- * Has to be instantiated on the EDT
- */
+@InstantiateOnEDT
 @Value
 public class SimulatorApplication implements Observer<FileMenu> {
   JFrame applicationFrame = new JFrame();
@@ -36,7 +35,7 @@ public class SimulatorApplication implements Observer<FileMenu> {
     applicationFrame.setJMenuBar(menuBar);
 
     JPanel applicationPanel = new JPanel(new BorderLayout(5, 5));
-    applicationPanel.add(new ProgramView());
+    //applicationPanel.add(programView);
     applicationPanel.add(programView, BorderLayout.CENTER);
 
     applicationFrame.add(applicationPanel);
@@ -89,6 +88,7 @@ public class SimulatorApplication implements Observer<FileMenu> {
 
   @Override
   public void notify(Observable<FileMenu> o) {
+    System.out.println(SwingUtilities.isEventDispatchThread());
     File selectedFile = o.reify().getCurrentlySelectedFile();
 
     try {
@@ -96,7 +96,6 @@ public class SimulatorApplication implements Observer<FileMenu> {
     } catch (IOException e) {
       // TODO: Catch exception sensibly
       e.printStackTrace();
-
     }
   }
 }
