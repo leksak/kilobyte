@@ -20,8 +20,8 @@ public class PC implements Observable<PC> {
     currentAddress = 0;
   }
 
-  public void increment(int howMuch) {
-    Add.add(howMuch, 4);
+  public void increment(int howMuchInNumberOfBytes) {
+    Add.add(howMuchInNumberOfBytes, 4);
   }
 
   @Override

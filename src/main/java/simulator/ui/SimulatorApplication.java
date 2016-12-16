@@ -4,6 +4,7 @@ import common.annotations.InstantiateOnEDT;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import simulator.Observable;
+import simulator.ObservableSimulator;
 import simulator.Observer;
 import simulator.Simulator;
 import simulator.program.Program;
@@ -16,12 +17,12 @@ import java.io.IOException;
 
 import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 
-@InstantiateOnEDT
+@InstantiateOnEDT // Important!
 @Value
 public class SimulatorApplication implements Observer<FileMenu> {
   JFrame applicationFrame = new JFrame("Kilobyte");
   ProgramView programView = new ProgramView();
-  Simulator simulator = new Simulator();
+  ObservableSimulator simulator = new ObservableSimulator();
   FileMenu fileMenu = FileMenu.withCloseAction(applicationFrame,
         // Clicking on exit in the file-menu closes the application
         () -> dispatchEvent(WINDOW_CLOSING)
