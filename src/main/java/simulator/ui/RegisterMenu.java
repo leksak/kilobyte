@@ -3,7 +3,6 @@ package simulator.ui;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import common.annotations.InstantiateOnEDT;
-import common.hardware.Register;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.jcip.annotations.NotThreadSafe;
@@ -12,7 +11,6 @@ import simulator.Observer;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @InstantiateOnEDT

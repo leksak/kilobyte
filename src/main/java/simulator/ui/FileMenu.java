@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import common.annotations.InstantiateOnEDT;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import net.jcip.annotations.NotThreadSafe;
@@ -13,14 +12,11 @@ import simulator.Observer;
 
 import javax.swing.*;
 
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static java.awt.event.ActionEvent.CTRL_MASK;
-import static java.awt.event.KeyEvent.*;
 import static java.awt.event.KeyEvent.VK_L;
 import static java.awt.event.KeyEvent.VK_Q;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
@@ -32,7 +28,7 @@ import static javax.swing.JFileChooser.APPROVE_OPTION;
 @NotThreadSafe // Doesn't store listeners in a thread-safe manner b/c overhead
 @Value
 @EqualsAndHashCode(callSuper = true)
-class FileMenu extends JMenu implements Observable<FileMenu>  {
+class FileMenu extends JMenu implements Observable<FileMenu> {
   List<Observer<FileMenu>> observers = new ArrayList<>();
 
   @NonFinal

@@ -40,15 +40,18 @@ public class Simulator {
         NOP
   );
 
-  public Instruction next() {
+  public void next() {
     // Fetch the next instruction from memory.
-    Instruction ret = instructionMemory.read(programCounter);
-    programCounter.increment(4);
-    return ret;
+    Instruction i = instructionMemory.read(programCounter);
   }
 
   public void execute(Instruction i) {
 
+  }
+
+  public void execute(String s) {
+    // Executes a single instruction
+    execute(Instruction.from(s));
   }
 
   /**

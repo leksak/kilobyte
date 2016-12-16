@@ -1,17 +1,20 @@
 package simulator;
 
-import com.google.common.collect.ImmutableCollection;
-
 import java.util.Collection;
 
+
 public interface Observable<T> {
-  void addObserver(Observer<T> o);
+  default void addObserver(Observer<T> o) {
+    observers().add(o);
+  }
 
   default void notifyObservers() {
     observers().forEach(o -> o.notify(this));
   }
 
-  ImmutableCollection<Observer<T>> observers();
+  // Not particularly safe but considering the scale of the application
+  // we will allow it.
+  Collection<Observer<T>> observers();
 
   T reify();
 }
