@@ -9,12 +9,13 @@ import static common.instruction.decomposedrepresentation.DecomposedRepresentati
 import static common.instruction.decomposedrepresentation.DecomposedRepresentation.fromNumber;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.*;
 
 public class DecomposedRepresentationTests {
   @Test
   void testDecimalDecomposition() {
     DecomposedRepresentation d = fromNumber(0x71014802, 6, 5, 5, 5, 5, 6);
-    assertEquals("[28 8 1 9 0 2]", d.asDecimalString());
+    assertThat(d.asDecimalString()).isEqualTo("[28 8 1 9 0 2]");
   }
 
   @Test

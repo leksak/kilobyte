@@ -45,6 +45,10 @@ repositories {
         // Required both here and in the buildscript!
         url 'https://dl.bintray.com/kotlin/kotlin-eap-1.1'
     }
+    maven {
+        // Required for jcip
+        url 'https://maven.repository.redhat.com/ga/'
+    }
     flatDir dirs: "${rootDir}/lib"
 }
 
@@ -70,10 +74,12 @@ dependencies {
     // Used for checking Preconditions mostly
     compile 'com.google.guava:guava:19.0'
 
+    compile group: 'net.jcip', name: 'jcip-annotations', version: '1.0.0.redhat-8'
+
     testCompile("org.junit.jupiter:junit-jupiter-api:5.0.0-M3")
     testCompile("org.junit.platform:junit-platform-gradle-plugin:1.0.0-M3")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.0-M3")
-
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.6.1'
     testCompile group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3'
 }
 
