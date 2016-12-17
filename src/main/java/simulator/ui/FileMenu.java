@@ -1,22 +1,14 @@
 package simulator.ui;
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
 import common.annotations.InstantiateOnEDT;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import net.jcip.annotations.NotThreadSafe;
-import simulator.Observable;
-import simulator.Observer;
 
 import javax.swing.*;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static java.awt.event.ActionEvent.CTRL_MASK;
 import static java.awt.event.KeyEvent.VK_L;

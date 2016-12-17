@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @Value
 public class PC implements Observable<PC> {
