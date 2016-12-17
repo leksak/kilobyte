@@ -2,6 +2,9 @@ package simulator.ui;
 
 import common.annotations.InstantiateOnEDT;
 import lombok.Value;
+import simulator.Observable;
+import simulator.Observer;
+import simulator.Simulator;
 import simulator.program.Program;
 
 import javax.swing.*;
@@ -14,7 +17,8 @@ import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 
 @InstantiateOnEDT // Important!
 @Value
-public class SimulatorApplication {
+public class SimulatorApplication implements Observer<RegisterMenu> {
+  Simulator s = new Simulator();
   JFrame applicationFrame = new JFrame("Kilobyte");
   ProgramView programView = new ProgramView();
   FileMenu fileMenu = FileMenu.withCloseAction(applicationFrame,
@@ -23,6 +27,7 @@ public class SimulatorApplication {
         this::loadProgram
   );
   RegisterMenu registerMenu = new RegisterMenu();
+  RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
 
   SimulatorApplication() {
     applicationFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -36,19 +41,16 @@ public class SimulatorApplication {
     applicationFrame.setLocationRelativeTo(null);
 
     JPanel applicationPanel = new JPanel(new BorderLayout(5, 5));
-    applicationPanel.add(programView, BorderLayout.CENTER);
+    //applicationPanel.add(programView, BorderLayout.CENTER);
+    //applicationPanel.add(registersPanel, BorderLayout.WEST);
 
-    applicationFrame.add(applicationPanel);
-
-    applicationFrame.setMinimumSize(applicationFrame.getSize());
-
-    /*
-    // ADD the register view here later
     JSplitPane splitPane = new JSplitPane(
           JSplitPane.HORIZONTAL_SPLIT,
-          applicationPanel,
-          new JScrollPane(registerView));
-    add(splitPane, BorderLayout.CENTER);*/
+          registersPanel,
+          programView);
+    applicationPanel.add(splitPane, BorderLayout.CENTER);
+    applicationFrame.add(applicationPanel);
+    applicationFrame.setMinimumSize(applicationFrame.getSize());
 
   }
 
@@ -81,5 +83,11 @@ public class SimulatorApplication {
       // TODO: Catch sensibly
       e.printStackTrace();
     }
+  }
+
+  @Override
+  public void notify(Observable<RegisterMenu> o) {
+    // Get the currently selected base and forward that information to
+    // the RegistersPanel
   }
 }

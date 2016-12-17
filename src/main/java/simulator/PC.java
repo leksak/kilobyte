@@ -10,9 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Value
-public class PC implements Observable<PC> {
-  List<Observer<PC>> observers = new LinkedList<>();
-
+public class PC {
   @NonFinal
   @Getter
   int currentAddress;
@@ -23,20 +21,5 @@ public class PC implements Observable<PC> {
 
   public void increment(int howMuchInNumberOfBytes) {
     Add.add(howMuchInNumberOfBytes, 4);
-  }
-
-  @Override
-  public void addObserver(Observer<PC> o) {
-    observers.add(o);
-  }
-
-  @Override
-  public ImmutableCollection<Observer<PC>> observers() {
-    return ImmutableList.copyOf(observers);
-  }
-
-  @Override
-  public PC reify() {
-    return this;
   }
 }

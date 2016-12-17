@@ -16,7 +16,7 @@ class SimulatorTest {
   @BeforeEach
   internal fun initCreateSimulator() {
     s = Simulator()
-    rf = s.rf
+    rf = s.registerFile
   }
 
   @Test

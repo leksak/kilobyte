@@ -13,7 +13,7 @@ public class Simulator {
   @Getter
   PC programCounter = new PC();
   @Getter
-  RegisterFile rf = new RegisterFile();
+  RegisterFile registerFile = new RegisterFile();
 
   @Getter
   InstructionMemory instructionMemory = InstructionMemory.init();

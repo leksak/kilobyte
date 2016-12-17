@@ -51,7 +51,7 @@ class FileMenu extends JMenu {
 
       if (ret == APPROVE_OPTION) {
         currentlySelectedFile = fileChooser.getSelectedFile();
-        //notifyObservers(); // Still on the EDT!
+        // Still on the EDT!
         callOnFileLoad.accept(currentlySelectedFile);
       }
     });
