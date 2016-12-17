@@ -2,8 +2,6 @@ package simulator.ui;
 
 import common.annotations.InstantiateOnEDT;
 import lombok.Value;
-import simulator.Observable;
-import simulator.Observer;
 import simulator.program.Program;
 
 import javax.swing.*;
@@ -16,27 +14,19 @@ import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 
 @InstantiateOnEDT // Important!
 @Value
-public class SimulatorApplication implements Observer<FileMenu> {
+public class SimulatorApplication {
   JFrame applicationFrame = new JFrame("Kilobyte");
   ProgramView programView = new ProgramView();
   FileMenu fileMenu = FileMenu.withCloseAction(applicationFrame,
         // Clicking on exit in the file-menu closes the application
         () -> dispatchEvent(WINDOW_CLOSING),
-        f -> {
-          try {
-            programView.display(Program.from(f));
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        }
+        this::loadProgram
   );
   RegisterMenu registerMenu = new RegisterMenu();
 
   SimulatorApplication() {
     applicationFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-    //fileMenu.addObserver(this);
-    //SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu);
     SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, registerMenu);
     applicationFrame.setJMenuBar(menuBar);
 
@@ -84,15 +74,11 @@ public class SimulatorApplication implements Observer<FileMenu> {
     });
   }
 
-  @Override
-  public void notify(Observable<FileMenu> o) {
-    // We are on the EDT
-    File selectedFile = o.reify().getCurrentlySelectedFile();
-
+  public void loadProgram(File f) {
     try {
-      programView.display(Program.from(selectedFile));
+      programView.display(Program.from(f));
     } catch (IOException e) {
-      // TODO: Catch exception sensibly
+      // TODO: Catch sensibly
       e.printStackTrace();
     }
   }

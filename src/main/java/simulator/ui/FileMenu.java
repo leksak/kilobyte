@@ -30,9 +30,7 @@ import static javax.swing.JFileChooser.APPROVE_OPTION;
 @NotThreadSafe // Doesn't store listeners in a thread-safe manner b/c overhead
 @Value
 @EqualsAndHashCode(callSuper = true)
-class FileMenu extends JMenu{
-  // List<Observer<FileMenu>> observers = new ArrayList<>();
-
+class FileMenu extends JMenu {
   @NonFinal
   File currentlySelectedFile = null;
 
@@ -41,7 +39,8 @@ class FileMenu extends JMenu{
   JMenuItem load = new JMenuItem("Load");
   JFileChooser fileChooser = new JFileChooser();
 
-  private FileMenu(JFrame frame, Runnable closeOperation, Consumer<File> callOnFileLoad) {
+  private FileMenu(JFrame frame, Runnable closeOperation,
+                   Consumer<File> callOnFileLoad) {
     super("File");
 
     exit.setMnemonic(VK_Q);
@@ -76,6 +75,7 @@ class FileMenu extends JMenu{
    *
    * @param frame required to center the file open dialog on top of the frame.
    * @param closeOperation the runnable that closes the application
+   * @param callOnFileLoad callback function to be called when a file is loaded
    * @return the FileMenu for use by the application
    */
   static FileMenu withCloseAction(JFrame frame, Runnable closeOperation, Consumer<File> callOnFileLoad) {

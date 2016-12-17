@@ -14,12 +14,12 @@ import javax.swing.*;
 @EqualsAndHashCode(callSuper = true)
 class ProgramView extends JPanel {
   DefaultListModel<Instruction> programModel = new DefaultListModel<>();
-
   JList<Instruction> programFrontend = new JList<>();
 
   public ProgramView() {
     super();
     programFrontend.setModel(programModel);
+    programFrontend.setCellRenderer(new InstructionRenderer());
     this.add(programFrontend);
   }
 
