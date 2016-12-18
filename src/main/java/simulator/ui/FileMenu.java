@@ -19,7 +19,6 @@ import static javax.swing.JFileChooser.APPROVE_OPTION;
  * Has to be instantiated on the EDT
  */
 @InstantiateOnEDT
-@NotThreadSafe // Doesn't store listeners in a thread-safe manner b/c overhead
 @Value
 @EqualsAndHashCode(callSuper = true)
 class FileMenu extends JMenu {
@@ -70,7 +69,9 @@ class FileMenu extends JMenu {
    * @param callOnFileLoad callback function to be called when a file is loaded
    * @return the FileMenu for use by the application
    */
-  static FileMenu withCloseAction(JFrame frame, Runnable closeOperation, Consumer<File> callOnFileLoad) {
+  static FileMenu withCloseAction(JFrame frame,
+                                  Runnable closeOperation,
+                                  Consumer<File> callOnFileLoad) {
     return new FileMenu(frame, closeOperation, callOnFileLoad);
   }
 }

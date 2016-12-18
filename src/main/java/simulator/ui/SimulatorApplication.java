@@ -15,6 +15,51 @@ import java.io.IOException;
 
 import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 
+/**
+ * The simulator has to be capable of displaying its operation on
+ * a per-instruction basis. The interface may be either graphical
+ * (which this GUI satisfies) or textual (ignored), and has to
+ * meet the following requirements:
+ *
+ * <ol>
+ *    <li>
+ *      Each instruction of the program, with a pointer or
+ *      highlighting indicating the instruction that is currently
+ *      being executed.
+ *    </li>
+ *    <li>
+ *      The numerical constituent fields of each instruction.
+ *    </li>
+ *    <li>
+ *      The current value of each register which has been changed
+ *      during the execution of the program has to be shown.
+ *    </li>
+ *    <li>
+ *      The current value of the program counter (PC) has to be
+ *      shown.
+ *    </li>
+ *    <li>
+ *      The current value of each memory location which has been
+ *      changed during the execution of the program has to be shown.
+ *    </li>
+ * </ol>
+ *
+ * There must be a choice of whether values are displayed in
+ * decimal or hexadecimal. Minimally, this may be implemented
+ * as an option at startup time, but it would be preferable to
+ * allow the form of display to be changed during the execution
+ * of the simulator.
+ *
+ * The interface must afford the user (at least) the following
+ * operations:
+ * <ul>
+ *   <li>Step: Execute the next instruction and then wait.</li>
+ *   <li>Run: Run the program until it ends.</li>
+ *   <li>Reset: Reset to the initial state when the program file
+ *              was loaded. This should be possible even when the
+ *              program is in (a possibly unending loop).</li>
+ * </ul>
+ */
 @InstantiateOnEDT // Important!
 @Value
 public class SimulatorApplication implements Observer<RegisterMenu> {
@@ -35,23 +80,24 @@ public class SimulatorApplication implements Observer<RegisterMenu> {
     SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, registerMenu);
     applicationFrame.setJMenuBar(menuBar);
 
+    JPanel applicationPanel = new JPanel();
+    JPanel pcAndRegistersPanel = new JPanel();
+    pcAndRegistersPanel.setLayout(new BoxLayout(pcAndRegistersPanel, BoxLayout.PAGE_AXIS));
+
+    pcAndRegistersPanel.add(registersPanel);
+
+    JSplitPane splitPane = new JSplitPane(
+          JSplitPane.HORIZONTAL_SPLIT,
+          pcAndRegistersPanel,
+          programView);
+    applicationPanel.add(splitPane, BorderLayout.WEST);
+    applicationFrame.add(applicationPanel);
+    //applicationFrame.setMinimumSize(applicationFrame.getSize());
+
     applicationFrame.pack();
 
     /* Center the GUI on the screen, has to be called after pack() */
     applicationFrame.setLocationRelativeTo(null);
-
-    JPanel applicationPanel = new JPanel(new BorderLayout(5, 5));
-    //applicationPanel.add(programView, BorderLayout.CENTER);
-    //applicationPanel.add(registersPanel, BorderLayout.WEST);
-
-    JSplitPane splitPane = new JSplitPane(
-          JSplitPane.HORIZONTAL_SPLIT,
-          registersPanel,
-          programView);
-    applicationPanel.add(splitPane, BorderLayout.CENTER);
-    applicationFrame.add(applicationPanel);
-    applicationFrame.setMinimumSize(applicationFrame.getSize());
-
   }
 
   private void dispatchEvent(int i) {

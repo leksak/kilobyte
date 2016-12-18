@@ -34,7 +34,7 @@ public class InstructionMemory {
   /**
    * Inits 1000 bytes of instruction memory
    *
-   * @return
+   * @return a 1000-bytes of instruction memory
    */
   public static InstructionMemory init() {
     return init(1000);

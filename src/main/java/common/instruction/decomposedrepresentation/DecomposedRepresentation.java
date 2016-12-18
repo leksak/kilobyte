@@ -26,13 +26,12 @@ public class DecomposedRepresentation {
    * of lengths (6,5,5,5,5,6) yields the representation [0x1c, 8, 1, 9, 0, 2]
    * <p>
    * To get the aforementioned decomposition call the method like so:
-   * <pre>{@code fromNumber(0x71014802, 6, 5, 5, 5, 5, 6)</pre>
+   * <pre>{@code fromNumber(0x71014802, 6, 5, 5, 5, 5, 6)}</pre>
    *
    * @param number  the numerical representation of the number to decompose.
    * @param lengths the length of each chunk if {@code number} was in base 2.
    * @return the decomposed representation of {@code number} into chunks
    * where each chunk matches (in order) the supplied lengths.
-   * @throws InvalidParameterException if the sum of {@code lengths} is not 32.
    */
   public static DecomposedRepresentation fromNumber(long number, int... lengths) {
     if (Arrays.stream(lengths).sum() != 32) {
@@ -147,15 +146,16 @@ public class DecomposedRepresentation {
 
   /**
    * Get the decomposed representation as an int array.
-   * <p>
-   * For an example, decomposing the number 0x71014802 into (6, 5, 5
+   *
    * For an example, the decomposition
-   * <p>
+   *
    * <pre>{@code d = fromNumber(0x71014802, 6, 5, 5, 5, 5, 6)}</pre>
    *
    * satisfies
    *
-   * <pre>{@code Arrays.equals(d.toIntArray(), new int[] {0x1c, 8, 1, 9, 0, 2})</pre>
+   * <pre>{@code Arrays.equals(d.toIntArray(), new int[] {0x1c, 8, 1, 9, 0, 2})}</pre>
+   *
+   * @return the decomposition as an int array
    */
   public int[] toIntArray() {
     return decomposition;
@@ -164,9 +164,9 @@ public class DecomposedRepresentation {
   /**
    * Returns a string representation where each chunk is represented in
    * its hexadecimal form.
-   * <p>
+   *
    * For an example, the decomposition
-   * <p>
+   *
    * <pre>{@code d = fromNumber(0x71014802, 6, 5, 5, 5, 5, 6)}</pre>
    *
    * is represented as the string "[0x1c 8 1 9 0 2]".
@@ -190,9 +190,9 @@ public class DecomposedRepresentation {
   /**
    * Returns a string representation where each chunk is represented in
    * its decimal form.
-   * <p>
+   *
    * For an example, the decomposition
-   * <p>
+   *
    * <pre>{@code d = fromNumber(0x71014802, 6, 5, 5, 5, 5, 6)}</pre>
    *
    * is represented as the string "[28 8 1 9 0 2]".
