@@ -1,7 +1,5 @@
 package simulator.ui;
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
 import common.annotations.InstantiateOnEDT;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
@@ -11,10 +9,7 @@ import simulator.Observable;
 import simulator.Observer;
 
 import javax.swing.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @InstantiateOnEDT

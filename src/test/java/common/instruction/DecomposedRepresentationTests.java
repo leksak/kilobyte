@@ -7,9 +7,9 @@ import java.util.Arrays;
 
 import static common.instruction.decomposedrepresentation.DecomposedRepresentation.fromIntArray;
 import static common.instruction.decomposedrepresentation.DecomposedRepresentation.fromNumber;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.assertj.core.api.Assertions.*;
 
 public class DecomposedRepresentationTests {
   @Test

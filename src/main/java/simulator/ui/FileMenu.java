@@ -4,7 +4,6 @@ import common.annotations.InstantiateOnEDT;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-import net.jcip.annotations.NotThreadSafe;
 
 import javax.swing.*;
 import java.io.File;
