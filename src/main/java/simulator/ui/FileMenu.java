@@ -29,7 +29,8 @@ class FileMenu extends JMenu {
   JMenuItem load = new JMenuItem("Load");
   JFileChooser fileChooser = new JFileChooser();
 
-  private FileMenu(JFrame frame, Runnable closeOperation,
+  private FileMenu(JFrame frame,
+                   Runnable closeOperation,
                    Consumer<File> callOnFileLoad) {
     super("File");
 

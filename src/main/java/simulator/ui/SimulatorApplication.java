@@ -2,8 +2,6 @@ package simulator.ui;
 
 import common.annotations.InstantiateOnEDT;
 import lombok.Value;
-import simulator.Observable;
-import simulator.Observer;
 import simulator.Simulator;
 import simulator.program.Program;
 
@@ -13,6 +11,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 
+import static java.awt.event.KeyEvent.VK_F;
+import static java.awt.event.KeyEvent.VK_V;
 import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 
 /**
@@ -62,22 +62,24 @@ import static java.awt.event.WindowEvent.WINDOW_CLOSING;
  */
 @InstantiateOnEDT // Important!
 @Value
-public class SimulatorApplication implements Observer<RegisterMenu> {
+public class SimulatorApplication {
   Simulator s = new Simulator();
   JFrame applicationFrame = new JFrame("Kilobyte");
   ProgramView programView = new ProgramView();
-  FileMenu fileMenu = FileMenu.withCloseAction(applicationFrame,
+  FileMenu fileMenu = FileMenu.withCloseAction(
+        applicationFrame,
         // Clicking on exit in the file-menu closes the application
         () -> dispatchEvent(WINDOW_CLOSING),
-        this::loadProgram
-  );
-  RegisterMenu registerMenu = new RegisterMenu();
+        this::loadProgram);
+
   RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
+  ViewMenu displaySettings = new ViewMenu(registersPanel);
 
   SimulatorApplication() {
     applicationFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-    SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, registerMenu);
+    fileMenu.setMnemonic(VK_F);
+    displaySettings.setMnemonic(VK_V);
+    SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, displaySettings);
     applicationFrame.setJMenuBar(menuBar);
 
     JPanel applicationPanel = new JPanel();
@@ -129,11 +131,5 @@ public class SimulatorApplication implements Observer<RegisterMenu> {
       // TODO: Catch sensibly
       e.printStackTrace();
     }
-  }
-
-  @Override
-  public void notify(Observable<RegisterMenu> o) {
-    // Get the currently selected base and forward that information to
-    // the RegistersPanel
   }
 }

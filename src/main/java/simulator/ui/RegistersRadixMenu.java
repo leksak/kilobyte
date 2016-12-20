@@ -5,38 +5,36 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import net.jcip.annotations.NotThreadSafe;
-import simulator.Observable;
-import simulator.Observer;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @InstantiateOnEDT
 @NotThreadSafe
 @Value
 @EqualsAndHashCode(callSuper = true)
 // Decides the radix used in the registers panel
-public class RegisterMenu extends JMenu implements Observable<RegisterMenu> {
-  // Lombok will generate our getObservers method
-  List<Observer<RegisterMenu>> observers = new ArrayList<>();
+public class RegistersRadixMenu extends JMenu {
   JRadioButtonMenuItem hex = new JRadioButtonMenuItem("Hex", true);
   JRadioButtonMenuItem decimal = new JRadioButtonMenuItem("Decimal");
   ButtonGroup buttonGroup = ButtonGroupFactory.from(hex, decimal);
 
   @NonFinal
-  Radix radix = Radix.HEX;
+  Radix radix = Radix.HEX; // Default setting
 
-  RegisterMenu() {
+  RegistersRadixMenu(RegistersPanel r) {
     super("Registers");
     add(hex);
     add(decimal);
+
+    // Ensure that the view and this controller defaults to the same
+    // radix.
+    r.setRadix(radix);
 
     hex.addActionListener(e -> {
       // We only want to perform this action when the radix changes
       if (this.radix != Radix.HEX) {
         this.radix = Radix.HEX;
-        notifyObservers();
+        r.setRadix(radix);
       }
     });
 
@@ -44,13 +42,8 @@ public class RegisterMenu extends JMenu implements Observable<RegisterMenu> {
       // We only want to perform this action when the radix changes
       if (this.radix != Radix.DECIMAL) {
         this.radix = Radix.DECIMAL;
-        notifyObservers();
+        r.setRadix(radix);
       }
     });
-  }
-
-  @Override
-  public RegisterMenu reify() {
-    return this;
   }
 }

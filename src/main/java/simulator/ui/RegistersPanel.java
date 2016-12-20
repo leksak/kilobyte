@@ -4,18 +4,20 @@ import common.annotations.InstantiateOnEDT;
 import common.hardware.Register;
 import common.hardware.RegisterFile;
 import lombok.Value;
+import lombok.val;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.function.Function;
 
 @InstantiateOnEDT
 @Value
-public class RegistersPanel extends JPanel {
+class RegistersPanel extends JPanel {
   RegisterFile rf;
   JTable table;
   DefaultTableModel tableModel;
 
-  public RegistersPanel(RegisterFile rf) {
+  RegistersPanel(RegisterFile rf) {
     this.rf = rf;
 
     // We do not want to show the actual column headers, we just define
@@ -39,5 +41,37 @@ public class RegistersPanel extends JPanel {
     table.setShowGrid(false);
 
     add(table);
+  }
+
+  void setRadix(Radix radix) {
+    int indexOfValueColumn = tableModel.getColumnCount() - 1;
+    int noOfRows = tableModel.getRowCount();
+
+    Function<Integer, String> radixDisplayFunc;
+
+    if (radix == Radix.HEX) {
+      radixDisplayFunc = (i) -> "0x" + Integer.toHexString(i);
+    } else if (radix == Radix.DECIMAL) {
+      radixDisplayFunc = String::valueOf;
+    } else {
+      String e = "Trying to set the register radix display to: " +
+            "\"" + radix.name() + "\""
+            + "but there is no code-path for that radix";
+      throw new IllegalStateException(e);
+    }
+
+    Register[] registers = rf.getRegisters();
+    for (int rowIndex = 0; rowIndex < noOfRows; rowIndex++) {
+      val actual = registers[rowIndex].getValue();
+      val displayedValue = radixDisplayFunc.apply(actual);
+
+      // setValueAt calls "fireTableCellUpdated" which executes
+      // operations on the EDT. Hence, it must be wrapped in an
+      // invokeLater call
+      int finalRowIndex = rowIndex;
+      SwingUtilities.invokeLater(() -> {
+        tableModel.setValueAt(displayedValue, finalRowIndex, indexOfValueColumn);
+      });
+    }
   }
 }

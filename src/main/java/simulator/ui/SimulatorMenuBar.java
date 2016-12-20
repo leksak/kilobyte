@@ -4,10 +4,11 @@ import common.annotations.InstantiateOnEDT;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 @InstantiateOnEDT
 public class SimulatorMenuBar extends JMenuBar {
-  SimulatorMenuBar(FileMenu fileMenu, RegisterMenu registerMenu) {
+  SimulatorMenuBar(JMenuItem... menuItems) {
     super();
 
     Toolkit tk = Toolkit.getDefaultToolkit();
@@ -16,8 +17,8 @@ public class SimulatorMenuBar extends JMenuBar {
     run.setIcon(Icon.play(tk, this.getClass()));
     run.setToolTipText("Start the simulator");
 
-    add(fileMenu);
-    add(registerMenu);
+    Arrays.stream(menuItems).forEach(this::add);
+
     add(run);
   }
 }
