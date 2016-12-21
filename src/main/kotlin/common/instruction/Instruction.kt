@@ -88,7 +88,7 @@ data class Instruction private constructor(
       val iname: String,
       val opcode: Opcode,
       val mnemonicRepresentation: String,
-      val numericRepresentation: MachineCode, // Long because of overflow
+      val numericRepresentation: MachineCode, 
       val description: String,
       val format: Format,
       val pattern: ParametrizedInstructionRoutine,
