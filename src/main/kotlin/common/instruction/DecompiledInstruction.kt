@@ -1,7 +1,7 @@
 package common.instruction
 
 import common.machinecode.MachineCode
-import common.machinecode.*
+import common.machinecode.opcode
 import java.util.*
 
 sealed class DecompiledInstruction {

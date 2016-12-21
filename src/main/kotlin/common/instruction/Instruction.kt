@@ -2,13 +2,11 @@ package common.instruction
 
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.NoSuchInstructionException
-import common.machinecode.*
 import common.instruction.mnemonic.iname
 import common.instruction.mnemonic.mnemonicEquals
 import common.instruction.parametrizedroutines.*
-import common.machinecode.MachineCode
+import common.machinecode.*
 import io.atlassian.fugue.Either
-
 import java.util.*
 
 /**

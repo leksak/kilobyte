@@ -9,12 +9,11 @@ import common.instruction.Instruction
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import common.instruction.exceptions.MalformedMnemonicException
-import common.machinecode.*
 import common.instruction.mnemonic.iname
 import common.instruction.mnemonic.standardizeMnemonic
 import common.instruction.mnemonic.throwExceptionIfContainsIllegalCharacters
 import common.instruction.mnemonic.throwIfIncorrectNumberOfCommas
-import common.machinecode.MachineCode
+import common.machinecode.*
 import decompiler.MachineCodeDecoder
 import java.util.*
 
