@@ -18,7 +18,20 @@ sealed class DecompiledInstruction {
       }
       is UnknownInstruction -> {
         val op = machineCode.opcode()
-        return "There is no known instruction corresponding to: \"$machineCode\". opcode=\"$op\""
+        val sj = StringJoiner(" ")
+        sj.add("Unknown instruction: \"$machineCode\". opcode=\"$op\".")
+        val eitherFormatOrString = Instruction.formatFrom(op)
+
+        if (eitherFormatOrString.isLeft) {
+          // We were able to infer a format so we can decompose the machineCode
+          val actualFormat = eitherFormatOrString.left().get()
+          sj.add("Format=\"${actualFormat.name}\".")
+          sj.add("Decomposition=${actualFormat.decompose(machineCode)}")
+        } else {
+          sj.add(eitherFormatOrString.right().get())
+        }
+
+        return sj.toString()
       }
     }
   }

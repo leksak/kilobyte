@@ -8,6 +8,7 @@ import common.instruction.extensions.rt
 import common.instruction.mnemonic.iname
 import common.instruction.mnemonic.mnemonicEquals
 import common.instruction.parametrizedroutines.*
+import io.atlassian.fugue.Either
 
 import java.util.*
 
@@ -995,6 +996,17 @@ data class Instruction private constructor(
           type = Type.T,
           pattern = INAME_RS_OFFSET)
 
+    @JvmField val SYSCALL = Instruction(
+          iname = "syscall",
+          opcode = 0,
+          funct = 0xc,
+          mnemonicRepresentation = "syscall",
+          numericRepresentation = 0xc,
+          description = "Register \$v0 contains the number of the system call" +
+                " provided by SPIM",
+          format = Format.R,
+          pattern = INAME)
+    
     @JvmField val NOP = Instruction(
           iname = "nop",
           opcode = 0,
@@ -1377,6 +1389,8 @@ data class Instruction private constructor(
     // represent it.
     val inameToPrototype: HashMap<String, Instruction> = HashMap()
 
+    val opcodeToFormatMap: HashMap<Int, Format> = HashMap()
+
     /*
      * The arrays are all size 64 as there are at most 64 different
      * values to take into account.
@@ -1394,6 +1408,7 @@ data class Instruction private constructor(
       for (prototype in primordialSet) {
         val iname = prototype.iname
         inameToPrototype.put(iname, prototype)
+        opcodeToFormatMap.put(prototype.opcode, prototype.format)
 
         // Nop is all zeroes and clashes with sll which has opcode=0x00
         // and funct=0x00. We treat nop as a special case.
@@ -1467,6 +1482,14 @@ data class Instruction private constructor(
 
     @JvmStatic fun allExamples(): Iterable<Example> {
       return primordialSet.map { it.example }
+    }
+
+    @JvmStatic fun formatFrom(opcode: Int) : Either<Format, String> {
+      if (opcodeToFormatMap.containsKey(opcode)) {
+        return Either.left(opcodeToFormatMap[opcode])
+      } else {
+        return Either.right("There is no known format associated with opcode=\"$opcode\"")
+      }
     }
 
     @JvmStatic fun printAllExamples() {

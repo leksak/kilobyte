@@ -39,7 +39,7 @@ public class CommandLineDecompiler {
     return DecompiledInstruction.from(number);
   }
 
-  private static List<DecompiledInstruction> decompile(File f) {
+  public static List<DecompiledInstruction> decompile(File f) {
     return decompile(MachineCodeDecoder.decode(f));
   }
 
@@ -122,6 +122,11 @@ public class CommandLineDecompiler {
     }
 
     for (DecompiledInstruction d : decompiledInstructions) {
+      if (d.isUnknown()) {
+        System.out.println(d.toString());
+        continue;
+      }
+
       String unpretty = d.toString();
       String[] split = unpretty.split("\\s+");
       String machineCode = split[0];
