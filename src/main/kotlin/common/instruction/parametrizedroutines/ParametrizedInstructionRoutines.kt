@@ -9,11 +9,12 @@ import common.instruction.Instruction
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.IllegalCharactersInMnemonicException
 import common.instruction.exceptions.MalformedMnemonicException
-import common.instruction.extensions.*
+import common.machinecode.*
 import common.instruction.mnemonic.iname
 import common.instruction.mnemonic.standardizeMnemonic
 import common.instruction.mnemonic.throwExceptionIfContainsIllegalCharacters
 import common.instruction.mnemonic.throwIfIncorrectNumberOfCommas
+import common.machinecode.MachineCode
 import decompiler.MachineCodeDecoder
 import java.util.*
 
@@ -33,18 +34,17 @@ fun indexOf(fieldName: String): Int {
   return fieldNameToIndexMap[fieldName]!!
 }
 
-val fieldNameToMethodCallMap: HashMap<String, (n: Long) -> Int> = hashMapOf(
-      Pair("rs", Long::rs),
-      Pair("rt", Long::rt),
-      Pair("rd", Long::rd),
-      Pair("shamt", Long::shamt),
-      Pair("funct", Long::funct),
-      Pair("offset", Long::offset),
-      Pair("target", Long::target),
-      Pair("address", Long::offset),
-      Pair("hint", Long::hint)
+val fieldNameToMethodCallMap: HashMap<String, (n: MachineCode) -> Int> = hashMapOf(
+      Pair("rs", MachineCode::rs),
+      Pair("rt", MachineCode::rt),
+      Pair("rd", MachineCode::rd),
+      Pair("shamt", MachineCode::shamt),
+      Pair("funct", MachineCode::funct),
+      Pair("offset", MachineCode::offset),
+      Pair("target", MachineCode::target),
+      Pair("address", MachineCode::offset),
+      Pair("hint", MachineCode::hint)
 )
-
 
 /**
  * Hint-variable descriptions
@@ -225,7 +225,7 @@ enum class Hint(val value: Int) {
  * meaning that rs=$s2, rt=$t0, and the offset=24.
  */
 interface ParametrizedInstructionRoutine {
-  fun invoke(prototype: Instruction, machineCode: Long): DecompiledInstruction
+  fun invoke(prototype: Instruction, machineCode: MachineCode): DecompiledInstruction
   fun invoke(prototype: Instruction, mnemonicRepresentation: String): Instruction
 }
 
@@ -311,7 +311,7 @@ fun from(format: Format, pattern: String): ParametrizedInstructionRoutine {
     /**
      * When in machineCode, we trust.
      **/
-    override fun invoke(prototype: Instruction, machineCode: Long): DecompiledInstruction {
+    override fun invoke(prototype: Instruction, machineCode: MachineCode): DecompiledInstruction {
       val mnemonicRepresentation = formatMachineCodeToMnemonic(prototype,
             machineCode,
             fields)
@@ -330,11 +330,11 @@ private fun shouldFieldBeZero(fieldName: String, fields: Array<String>): Boolean
   return !fields.contains(fieldName)
 }
 
-private fun fieldIsNotZero(fieldName: String, machineCode: Long): Boolean {
+private fun fieldIsNotZero(fieldName: String, machineCode: MachineCode): Boolean {
   return fieldNameToMethodCallMap[fieldName]!!.invoke(machineCode) != 0
 }
 
-private fun errorCheckPrototype(machineCode: Long,
+private fun errorCheckPrototype(machineCode: MachineCode,
                                 format: Format,
                                 fields: Array<String>): ArrayList<String> {
   val errors = ArrayList<String>()
@@ -367,7 +367,7 @@ private fun errorCheckPrototype(machineCode: Long,
 }
 
 private fun formatMachineCodeToMnemonic(prototype: Instruction,
-                                        machineCode: Long,
+                                        machineCode: MachineCode,
                                         fields: Array<String>): String {
   val iname = prototype.iname
   var mnemonicRepresentation = "$iname "

@@ -1,6 +1,9 @@
-package common.instruction.extensions
+package common.machinecode
 
 import com.google.common.base.Preconditions.checkArgument
+
+typealias MachineCode = Long
+typealias Opcode = Int
 
 /* Convenience functions */
 fun Long.opcode() = this.bits(31, 26)

@@ -1,12 +1,13 @@
 package common.instruction
 
-import common.instruction.extensions.opcode
+import common.machinecode.MachineCode
+import common.machinecode.*
 import java.util.*
 
 sealed class DecompiledInstruction {
   class Valid(val instruction: Instruction) : DecompiledInstruction()
   class PartiallyValid(val instruction: Instruction, val errors: List<String>) : DecompiledInstruction()
-  class UnknownInstruction(val machineCode: Long) : DecompiledInstruction()
+  class UnknownInstruction(val machineCode: MachineCode) : DecompiledInstruction()
 
   override fun toString(): String {
     when (this) {
@@ -67,7 +68,7 @@ sealed class DecompiledInstruction {
   }
 
   companion object {
-    @JvmStatic fun from(machineCode: Long): DecompiledInstruction = Instruction.decompile(machineCode)
+    @JvmStatic fun from(machineCode: MachineCode): DecompiledInstruction = Instruction.decompile(machineCode)
 
     @JvmStatic fun printAllInstructions() {
       Instruction.primordialSet.forEach(::println)

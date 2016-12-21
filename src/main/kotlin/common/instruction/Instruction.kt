@@ -2,12 +2,11 @@ package common.instruction
 
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.NoSuchInstructionException
-import common.instruction.extensions.funct
-import common.instruction.extensions.opcode
-import common.instruction.extensions.rt
+import common.machinecode.*
 import common.instruction.mnemonic.iname
 import common.instruction.mnemonic.mnemonicEquals
 import common.instruction.parametrizedroutines.*
+import common.machinecode.MachineCode
 import io.atlassian.fugue.Either
 
 import java.util.*
@@ -89,9 +88,9 @@ import java.util.*
  */
 data class Instruction private constructor(
       val iname: String,
-      val opcode: Int,
+      val opcode: Opcode,
       val mnemonicRepresentation: String,
-      val numericRepresentation: Long, // Long because of overflow
+      val numericRepresentation: MachineCode, // Long because of overflow
       val description: String,
       val format: Format,
       val pattern: ParametrizedInstructionRoutine,
@@ -151,7 +150,7 @@ data class Instruction private constructor(
     }
   }
 
-  operator fun invoke(mnemonicRepresentation: String, numericRepresentation: Long): Instruction {
+  operator fun invoke(mnemonicRepresentation: String, numericRepresentation: MachineCode): Instruction {
     return this.copy(primordial = false,
           mnemonicRepresentation = mnemonicRepresentation,
           numericRepresentation = Integer.toUnsignedLong(numericRepresentation.toInt()))
@@ -162,7 +161,7 @@ data class Instruction private constructor(
     return this.pattern.invoke(this, mnemonicRepresentation)
   }
 
-  operator fun invoke(machineCode: Long): DecompiledInstruction {
+  operator fun invoke(machineCode: MachineCode): DecompiledInstruction {
     return this.pattern.invoke(this, machineCode)
   }
 
@@ -1006,7 +1005,7 @@ data class Instruction private constructor(
                 " provided by SPIM",
           format = Format.R,
           pattern = INAME)
-    
+
     @JvmField val NOP = Instruction(
           iname = "nop",
           opcode = 0,
@@ -1445,8 +1444,8 @@ data class Instruction private constructor(
       return inameToPrototype[symbolicRepresentation.iname()]!!(symbolicRepresentation)
     }
 
-    @JvmStatic fun decompile(machineCode: Long): DecompiledInstruction {
-      val opcode: Int = machineCode.opcode()
+    @JvmStatic fun decompile(machineCode: MachineCode): DecompiledInstruction {
+      val opcode = machineCode.opcode()
       if (opcode < 0 || opcode > 62) {
         return DecompiledInstruction.UnknownInstruction(machineCode)
       }
@@ -1476,7 +1475,7 @@ data class Instruction private constructor(
       return prototype.pattern.invoke(prototype, machineCode)
     }
 
-    @JvmStatic fun from(machineCode: Long): Instruction {
+    @JvmStatic fun from(machineCode: MachineCode): Instruction {
       return decompile(machineCode).asInstruction()
     }
 
@@ -1484,7 +1483,7 @@ data class Instruction private constructor(
       return primordialSet.map { it.example }
     }
 
-    @JvmStatic fun formatFrom(opcode: Int) : Either<Format, String> {
+    @JvmStatic fun formatFrom(opcode: Opcode) : Either<Format, String> {
       if (opcodeToFormatMap.containsKey(opcode)) {
         return Either.left(opcodeToFormatMap[opcode])
       } else {
