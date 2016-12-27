@@ -94,6 +94,17 @@ class InstructionTests {
   }
 
   @Test
+  void testShamtInstructions() throws Exception {
+    Instruction mnemonic = Instruction.from("sll $t1, $t2, 10");
+    assertEquals(Instruction.SLL, mnemonic, "Failed to translate from the mnemonic representation");
+
+    Instruction instructionNumeric = Instruction.from(0x014A4800);
+    assertEquals(Instruction.SLL, instructionNumeric, "Failed to translate from the numeric representation");
+
+    assertEquals(mnemonic, instructionNumeric);
+  }
+
+  @Test
   void testSWInstruction() throws Exception {
     Instruction mnemonic = Instruction.from("sw $ra, 4($sp)");
     assertEquals(Instruction.SW, mnemonic, "Failed to translate from the mnemonic representation");
@@ -195,11 +206,19 @@ class InstructionTests {
         test(instruction);
       }
     }
+  }
 
-    void test(Object[] instruction) throws NoSuchInstructionException {
-      long machineCode = (long) (int) instruction[0];
-      String assemblyCode = (String) instruction[4];
-      assertThat(Instruction.from(machineCode), is(equalTo(Instruction.from(assemblyCode))));
-    }
+  void test(Object[] instruction) throws NoSuchInstructionException {
+    long machineCode = (long) (int) instruction[0];
+    String assemblyCode = (String) instruction[4];
+    assertThat(Instruction.from(machineCode), is(equalTo(Instruction.from(assemblyCode))));
+  }
+
+  void test(Instruction fromMnemonic, Instruction fromMachineCode) {
+    assertThat(fromMnemonic, is(equalTo(fromMachineCode)));
+  }
+
+  void test(String mnemonic, int machineCode) {
+    test(Instruction.from(mnemonic), Instruction.from(machineCode));
   }
 }

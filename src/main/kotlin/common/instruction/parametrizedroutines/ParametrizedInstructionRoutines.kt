@@ -379,6 +379,7 @@ private fun formatMachineCodeToMnemonic(prototype: Instruction,
       "rs" -> mnemonicRepresentation += RegisterFile[machineCode.rs()]
       "offset" -> mnemonicRepresentation += machineCode.offset().toString()
       "target" -> mnemonicRepresentation += machineCode.target().toString()
+      "shamt" -> mnemonicRepresentation += machineCode.shamt().toString()
       "address" -> {
         mnemonicRepresentation += machineCode.offset().toString()
         if (!fields.contains("rs") && iname != "lui") {

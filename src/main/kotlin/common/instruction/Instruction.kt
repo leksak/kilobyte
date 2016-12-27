@@ -427,7 +427,7 @@ data class Instruction private constructor(
           iname = "sll",
           opcode = 0,
           funct = 0,
-          mnemonicRepresentation = "sll \$t1, \$t2, \$10",
+          mnemonicRepresentation = "sll \$t1, \$t2, 10",
           numericRepresentation = 0x014A4800,
           description = "Shift left logical : Set \$t1 to result of " +
                 "shifting \$t2 left by number of bits specified by " +
@@ -451,7 +451,7 @@ data class Instruction private constructor(
           iname = "sra",
           opcode = 0,
           funct = 3,
-          mnemonicRepresentation = "sra \$t1, \$t2, \$10",
+          mnemonicRepresentation = "sra \$t1, \$t2, 10",
           numericRepresentation = 0x014A4803,
           description = "Shift right arithmetic : Set \$t1 to result of " +
                 "sign-extended shifting \$t2 right by number of bits " +
@@ -475,7 +475,7 @@ data class Instruction private constructor(
           iname = "srl",
           opcode = 0,
           funct = 2,
-          mnemonicRepresentation = "srl \$t1, \$t2, \$10",
+          mnemonicRepresentation = "srl \$t1, \$t2, 10",
           numericRepresentation = 0x014A4802,
           description = "Shift right logical : Set \$t1 to result of " +
                 "shifting \$t2 right by number of bits specified " +

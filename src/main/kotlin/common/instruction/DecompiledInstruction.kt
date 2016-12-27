@@ -38,8 +38,8 @@ sealed class DecompiledInstruction {
   }
 
   fun asInstruction(): Instruction {
-    when (this) { is Valid -> return instruction
-    }
+    when (this) { is Valid -> return instruction }
+    println(this)
     throw IllegalStateException("\"asInstruction\" called on a non-valid instruction")
   }
 
