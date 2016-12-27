@@ -416,6 +416,10 @@ private fun formatMnemonic(tokens: Array<String>, n: IntArray, prototype: Instru
         n[destinationIndex] = hint
         prototype.hint = Hint.from(hint)
       }
+      "shamt" -> {
+        // Handles for instance the "19" in sll $s1, $t1, 19
+        n[destinationIndex] = tokens[i].toInt()
+      }
       else -> n[destinationIndex] = RegisterFile.indexOf(tokens[i])
     }
   }
@@ -453,6 +457,9 @@ fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic: String
 @JvmField val INAME_RS_RT = from(Format.R, "iname rs, rt")
 @JvmField val INAME_RD_RS = from(Format.R, "iname rd, rs")
 @JvmField val INAME_RD_RS_RT = from(Format.R, "iname rd, rs, rt")
+
+@JvmField val INAME_RD_RT_SHAMT = from(Format.R, "iname rd, rt, shamt")
+
 
 /**
  * The difference between offset and address is that address will accept an

@@ -61,6 +61,7 @@ public class InstructionMemory {
     return fromAddress(programCounter.getCurrentAddress());
   }
 
+  /* Add a single instruction to memory */
   public void add(Instruction i) {
     if (index >= 250) {
       throw new IllegalStateException("Ran out of InstructionMemory");

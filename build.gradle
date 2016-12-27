@@ -2,7 +2,7 @@ group 'callisto'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.1-M03'
+    ext.kotlin_version = '1.1-M04'
     ext.dokka_version = '0.9.11'
 
     repositories {
@@ -78,6 +78,9 @@ dependencies {
 
     // Used for the Either monad
     compile 'io.atlassian.fugue:fugue:4.3.0'
+
+    // Used for the simulator gui
+    compile group: 'com.jgoodies', name: 'jgoodies-forms', version: '1.9.0'
 
     testCompile("org.junit.jupiter:junit-jupiter-api:5.0.0-M3")
     testCompile("org.junit.platform:junit-platform-gradle-plugin:1.0.0-M3")

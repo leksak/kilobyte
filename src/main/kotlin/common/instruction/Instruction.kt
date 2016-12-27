@@ -433,7 +433,7 @@ data class Instruction private constructor(
                 "shifting \$t2 left by number of bits specified by " +
                 "immediate",
           format = Format.R,
-          pattern = INAME_RD_RS_RT)
+          pattern = INAME_RD_RT_SHAMT)
 
     @JvmField val SLLV = Instruction(
           iname = "sllv",
@@ -457,7 +457,7 @@ data class Instruction private constructor(
                 "sign-extended shifting \$t2 right by number of bits " +
                 "specified by immediate",
           format = Format.R,
-          pattern = INAME_RD_RS_RT)
+          pattern = INAME_RD_RT_SHAMT)
 
     @JvmField val SRAV = Instruction(
           iname = "srav",
@@ -481,7 +481,7 @@ data class Instruction private constructor(
                 "shifting \$t2 right by number of bits specified " +
                 "by immediate",
           format = Format.R,
-          pattern = INAME_RD_RS_RT)
+          pattern = INAME_RD_RT_SHAMT)
 
 
     @JvmField val SRLV = Instruction(
@@ -1246,25 +1246,21 @@ data class Instruction private constructor(
           iname = "swl",
           opcode = 42, // 0x2a
           mnemonicRepresentation = "swl \$t1, 4(\$t2)",
-          numericRepresentation = 0xA9490004,
+          numericRepresentation = 3108569092,
           description = "Store word left : Store high-order 1 to 4 bytes of " +
                 "\$t1 into memory, starting with effective byte address and " +
                 "continuing through the low-order byte of its word",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
 
-    /* Todo: mnemonic,numeric, description
     @JvmField val SWR = Instruction(
           iname = "swr",
           opcode = 46, // 0x2e
-          mnemonicRepresentation = "swl \$t1, 4(\$t2)",
-          numericRepresentation = 0xA9490004,
-          description = "Store word left : Store high-order 1 to 4 bytes of " +
-                "\$t1 into memory, starting with effective byte address and " +
-                "continuing through the low-order byte of its word",
+          mnemonicRepresentation = "swr \$t1, 4(\$t2)",
+          numericRepresentation = 0xb9490004,
+          description = "Store the right bytes from register rt at the possibly unaligned address.",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
-*/
 
     @JvmField val SC = Instruction(
           iname = "sc",

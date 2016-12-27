@@ -84,17 +84,18 @@ public class SimulatorApplication {
 
     JPanel applicationPanel = new JPanel();
     JPanel pcAndRegistersPanel = new JPanel();
-    pcAndRegistersPanel.setLayout(new BoxLayout(pcAndRegistersPanel, BoxLayout.PAGE_AXIS));
 
+    pcAndRegistersPanel.setLayout(new BoxLayout(pcAndRegistersPanel, BoxLayout.PAGE_AXIS));
     pcAndRegistersPanel.add(registersPanel);
 
     JSplitPane splitPane = new JSplitPane(
           JSplitPane.HORIZONTAL_SPLIT,
           pcAndRegistersPanel,
           programView);
-    applicationPanel.add(splitPane, BorderLayout.WEST);
+    applicationPanel.add(splitPane, BorderLayout.CENTER);
     applicationFrame.add(applicationPanel);
-    //applicationFrame.setMinimumSize(applicationFrame.getSize());
+
+    applicationFrame.setMinimumSize(applicationFrame.getSize());
 
     applicationFrame.pack();
 
