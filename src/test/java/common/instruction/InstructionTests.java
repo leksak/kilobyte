@@ -29,12 +29,24 @@ class InstructionTests {
     // i.e. srl $t5, $t5, 2 == srl $t5, $t5, 0x2
   }
 
+  void equalityTest(String mnemonic, Instruction prototype) {
+    assertThat(
+          "Expected Instruction.from(\"" + mnemonic + "\") to yield Instruction={" + prototype + "}",
+          Instruction.from(mnemonic), is(equalTo(prototype)));
+  }
+
+  void equalityTest(int numeric, Instruction prototype) {
+    assertThat(
+          "Expected Instruction.from(" + numeric + ") to yield Instruction={" + prototype + "}",
+          Instruction.from(numeric), is(equalTo(prototype)));
+  }
+
   @Nested
   class TestInstantiationForAtLeastOneInstructionFromEachPattern {
     @Test
     void INAME_RS() throws Exception {
-      assertThat(Instruction.JR, is(equalTo(Instruction.from("jr $t1"))));
-      assertThat(Instruction.JR, is(equalTo(Instruction.from(0x01200008))));
+      equalityTest(0x01200008, Instruction.JR);
+      equalityTest("jr $t1", Instruction.JR);
     }
 
     @Test
@@ -46,7 +58,7 @@ class InstructionTests {
 
 
   @Test
-  @DisplayName("Creating an instruction from 0x00 yields \"NOP\"")
+  @DisplayName("Creating an instruction from 0x00 yields \"NOP\" and not \"SLL\"")
   void gettingTheNOPInstructionFromAllZeroes() throws NoSuchInstructionException {
     Instruction actual = Instruction.from(0x00);
     assertEquals(Instruction.NOP, actual);
@@ -98,7 +110,7 @@ class InstructionTests {
     Instruction mnemonic = Instruction.from("sll $t1, $t2, 10");
     assertEquals(Instruction.SLL, mnemonic, "Failed to translate from the mnemonic representation");
 
-    Instruction instructionNumeric = Instruction.from(0x014A4800);
+    Instruction instructionNumeric = Instruction.from(0xa4a80);
     assertEquals(Instruction.SLL, instructionNumeric, "Failed to translate from the numeric representation");
 
     assertEquals(mnemonic, instructionNumeric);

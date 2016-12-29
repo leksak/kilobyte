@@ -428,10 +428,10 @@ data class Instruction private constructor(
           opcode = 0,
           funct = 0,
           mnemonicRepresentation = "sll \$t1, \$t2, 10",
-          numericRepresentation = 0x014A4800,
+          numericRepresentation = 0xa4a80,
           description = "Shift left logical : Set \$t1 to result of " +
                 "shifting \$t2 left by number of bits specified by " +
-                "immediate",
+                "the shamt amount",
           format = Format.R,
           pattern = INAME_RD_RT_SHAMT)
 
@@ -452,7 +452,7 @@ data class Instruction private constructor(
           opcode = 0,
           funct = 3,
           mnemonicRepresentation = "sra \$t1, \$t2, 10",
-          numericRepresentation = 0x014A4803,
+          numericRepresentation = 0xa4a83,
           description = "Shift right arithmetic : Set \$t1 to result of " +
                 "sign-extended shifting \$t2 right by number of bits " +
                 "specified by immediate",
@@ -476,7 +476,7 @@ data class Instruction private constructor(
           opcode = 0,
           funct = 2,
           mnemonicRepresentation = "srl \$t1, \$t2, 10",
-          numericRepresentation = 0x014A4802,
+          numericRepresentation = 0xa4a82,
           description = "Shift right logical : Set \$t1 to result of " +
                 "shifting \$t2 right by number of bits specified " +
                 "by immediate",
@@ -1246,7 +1246,7 @@ data class Instruction private constructor(
           iname = "swl",
           opcode = 42, // 0x2a
           mnemonicRepresentation = "swl \$t1, 4(\$t2)",
-          numericRepresentation = 3108569092,
+          numericRepresentation = 0xa9490004,
           description = "Store word left : Store high-order 1 to 4 bytes of " +
                 "\$t1 into memory, starting with effective byte address and " +
                 "continuing through the low-order byte of its word",
