@@ -48,7 +48,7 @@ public class CommandLineDecompiler {
   }
 
   private static void printExamples() {
-    Instruction.printAllExamples();
+    Instruction.printOneExampleForEachSupportedInstruction();
   }
 
   private static List<DecompiledInstruction> decompile(List<Long> numbers) {

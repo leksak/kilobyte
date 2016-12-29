@@ -93,12 +93,14 @@ data class Instruction private constructor(
       val format: Format,
       val pattern: ParametrizedInstructionRoutine,
       val primordial: Boolean = true,
+      var additionalExamples: Map<String, Int>? = null,
       var type: Type? = null,
       var rt: Int? = null,
       var funct: Int? = null,
       var offset: Int? = null,
       var hint: Hint? = null) {
   val example = Example(mnemonicRepresentation, numericRepresentation)
+  val allExamples: List<Example> = listOf(example).plus(additionalExamples)
   val decomposed = DecomposedRepresentation.fromNumber(numericRepresentation, *format.lengths)
 
   fun asPaddedHexString(): String {
@@ -429,6 +431,9 @@ data class Instruction private constructor(
           funct = 0,
           mnemonicRepresentation = "sll \$t1, \$t2, 10",
           numericRepresentation = 0xa4a80,
+          additionalExamples = mapOf(
+                "sll \$s1, \$t1, 19" to 0x00098cc0
+          ),
           description = "Shift left logical : Set \$t1 to result of " +
                 "shifting \$t2 left by number of bits specified by " +
                 "the shamt amount",
@@ -1474,7 +1479,9 @@ data class Instruction private constructor(
     }
 
     @JvmStatic fun allExamples(): Iterable<Example> {
-      return primordialSet.map { it.example }
+      val allExamples = ArrayList<Example>()
+      primordialSet.map { allExamples.addAll(it.allExamples) }
+      return allExamples
     }
 
     @JvmStatic fun formatFrom(opcode: Opcode) : Either<Format, String> {
@@ -1485,7 +1492,7 @@ data class Instruction private constructor(
       }
     }
 
-    @JvmStatic fun printAllExamples() {
+    @JvmStatic fun printOneExampleForEachSupportedInstruction() {
       primordialSet.forEach { prototype ->
         run {
           val numeric = Integer.toHexString(prototype.numericRepresentation.toInt())
@@ -1494,5 +1501,12 @@ data class Instruction private constructor(
       }
     }
   }
+}
+
+private fun  <E> List<E>.plus(pairs: Map<String, Int>?): List<E> {
+  if (pairs != null) {
+    this.plus(pairs.map { Example(it.key, it.value) })
+  }
+  return this
 }
 
