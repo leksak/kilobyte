@@ -6,12 +6,13 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Value
-public class InstructionMemory {
+public class InstructionMemory implements Memory<Long> {
   // Each instruction is 32 bits, or 4 bytes. An int is 32 bits.
   // We need to support a minimum of 1000 bytes of instruction memory.
   // Hence, we need to be able to store _at least_ 250 instructions.
@@ -29,6 +30,11 @@ public class InstructionMemory {
   private InstructionMemory(int numberOfBytes) {
     this.SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS = numberOfBytes / 4;
     instructions = new Instruction[SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS];
+
+    // The memory should be set to zero initially
+    for (int i = 0; i < SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS; i++) {
+      instructions[i] = Instruction.NOP.deepCopy();
+    }
   }
 
   /**
@@ -71,5 +77,17 @@ public class InstructionMemory {
 
   public void addAll(List<Instruction> instructions) {
     instructions.forEach(this::add);
+  }
+
+  @Override
+  public Long[] getMemoryContents() {
+    Long[] mem = new Long[SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS];
+    for (int i = 0; i < SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS; i++) {
+      if (instructions[i] == null) {
+        break;
+      }
+      mem[i] = instructions[i].asLong();
+    }
+    return mem;
   }
 }

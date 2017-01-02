@@ -17,6 +17,10 @@ public class Simulator {
 
   @Getter
   InstructionMemory instructionMemory = InstructionMemory.init();
+
+  @Getter
+  DataMemory dataMemory = new DataMemory();
+
   ImmutableSet<Instruction> supportedInstructions = ImmutableSet.of(
         ADD,
         SUB,

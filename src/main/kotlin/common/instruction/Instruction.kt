@@ -156,6 +156,11 @@ data class Instruction private constructor(
           numericRepresentation = Integer.toUnsignedLong(numericRepresentation.toInt()))
   }
 
+  fun deepCopy() : Instruction {
+    // Create a deep copy of this instruction
+    return copy()
+  }
+
   operator fun invoke(mnemonicRepresentation: String): Instruction {
     // Need to get at the numeric representation.
     return this.pattern.invoke(this, mnemonicRepresentation)
