@@ -1422,8 +1422,9 @@ data class Instruction private constructor(
         opcodeToFormatMap.put(prototype.opcode, prototype.format)
 
         // Nop is all zeroes and clashes with sll which has opcode=0x00
-        // and funct=0x00. We treat nop as a special case.
-        if (iname == "nop") {
+        // and funct=0x00. We treat nop as a special case. The same goes
+        // for "exit"
+        if (iname == "nop" || iname == "exit") {
           continue
         }
 
