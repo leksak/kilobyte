@@ -73,19 +73,26 @@ public class SimulatorApplication {
         this::loadProgram);
 
   RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
+  ProgramCounterView pc = new ProgramCounterView();
+  InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel();
   ViewMenu displaySettings = new ViewMenu(registersPanel);
 
   SimulatorApplication() {
+    // DISPOSE_ON_CLOSE is cleaner than EXIT_ON_CLOSE
     applicationFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     fileMenu.setMnemonic(VK_F);
     displaySettings.setMnemonic(VK_V);
     SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, displaySettings);
     applicationFrame.setJMenuBar(menuBar);
 
-    JPanel applicationPanel = new JPanel();
+    JPanel applicationPanel = new JPanel(new BorderLayout());
+
+    // Contains the program-counter and the registers in a stacked fashion
     JPanel pcAndRegistersPanel = new JPanel();
 
+    // BoxLayout let's us stack our components
     pcAndRegistersPanel.setLayout(new BoxLayout(pcAndRegistersPanel, BoxLayout.PAGE_AXIS));
+    pcAndRegistersPanel.add(pc);
     pcAndRegistersPanel.add(registersPanel);
 
     JSplitPane splitPane = new JSplitPane(
@@ -93,6 +100,7 @@ public class SimulatorApplication {
           pcAndRegistersPanel,
           programView);
     applicationPanel.add(splitPane, BorderLayout.CENTER);
+    applicationPanel.add(instructionMemory, BorderLayout.EAST);
     applicationFrame.add(applicationPanel);
 
     applicationFrame.setMinimumSize(applicationFrame.getSize());

@@ -11,6 +11,7 @@ import simulator.program.Program;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +27,11 @@ class ProgramView extends JPanel {
   List<Instruction> instructionsInDisplayedProgram = new ArrayList<>();
 
   public ProgramView() {
-    super();
-    JScrollPane wrapper = new JScrollPane(programFrontend);
+    super(new BorderLayout());
+    JScrollPane scrollPane = new JScrollPane(programFrontend);
+    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    this.add(scrollPane, BorderLayout.CENTER);
     programFrontend.setEditable(false);
-    this.add(wrapper);
   }
 
   @InvokeLaterNotNecessary
