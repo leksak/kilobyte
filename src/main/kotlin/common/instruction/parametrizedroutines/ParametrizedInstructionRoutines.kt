@@ -452,6 +452,7 @@ fun throwIfIncorrectNumberOfArgs(expectedArgc: Int, standardizedMnemonic: String
   throw MalformedMnemonicException(standardizedMnemonic, err)
 }
 
+@JvmField val EXIT_PATTERN = from(Format.EXIT, "iname")
 @JvmField val INAME = from(Format.R, "iname")
 @JvmField val INAME_RS = from(Format.R, "iname rs")
 @JvmField val INAME_RD = from(Format.R, "iname rd")

@@ -68,6 +68,9 @@ class InstructionTests {
   @DisplayName("All (long, String) archetype-pairs yield matching instructions")
   void checkThatAllPrototypesCreateEqualInstancesFromTheirRespectiveExamples() throws Exception {
     for (Example e : Instruction.allExamples()) {
+      if (e.getIname().equals("exit")) {
+        continue; // "exit" is not decompile-able
+      }
       String mnemonic = e.getMnemonicExample();
       long numeric = e.getNumericExample();
       Instruction fromMnemonic = Instruction.from(mnemonic);

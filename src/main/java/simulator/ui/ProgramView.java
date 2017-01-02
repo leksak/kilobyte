@@ -5,12 +5,14 @@ import common.annotations.InvokeLaterNotNecessary;
 import common.instruction.Instruction;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.val;
 import simulator.program.Program;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +28,12 @@ class ProgramView extends JPanel {
   List<Instruction> instructionsInDisplayedProgram = new ArrayList<>();
 
   public ProgramView() {
-    super();
-    JScrollPane wrapper = new JScrollPane(programFrontend);
+    // The BorderLayout is what allows us to fit the text pane to the panel
+    super(new BorderLayout());
+    JScrollPane scrollPane = new JScrollPane(programFrontend);
+    scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    this.add(scrollPane, BorderLayout.CENTER);
     programFrontend.setEditable(false);
-    this.add(wrapper);
   }
 
   @InvokeLaterNotNecessary
@@ -38,16 +42,26 @@ class ProgramView extends JPanel {
       // Clear the old instructions - if any
       programFrontend.setText("");
 
-      // Adding the elements has to happen on the
+      // Adding the elements has to happen on the EDT
       p.getInstructions().forEach(this::append);
     });
   }
 
+  @NonFinal
+  boolean empty = true;
+
   private void append(Instruction i) {
     try {
-      programDocument.insertString(
-            programDocument.getLength(),
-            "\n" + i.getMnemonicRepresentation(), null);
+      if (empty) {
+        programDocument.insertString(
+              programDocument.getLength(),
+              i.getMnemonicRepresentation(), null);
+        empty = false;
+      } else {
+        programDocument.insertString(
+              programDocument.getLength(),
+              "\n" + i.getMnemonicRepresentation(), null);
+      }
       instructionsInDisplayedProgram.add(i);
     } catch (BadLocationException e) {
       e.printStackTrace();

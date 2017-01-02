@@ -4,6 +4,9 @@ import common.annotations.InstantiateOnEDT;
 import lombok.Value;
 import simulator.Simulator;
 import simulator.program.Program;
+import simulator.ui.memory.DataMemoryPanel;
+import simulator.ui.memory.InstructionMemoryPanel;
+import simulator.ui.memory.TabbedMemoryPane;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,19 +76,28 @@ public class SimulatorApplication {
         this::loadProgram);
 
   RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
+  ProgramCounterView pc = new ProgramCounterView();
+  InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(s.getInstructionMemory());
+  DataMemoryPanel dataMemory = new DataMemoryPanel(s.getDataMemory());
+  TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
   ViewMenu displaySettings = new ViewMenu(registersPanel);
 
   SimulatorApplication() {
+    // DISPOSE_ON_CLOSE is cleaner than EXIT_ON_CLOSE
     applicationFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     fileMenu.setMnemonic(VK_F);
     displaySettings.setMnemonic(VK_V);
     SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, displaySettings);
     applicationFrame.setJMenuBar(menuBar);
 
-    JPanel applicationPanel = new JPanel();
+    JPanel applicationPanel = new JPanel(new BorderLayout());
+
+    // Contains the program-counter and the registers in a stacked fashion
     JPanel pcAndRegistersPanel = new JPanel();
 
+    // BoxLayout let's us stack our components
     pcAndRegistersPanel.setLayout(new BoxLayout(pcAndRegistersPanel, BoxLayout.PAGE_AXIS));
+    pcAndRegistersPanel.add(pc);
     pcAndRegistersPanel.add(registersPanel);
 
     JSplitPane splitPane = new JSplitPane(
@@ -93,6 +105,7 @@ public class SimulatorApplication {
           pcAndRegistersPanel,
           programView);
     applicationPanel.add(splitPane, BorderLayout.CENTER);
+    applicationPanel.add(tabbedMemories, BorderLayout.EAST);
     applicationFrame.add(applicationPanel);
 
     applicationFrame.setMinimumSize(applicationFrame.getSize());
@@ -120,14 +133,18 @@ public class SimulatorApplication {
       // Contains Run/Pause/Step/Reset
       //JMenu simulatorMenu = new JMenu("Simulator");
 
-
       app.setVisible();
     });
   }
 
   public void loadProgram(File f) {
     try {
-      programView.display(Program.from(f));
+      Program p = Program.from(f);
+      s.loadProgram(p);
+      programView.display(p);
+
+      // Update the instruction memory
+      instructionMemory.update();
     } catch (IOException e) {
       // TODO: Catch sensibly
       e.printStackTrace();

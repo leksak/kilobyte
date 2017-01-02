@@ -7,6 +7,7 @@ import common.instruction.Instruction;
 import decompiler.MachineCodeDecoder;
 import lombok.Getter;
 import lombok.Value;
+import simulator.program.Program;
 
 import static common.instruction.Instruction.*;
 
@@ -20,6 +21,10 @@ public class Simulator {
 
   @Getter
   InstructionMemory instructionMemory = InstructionMemory.init();
+
+  @Getter
+  DataMemory dataMemory = new DataMemory();
+
   ImmutableSet<Instruction> supportedInstructions = ImmutableSet.of(
         ADD,
         SUB,
@@ -77,5 +82,9 @@ public class Simulator {
    */
   public void printSupportedInstructions() {
     supportedInstructions.forEach(System.out::println);
+  }
+
+  public void loadProgram(Program p) {
+    instructionMemory.addAll(p.getInstructions());
   }
 }

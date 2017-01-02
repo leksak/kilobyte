@@ -156,6 +156,11 @@ data class Instruction private constructor(
           numericRepresentation = Integer.toUnsignedLong(numericRepresentation.toInt()))
   }
 
+  fun deepCopy() : Instruction {
+    // Create a deep copy of this instruction
+    return copy()
+  }
+
   operator fun invoke(mnemonicRepresentation: String): Instruction {
     // Need to get at the numeric representation.
     return this.pattern.invoke(this, mnemonicRepresentation)
@@ -1056,7 +1061,6 @@ data class Instruction private constructor(
       pattern = INAME)
     */
 
-
     @JvmField val BLEZL = Instruction(
           iname = "blezl",
           opcode = 22,
@@ -1378,6 +1382,15 @@ data class Instruction private constructor(
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
 
+    @JvmField val EXIT = Instruction( // Not a "real" instruction
+          iname = "exit",
+          opcode = 0, // Doesn't really have an opcode
+          mnemonicRepresentation = "exit",
+          numericRepresentation = 0, // Does not really have a numerical representation
+          description = "Marks that the program should be terminated",
+          format = Format.EXIT,
+          pattern = EXIT_PATTERN)
+
     // Lookup table
     // You can take the name of an Instruction and create
     // an Instruction of the same sort, i.e.
@@ -1409,12 +1422,13 @@ data class Instruction private constructor(
         opcodeToFormatMap.put(prototype.opcode, prototype.format)
 
         // Nop is all zeroes and clashes with sll which has opcode=0x00
-        // and funct=0x00. We treat nop as a special case.
-        if (iname == "nop") {
+        // and funct=0x00. We treat nop as a special case. The same goes
+        // for "exit"
+        if (iname == "nop" || iname == "exit") {
           continue
         }
 
-        if (prototype.opcode == 0) {
+        if (prototype.opcode == 0 && prototype.format == Format.R) {
           // Throws an IllegalStateException if the funct field has not
           // been set, that seems appropriate as that would be a programmer
           // error by _us_. If it is set (not null) we get its value.

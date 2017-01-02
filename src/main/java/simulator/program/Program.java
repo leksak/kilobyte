@@ -31,6 +31,7 @@ public class Program {
     List<Instruction> instructions = new ArrayList<>();
     String line;
     while ((line = br.readLine()) != null) {
+      line = line.trim(); // Indentation doesn't matter
       if (line.isEmpty()) {
         continue;
       }
