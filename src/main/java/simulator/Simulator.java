@@ -5,6 +5,7 @@ import common.hardware.RegisterFile;
 import common.instruction.Instruction;
 import lombok.Getter;
 import lombok.Value;
+import simulator.program.Program;
 
 import static common.instruction.Instruction.*;
 
@@ -60,5 +61,9 @@ public class Simulator {
    */
   public void printSupportedInstructions() {
     supportedInstructions.forEach(System.out::println);
+  }
+
+  public void loadProgram(Program p) {
+    instructionMemory.addAll(p.getInstructions());
   }
 }

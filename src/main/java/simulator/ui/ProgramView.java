@@ -5,6 +5,7 @@ import common.annotations.InvokeLaterNotNecessary;
 import common.instruction.Instruction;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.val;
 import simulator.program.Program;
 
@@ -41,16 +42,26 @@ class ProgramView extends JPanel {
       // Clear the old instructions - if any
       programFrontend.setText("");
 
-      // Adding the elements has to happen on the
+      // Adding the elements has to happen on the EDT
       p.getInstructions().forEach(this::append);
     });
   }
 
+  @NonFinal
+  boolean empty = true;
+
   private void append(Instruction i) {
     try {
-      programDocument.insertString(
-            programDocument.getLength(),
-            "\n" + i.getMnemonicRepresentation(), null);
+      if (empty) {
+        programDocument.insertString(
+              programDocument.getLength(),
+              i.getMnemonicRepresentation(), null);
+        empty = false;
+      } else {
+        programDocument.insertString(
+              programDocument.getLength(),
+              "\n" + i.getMnemonicRepresentation(), null);
+      }
       instructionsInDisplayedProgram.add(i);
     } catch (BadLocationException e) {
       e.printStackTrace();

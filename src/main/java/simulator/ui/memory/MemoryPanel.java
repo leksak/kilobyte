@@ -7,7 +7,8 @@ import simulator.Memory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
+
+import static java.lang.String.format;
 
 @InstantiateOnEDT
 @Log
@@ -31,6 +32,7 @@ public abstract class MemoryPanel<T> extends JPanel {
 
   @InvokeLaterNotNecessary
   public void update() { // Call whenever the underlying memory has changed.
+    log.info("Updating: " + label);
     // Events on the EDT are performed in order, so this is
     // guaranteed to happen before we start adding data back
     // into the model.
@@ -43,14 +45,18 @@ public abstract class MemoryPanel<T> extends JPanel {
   }
 
   private void populateList() {
-    log.info("Populating memory: " + label);
     T[] memoryContents = memory.getMemoryContents();
-    for (int i = 0; i < memoryContents.length; i++) {
-      if (memoryContents[i] == null) {
+    int noOfEntries = memoryContents.length;
+    log.info(format("Populating memory: %s with %d entries", label, noOfEntries));
+    for (int i = 0; i < noOfEntries; i++) {
+      T entry = memoryContents[i];
+      if (entry == null) {
         log.warning("Found null entry in memory at index=" + i);
         break;
       }
-      model.addElement(memoryContents[i].toString());
+
+      // invokeLater call is necessary
+      SwingUtilities.invokeLater(() -> model.addElement(entry.toString()));
     }
   }
 

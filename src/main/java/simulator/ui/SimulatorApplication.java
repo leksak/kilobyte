@@ -133,14 +133,18 @@ public class SimulatorApplication {
       // Contains Run/Pause/Step/Reset
       //JMenu simulatorMenu = new JMenu("Simulator");
 
-
       app.setVisible();
     });
   }
 
   public void loadProgram(File f) {
     try {
-      programView.display(Program.from(f));
+      Program p = Program.from(f);
+      s.loadProgram(p);
+      programView.display(p);
+
+      // Update the instruction memory
+      instructionMemory.update();
     } catch (IOException e) {
       // TODO: Catch sensibly
       e.printStackTrace();

@@ -10,8 +10,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import lombok.extern.java.Log;
+
 
 @Value
+@Log
 public class InstructionMemory implements Memory<Long> {
   // Each instruction is 32 bits, or 4 bytes. An int is 32 bits.
   // We need to support a minimum of 1000 bytes of instruction memory.
@@ -30,7 +33,10 @@ public class InstructionMemory implements Memory<Long> {
   private InstructionMemory(int numberOfBytes) {
     this.SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS = numberOfBytes / 4;
     instructions = new Instruction[SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS];
+    resetMemory();
+  }
 
+  public void resetMemory() {
     // The memory should be set to zero initially
     for (int i = 0; i < SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS; i++) {
       instructions[i] = Instruction.NOP.deepCopy();
@@ -68,8 +74,9 @@ public class InstructionMemory implements Memory<Long> {
   }
 
   /* Add a single instruction to memory */
-  public void add(Instruction i) {
-    if (index >= 250) {
+  private void add(Instruction i) {
+    log.info("Adding instruction={" + i + "} to memory");
+    if (index >= SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS) {
       throw new IllegalStateException("Ran out of InstructionMemory");
     }
     instructions[index++] = i;
