@@ -4,16 +4,21 @@ import java.awt.Toolkit
 import javax.swing.ImageIcon
 
 object Icon {
-  private const val DIRECTORY_PATH = "/icons/iconic/raster"
-  private const val PLAY_PATH = "$DIRECTORY_PATH/green/play_9x12.png"
+  enum class Name(val path: String) {
+    PLAY("/icons/iconic/raster/green/play_9x12.png"),
+    STOP("/icons/iconic/raster/red/stop_12x12.png"),
+    RESET("/icons/iconic/raster/gray_dark/reload_9x11.png"),
+    STEP_FORWARD("/icons/bitcons/png/gray/16x16/forward.png")
+  }
 
-  private var playIcon : ImageIcon? = null
+  private val iconMap : MutableMap<Name, ImageIcon> = mutableMapOf()
 
-  @JvmStatic fun <T> play(tk: Toolkit, clazz: Class<T>) : ImageIcon {
-    if (playIcon == null) {
-      playIcon = ImageIcon(tk.getImage(clazz.getResource(PLAY_PATH)))
+  @JvmStatic fun <T> getIcon(tk: Toolkit, clazz: Class<T>, name: Name) : ImageIcon {
+    if (iconMap.containsKey(name)) {
+      return iconMap[name]!!
     }
-    return playIcon!!
+    iconMap.put(name, ImageIcon(tk.getImage(clazz.getResource(name.path))))
+    return iconMap[name]!!
   }
 }
 

@@ -90,6 +90,8 @@ public class SimulatorApplication {
     SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, displaySettings);
     applicationFrame.setJMenuBar(menuBar);
 
+    JToolBar controls = new SimulatorControlsToolbar();
+    applicationFrame.add(controls, BorderLayout.NORTH);
     JPanel applicationPanel = new JPanel(new BorderLayout());
 
     // Contains the program-counter and the registers in a stacked fashion
