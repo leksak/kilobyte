@@ -94,13 +94,13 @@ class RegisterFile {
      * Returns the symbolic version of the supplied register meaning that
      * get($0) yields $zero and get($zero) yields $zero.
      */
-    @JvmStatic operator fun get(mnemonic: String): String = rf[mnemonic].toString()
+    @JvmStatic fun getMnemonic(mnemonic: String): String = rf[mnemonic].toString()
 
     /**
      * Returns the string representation of the register at the given index, i.e.
      * get(0) is equal to $zero.
      */
-    @JvmStatic operator fun get(index: Int): String = rf[index].toString()
+    @JvmStatic fun getMnemonic(index: Int): String = rf[index].toString()
 
     /**
      * Interprets the given String and returns the index of that register,

@@ -10,25 +10,25 @@ class RegisterTests {
   @Test
   @DisplayName("RegisterFile[\$t1] is equal to RegisterFile[\$9]")
   fun testThatSymbolicAndNonSymbolicRepresentationsAreEquivalent() {
-    assertEquals(RegisterFile["\$t1"], RegisterFile["$9"])
+    assertEquals(RegisterFile.getMnemonic("\$t1"), RegisterFile.getMnemonic("$9"))
   }
 
   @Test
   @DisplayName("RegisterFile[\$t1] is equal to itself")
   fun testThatTwoSymbolicRepresentationsAreTreatedAsEqual() {
-    assertEquals(RegisterFile["\$t1"], RegisterFile["\$t1"])
+    assertEquals(RegisterFile.getMnemonic("\$t1"), RegisterFile.getMnemonic("\$t1"))
   }
 
   @Test
   @DisplayName("RegisterFile[\$0] is equal to itself")
   fun testThatTwoNumericRepresentationsAreTreatedAsEqual() {
-    assertEquals(RegisterFile["\$0"], RegisterFile["\$0"])
+    assertEquals(RegisterFile.getMnemonic("\$0"), RegisterFile.getMnemonic("\$0"))
   }
 
   @Test
   @DisplayName("RegisterFile[\$zero] equals RegisterFile[0]")
   fun testThatParsingANumberAsAnIndexYieldsTheCorrectRegister() {
-    assertEquals(RegisterFile["\$zero"], RegisterFile[0])
+    assertEquals(RegisterFile.getMnemonic("\$zero"), RegisterFile.getMnemonic(0))
   }
 
   @Test

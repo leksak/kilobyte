@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import common.hardware.Register;
 import common.hardware.RegisterFile;
 import common.instruction.Instruction;
+import common.machinecode.OperationsKt;
 import decompiler.MachineCodeDecoder;
 import lombok.Getter;
 import lombok.Value;
@@ -19,11 +20,14 @@ public class Simulator {
   RegisterFile registerFile = new RegisterFile();
   ALUControl aluControl = new ALUControl();
 
+
   @Getter
   InstructionMemory instructionMemory = InstructionMemory.init();
 
   @Getter
   DataMemory dataMemory = new DataMemory();
+
+  ALUOperation aluOperationRegData = new ALUOperation(dataMemory);
 
   ImmutableSet<Instruction> supportedInstructions = ImmutableSet.of(
         ADD,
@@ -63,11 +67,28 @@ public class Simulator {
     // Instruction 31:26 - AluController
     aluControl.updateOperationType(i.getOpcode());
     // Instruction 25:21 read register 1 (rs)
-
+    Register r1 = registerFile.get(OperationsKt.rs(i.getNumericRepresentation()));
 
     // Instruction 20:16 read register 2 (rt) + MUX1
+    Register r2 = registerFile.get(OperationsKt.rt(i.getNumericRepresentation()));
+    //MUX0
+    if (r2.getValue() > 0 ) {
+
+    } else {
+
+    }
 
     // Instruction 15:0 sig-extend 16 -> 32 OR Instruction 5-0->ALU control
+    i.getNumericRepresentation();
+    long instrpart0to15 = 0;
+    int ret15to0 = OperationsKt.bits(instrpart0to15, 15,0);
+    int ret5to0 = OperationsKt.bits(instrpart0to15, 5,0);
+
+    if (aluControl.getAluOp0() || aluControl.getAluOp1()) {
+      aluOperationRegData.functionCode(ret5to0);
+    }
+
+
 
   }
 

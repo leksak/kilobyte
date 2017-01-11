@@ -56,4 +56,4 @@ fun String.getOffset(): Int = MachineCodeDecoder.decode(this.remove(")").tokeniz
  * For a String on the form OFFSET($REG) this function yields OFFSET, meaning that for
  * "10($t0)".getRegister() is equal to "$t0"
  */
-fun String.getRegister(): String = RegisterFile[this.remove(")").tokenize("(")[1]]
+fun String.getRegister(): String = RegisterFile.getMnemonic(this.remove(")").tokenize("(")[1])
