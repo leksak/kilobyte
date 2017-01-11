@@ -6,7 +6,6 @@ import common.instruction.Instruction;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-import lombok.val;
 import simulator.program.Program;
 
 import javax.swing.*;
@@ -34,6 +33,10 @@ class ProgramView extends JPanel {
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     this.add(scrollPane, BorderLayout.CENTER);
     programFrontend.setEditable(false);
+    append("No MIPS32 program has been loaded into memory.");
+    append("Try ALT+F by CTRL+L to open the file browser, or use the");
+    append("\"File\"-menu in the top-left corner.");
+
   }
 
   @InvokeLaterNotNecessary
@@ -48,23 +51,22 @@ class ProgramView extends JPanel {
   }
 
   @NonFinal
-  boolean empty = true;
+  boolean displayingProgram = false;
 
-  private void append(Instruction i) {
+  private void append(String s) {
     try {
-      if (empty) {
-        programDocument.insertString(
-              programDocument.getLength(),
-              i.getMnemonicRepresentation(), null);
-        empty = false;
-      } else {
-        programDocument.insertString(
-              programDocument.getLength(),
-              "\n" + i.getMnemonicRepresentation(), null);
-      }
-      instructionsInDisplayedProgram.add(i);
+      programDocument.insertString(programDocument.getLength(), s + "\n", null);
     } catch (BadLocationException e) {
       e.printStackTrace();
     }
+  }
+
+  private void append(Instruction i) {
+    if (!displayingProgram) {
+      displayingProgram = true;
+    }
+
+    append(i.getMnemonicRepresentation());
+    instructionsInDisplayedProgram.add(i);
   }
 }
