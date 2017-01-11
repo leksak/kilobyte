@@ -3,6 +3,7 @@ package simulator;
 import com.google.common.collect.ImmutableSet;
 import common.hardware.Register;
 import common.hardware.RegisterFile;
+import common.instruction.Format;
 import common.instruction.Instruction;
 import common.machinecode.OperationsKt;
 import lombok.Getter;
@@ -76,33 +77,90 @@ public class Simulator {
 
     // Instruction 31:26 - AluController
     aluControl.updateOperationType(i.getOpcode());
+
+
+    switch(i.getFormat()) {
+      case I:
+        executeFormatI(i);
+        break;
+      case J:
+        //executeFormatJ(i);
+        break;
+      case R:
+        executeFormatR(i);
+        break;
+      case EXIT:
+        // Exit
+        break;
+
+    }
+
+  }
+
+  private void executeFormatI(Instruction i) {
+    /* 2. Two registers, $t1 and $t2 , are read from the register file. */
+      // Instruction 25:21 read register 1 (rs)
+      Register r1 = registerFile.get(OperationsKt.rs(i.getNumericRepresentation()));
+      // Instruction 20:16 read register 2 (rt) + MUX1
+      Register r2 = registerFile.get(OperationsKt.rt(i.getNumericRepresentation()));
+
+    /*3.The ALU performs a subtract on the data values read from the register
+       file. The value of PC + 4 is added to the sign-extended, lower 16 bits of
+       the instruction ( offset ) shifted left by two; the result is the branch target
+       address.
+     */
+    Operation aluArtOp;
+    int weReallyDoNotCare = 0;
+    aluArtOp = aluOperation.functionCode(aluControl.getAluOp0(),
+          aluControl.getAluOp1(),
+          weReallyDoNotCare);
+
+    /* 3.1 The ALU performs a subtract on the data values read from the register file */
+    int aluReturnCalc = aluArithmetic.Arithmetic(aluArtOp, r1, r2);
+
+    /* The value of PC + 4 is added to the sign-extended, lower 16 bits of the
+     * instruction ( offset ) shifted left by two; the result is the branch target address. */
+    int ret15to0 = OperationsKt.offset(i.getNumericRepresentation());
+    int signExtend = SignExtender.extend(ret15to0+programCounter.getCurrentAddress()+4);
+
+
+    /* 4.	The Zero result from the ALU is used to decide which adder result to store
+          into the PC.
+    */
+    //TODO: this
+
+
+  }
+
+  private void executeFormatR(Instruction i) {
     // Instruction 25:21 read register 1 (rs)
     Register r1 = registerFile.get(OperationsKt.rs(i.getNumericRepresentation()));
     // Instruction 20:16 read register 2 (rt) + MUX1
     Register r2 = registerFile.get(OperationsKt.rt(i.getNumericRepresentation()));
-    //MUX0
-    //if
-    if (r2.getIndex() > 0 && r2.getValue() > 0 ) {
-
-    } else {
-
-    }
 
     // Instruction 15:0 sig-extend 16 -> 32 OR Instruction 5-0->ALU control
-    int ret15to0 = OperationsKt.bits(i.getNumericRepresentation(), 15,0);
+
+
+    //int ret15to0 = OperationsKt.bits(i.getNumericRepresentation(), 15,0);
     int ret5to0 = OperationsKt.bits(i.getNumericRepresentation(), 5,0);
 
-    // Data part.
-    Operation aluArtOp = aluOperation.functionCode(aluControl.getAluOp0(),
-                                                   aluControl.getAluOp1(),
-                                                   ret5to0);
+
+
+    // ALU Control get ALU-Operation for arithmetic.
+    Operation aluArtOp;
+    aluArtOp = aluOperation.functionCode(aluControl.getAluOp0(),
+                                         aluControl.getAluOp1(),
+                                         ret5to0);
+
+    // Execute ALU-Arithmetic and return output.
     int artCalc = aluArithmetic.Arithmetic(aluArtOp, r1, r2);
 
-    //MUX1 instruction 20-16(0) : 15-11(1)
+    //If ALUC-RegDst save to register then save in register.
     if (aluControl.getRegDst()) {
       Register writeRegister = registerFile.get(OperationsKt.rd(i.getNumericRepresentation()));
       writeRegister.setValue(artCalc);
     }
+
   }
 
   public void execute(String s) {

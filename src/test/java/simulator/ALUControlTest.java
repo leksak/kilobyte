@@ -6,6 +6,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static common.instruction.Format.R;
+import static common.instruction.Instruction.BEQ;
+import static common.instruction.Instruction.LW;
+import static common.instruction.Instruction.SW;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -84,7 +88,7 @@ class ALUControlTest {
 
   @Test
   void testUpdateOperationTypeCheckValuesAfterLWLW() {
-    Instruction i = Instruction.LW;
+    Instruction i = LW;
     aluC.updateOperationType(i.getOpcode());
     assertLWFormat(aluC);
   }
@@ -92,7 +96,7 @@ class ALUControlTest {
 
   @Test
   void testUpdateOperationTypeCheckValuesAfterSWSW() {
-    Instruction i = Instruction.SW;
+    Instruction i = SW;
     aluC.updateOperationType(i.getOpcode());
     assertSWFormat(aluC);
   }
@@ -100,39 +104,11 @@ class ALUControlTest {
 
   @Test
   void testUpdateOperationTypeCheckValuesAfterBEQBEQ() {
-    Instruction i = Instruction.BEQ;
+    Instruction i = BEQ;
     aluC.updateOperationType(i.getOpcode());
     assertBEQFormat(aluC);
   }
 
-  @Test
-  void testUpdateOperationTypeCheckValuesAfterAllExamples() {
-    Iterable<Example> iIterable = Instruction.allExamples();
-    for (Example e : iIterable) {
-      String mnemonic = e.getMnemonicExample();
-      Instruction fromMnemonic = Instruction.from(mnemonic);
-      aluC.updateOperationType(fromMnemonic.getOpcode());
-
-      switch (aluC.getFormat()) {
-        case R:
-          assertRFormat(aluC);
-          break;
-        case LW:
-          assertLWFormat(aluC);
-          break;
-        case SW:
-          assertSWFormat(aluC);
-          break;
-        case BEQ:
-          assertBEQFormat(aluC);
-          break;
-        default:
-          fail("Didn't find matching format");
-
-
-      }
-    }
-  }
 
 
 
