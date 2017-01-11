@@ -374,9 +374,9 @@ private fun formatMachineCodeToMnemonic(prototype: Instruction,
     // The fields are given in order, so we can just concatenate
     // the strings.
     when (fields[i]) {
-      "rd" -> mnemonicRepresentation += RegisterFile[machineCode.rd()]
-      "rt" -> mnemonicRepresentation += RegisterFile[machineCode.rt()]
-      "rs" -> mnemonicRepresentation += RegisterFile[machineCode.rs()]
+      "rd" -> mnemonicRepresentation += RegisterFile.getMnemonic(machineCode.rd())
+      "rt" -> mnemonicRepresentation += RegisterFile.getMnemonic(machineCode.rt())
+      "rs" -> mnemonicRepresentation += RegisterFile.getMnemonic(machineCode.rs())
       "offset" -> mnemonicRepresentation += machineCode.offset().toString()
       "target" -> mnemonicRepresentation += machineCode.target().toString()
       "shamt" -> mnemonicRepresentation += machineCode.shamt().toString()
@@ -384,7 +384,7 @@ private fun formatMachineCodeToMnemonic(prototype: Instruction,
         mnemonicRepresentation += machineCode.offset().toString()
         if (!fields.contains("rs") && iname != "lui") {
           mnemonicRepresentation += "("
-          mnemonicRepresentation += RegisterFile[machineCode.rs()]
+          mnemonicRepresentation += RegisterFile.getMnemonic(machineCode.rs())
           mnemonicRepresentation += ")"
         }
       }

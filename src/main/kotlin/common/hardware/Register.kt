@@ -19,7 +19,7 @@ class Register(val index: Int, val name: String, val description: String) {
 
   companion object {
     @JvmStatic fun equals(s1: String, s2: String): Boolean {
-      return RegisterFile[s1] == RegisterFile[s2]
+      return RegisterFile.getMnemonic(s1) == RegisterFile.getMnemonic(s2)
     }
   }
 }
