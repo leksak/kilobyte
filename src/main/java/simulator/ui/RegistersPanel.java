@@ -8,6 +8,7 @@ import lombok.val;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.function.Function;
 
 @InstantiateOnEDT
@@ -18,6 +19,7 @@ class RegistersPanel extends JPanel {
   DefaultTableModel tableModel;
 
   RegistersPanel(RegisterFile rf) {
+    super(new BorderLayout());
     this.rf = rf;
 
     // We do not want to show the actual column headers, we just define
