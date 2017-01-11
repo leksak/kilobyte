@@ -4,6 +4,8 @@ import common.annotations.InstantiateOnEDT;
 import common.annotations.InvokeLaterNotNecessary;
 import lombok.extern.java.Log;
 import simulator.Memory;
+import simulator.ui.ChangeRadixDisplayCapable;
+import simulator.ui.Radix;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,11 +14,12 @@ import static java.lang.String.format;
 
 @InstantiateOnEDT
 @Log
-public abstract class MemoryPanel<T> extends JPanel {
+public abstract class MemoryPanel extends JPanel implements ChangeRadixDisplayCapable {
   DefaultListModel<String> model = new DefaultListModel<>();
   JList<String> displayList = new JList<>(model);
   Memory memory;
   String label;
+  Radix currentRadix = Radix.HEX;
 
   public MemoryPanel(Memory memory, String label) {
     super(new BorderLayout());
@@ -45,7 +48,14 @@ public abstract class MemoryPanel<T> extends JPanel {
   }
 
   private void populateList() {
-    String[] memoryContents = memory.displayMemoryContents();
+    String[] memoryContents;
+
+    if (currentRadix == Radix.HEX) {
+      memoryContents = memory.toHexStringArray();
+    } else {
+      memoryContents = memory.toDecimalStringArray();
+    }
+
     int noOfEntries = memoryContents.length;
     log.info(format("Populating memory: %s with %d entries", label, noOfEntries));
     for (int i = 0; i < noOfEntries; i++) {
@@ -59,6 +69,14 @@ public abstract class MemoryPanel<T> extends JPanel {
       SwingUtilities.invokeLater(() -> model.addElement(entry));
     }
   }
+
+  @Override
+  public void setRadix(Radix r) {
+    currentRadix = r;
+    clearList();
+    populateList();
+  }
+
 
   public String getLabel() {
     return label;

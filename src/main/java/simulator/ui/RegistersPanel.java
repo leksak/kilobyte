@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 @InstantiateOnEDT
 @Value
-class RegistersPanel extends JPanel {
+class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
   RegisterFile rf;
   JTable table;
   DefaultTableModel tableModel;
@@ -50,7 +50,8 @@ class RegistersPanel extends JPanel {
     add(table);
   }
 
-  void setRadix(Radix radix) {
+  @Override
+  public void setRadix(Radix radix) {
     int indexOfValueColumn = tableModel.getColumnCount() - 1;
     int noOfRows = tableModel.getRowCount();
 

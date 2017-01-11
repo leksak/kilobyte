@@ -1,16 +1,17 @@
 package simulator;
 
+import common.instruction.Format;
 import common.instruction.Instruction;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import lombok.extern.java.Log;
+import simulator.ui.Radix;
 
 
 @Value
@@ -25,24 +26,43 @@ public class InstructionMemory implements Memory {
   @NonFinal
   int index = 0;
 
-  private InstructionMemory() {
-    // Intentionally left empty
-    this(1000);
-  }
-
   private InstructionMemory(int numberOfBytes) {
     this.SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS = numberOfBytes / 4;
     instructions = new Instruction[SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS];
     resetMemory();
   }
 
-  @Override
-  public String[] displayMemoryContents() {
-    String[] d = new String[instructions.length];
-    for (int i = 0; i < d.length; i++) {
-      d[i] = instructions[i].toString();
+  public String[] toStringArray(Radix r) {
+    checkArgument(r == Radix.HEX || r == Radix.DECIMAL,
+          "Expected the supplied radix to be either HEX or DECIMAL");
+    int rad = -1;
+    if (r == Radix.HEX) rad = 16;
+    if (r == Radix.DECIMAL) rad = 10;
+
+    String[] arr = new String[instructions.length];
+    for (int i = 0; i < arr.length; i++) {
+      Instruction inst = instructions[i];
+      long numeric = inst.getNumericRepresentation();
+      Format format = inst.getFormat();
+
+      String asMachineCode;
+      String decomposed;
+
+      if (r == Radix.HEX) {
+        decomposed = inst.asDecomposedHexadecimalString();
+        asMachineCode = "0x" + Long.toString(numeric, rad);
+      } else {
+        decomposed = inst.asDecomposedDecimalString();
+        asMachineCode = Long.toString(numeric);
+      }
+
+      arr[i] = String.format("%s %s %s",
+            asMachineCode,
+            format,
+            decomposed);
     }
-    return d;
+
+    return arr;
   }
 
   public void resetMemory() {

@@ -8,12 +8,15 @@ import net.jcip.annotations.NotThreadSafe;
 
 import javax.swing.*;
 
+/**
+ * Toggles between Radix.HEX and Radix.DEC on a RadixToggle-able
+ * JPanel
+ */
 @InstantiateOnEDT
 @NotThreadSafe
 @Value
 @EqualsAndHashCode(callSuper = true)
-// Decides the radix used in the registers panel
-public class RegistersRadixMenu extends JMenu {
+class RadixMenu extends JMenu {
   JRadioButtonMenuItem hex = new JRadioButtonMenuItem("Hex", true);
   JRadioButtonMenuItem decimal = new JRadioButtonMenuItem("Decimal");
   ButtonGroup buttonGroup = ButtonGroupFactory.from(hex, decimal);
@@ -21,8 +24,8 @@ public class RegistersRadixMenu extends JMenu {
   @NonFinal
   Radix radix = Radix.HEX; // Default setting
 
-  RegistersRadixMenu(RegistersPanel r) {
-    super("Registers");
+  RadixMenu(String name, ChangeRadixDisplayCapable r) {
+    super(name);
     add(hex);
     add(decimal);
 

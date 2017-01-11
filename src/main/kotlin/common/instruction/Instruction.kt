@@ -122,15 +122,15 @@ data class Instruction private constructor(
   }
 
   fun asLong() = numericRepresentation
-  fun asDecimalString() = decomposed.asDecimalString()
-  fun asHexadecimalString() = decomposed.asHexadecimalString()
+  fun asDecomposedDecimalString() = decomposed.asDecimalString()
+  fun asDecomposedHexadecimalString() = decomposed.asHexadecimalString()
 
   override fun toString(): String {
     return "%s %s %s %s %s".format(
           asPaddedHexString(),
           format,
-          asDecimalString(),
-          asHexadecimalString(),
+          asDecomposedDecimalString(),
+          asDecomposedHexadecimalString(),
           mnemonicRepresentation
     )
   }

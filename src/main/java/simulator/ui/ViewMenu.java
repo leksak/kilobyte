@@ -2,6 +2,8 @@ package simulator.ui;
 
 import common.annotations.InstantiateOnEDT;
 import lombok.val;
+import simulator.ui.memory.DataMemoryPanel;
+import simulator.ui.memory.InstructionMemoryPanel;
 
 import javax.swing.*;
 
@@ -24,10 +26,15 @@ class ViewMenu extends JMenu {
    * @param rp the {@see RegisterPanel} to wit we can change the
    *           radix display settings of.
    */
-  ViewMenu(RegistersPanel rp) {
+  ViewMenu(RegistersPanel rp, InstructionMemoryPanel imp, DataMemoryPanel dmp) {
     super("View");
-    val registerRadixMenu = new RegistersRadixMenu(rp);
+    val registerRadixMenu = new RadixMenu("Registers", rp);
+    val instructionMemoryMenu = new RadixMenu("Instruction Memory", imp);
+    val dataMemoryMenu = new RadixMenu("Data Memory", dmp);
+
     add(registerRadixMenu);
+    add(instructionMemoryMenu);
+    add(dataMemoryMenu);
     registerRadixMenu.setMnemonic(VK_R);
   }
 }

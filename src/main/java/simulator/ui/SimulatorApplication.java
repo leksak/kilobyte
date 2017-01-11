@@ -80,7 +80,7 @@ public class SimulatorApplication {
   InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(s.getInstructionMemory());
   DataMemoryPanel dataMemory = new DataMemoryPanel(s.getDataMemory());
   TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
-  ViewMenu displaySettings = new ViewMenu(registersPanel);
+  ViewMenu displaySettings = new ViewMenu(registersPanel, instructionMemory, dataMemory);
 
   SimulatorApplication() {
     // DISPOSE_ON_CLOSE is cleaner than EXIT_ON_CLOSE
