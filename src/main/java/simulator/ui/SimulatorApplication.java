@@ -9,6 +9,7 @@ import simulator.ui.memory.InstructionMemoryPanel;
 import simulator.ui.memory.TabbedMemoryPane;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -101,6 +102,8 @@ public class SimulatorApplication {
     pcAndRegistersPanel.setLayout(new BoxLayout(pcAndRegistersPanel, BoxLayout.PAGE_AXIS));
     pcAndRegistersPanel.add(pc);
     pcAndRegistersPanel.add(registersPanel);
+    pc.setBorder(BorderFactory.createTitledBorder("Program Counter"));
+    registersPanel.setBorder(BorderFactory.createTitledBorder("Registers"));
 
     JSplitPane splitPane = new JSplitPane(
           JSplitPane.HORIZONTAL_SPLIT,

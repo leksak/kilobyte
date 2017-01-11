@@ -4,6 +4,6 @@ import simulator.DataMemory;
 
 public class DataMemoryPanel extends MemoryPanel {
   public DataMemoryPanel(DataMemory memory) {
-    super(memory, "Data Memory");
+    super(memory, "Data");
   }
 }

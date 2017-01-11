@@ -29,6 +29,7 @@ class ProgramView extends JPanel {
   public ProgramView() {
     // The BorderLayout is what allows us to fit the text pane to the panel
     super(new BorderLayout());
+    this.setBorder(BorderFactory.createTitledBorder("Program"));
     JScrollPane scrollPane = new JScrollPane(programFrontend);
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     this.add(scrollPane, BorderLayout.CENTER);

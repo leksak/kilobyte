@@ -18,7 +18,6 @@ import java.awt.*;
  * </ul>
  */
 public class SimulatorControlsToolbar extends JToolBar {
-
   SimulatorControlsToolbar() {
     super();
     // Moves all the Icons to the far left AND (important) adds sensible
