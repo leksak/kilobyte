@@ -25,11 +25,13 @@ class RegistersPanel extends JPanel {
     // We do not want to show the actual column headers, we just define
     // them so that we ourselves can make sense of our code more easily
     Object[] columnNames = new Object[]{"Ri", "[$reg]", "=", "value"};
+    int noOfColumns = columnNames.length;
 
-    Object[][] data = new Object[32][4];
     Register[] registers = rf.getRegisters();
+    int noOfRows = registers.length;
+    Object[][] data = new Object[noOfRows][noOfColumns];
 
-    for (int i = 0; i < registers.length; i++) {
+    for (int i = 0; i < noOfRows; i++) {
       String c1 = "R" + i; // column 1
 
       Register r = registers[i];
@@ -38,6 +40,9 @@ class RegistersPanel extends JPanel {
       data[i] = new Object[]{ c1, mnemonic, "=", value };
     }
 
+    /* We assume that the caller instantiates this class on the EDT,
+     * therefore these operations are safe.
+     */
     tableModel = new DefaultTableModel(data, columnNames);
     table = new JTable(tableModel);
     table.setShowGrid(false);
