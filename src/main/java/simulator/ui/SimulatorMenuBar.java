@@ -3,7 +3,6 @@ package simulator.ui;
 import common.annotations.InstantiateOnEDT;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.Arrays;
 
 @InstantiateOnEDT

@@ -5,7 +5,6 @@ import common.hardware.Register;
 import common.hardware.RegisterFile;
 import common.instruction.Instruction;
 import common.machinecode.OperationsKt;
-import decompiler.MachineCodeDecoder;
 import lombok.Getter;
 import lombok.Value;
 import simulator.program.Program;
