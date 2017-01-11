@@ -6,12 +6,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
+import lombok.extern.java.Log;
+import simulator.ui.Radix;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import lombok.extern.java.Log;
-import simulator.ui.Radix;
 
 
 @Value

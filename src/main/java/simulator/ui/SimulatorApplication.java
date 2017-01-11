@@ -9,7 +9,6 @@ import simulator.ui.memory.InstructionMemoryPanel;
 import simulator.ui.memory.TabbedMemoryPane;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.io.File;
