@@ -5,9 +5,9 @@ import common.hardware.Register;
 import common.hardware.RegisterFile;
 import common.instruction.Instruction;
 import common.machinecode.OperationsKt;
-import decompiler.MachineCodeDecoder;
 import lombok.Getter;
 import lombok.Value;
+import simulator.ALUOperation.Operation;
 import simulator.program.Program;
 
 import static common.instruction.Instruction.*;
@@ -27,7 +27,8 @@ public class Simulator {
   @Getter
   DataMemory dataMemory = new DataMemory();
 
-  ALUOperation aluOperationRegData = new ALUOperation(dataMemory);
+  ALUOperation aluOperation = new ALUOperation();
+  ALUArithmetic aluArithmetic = new ALUArithmetic(dataMemory);
 
   ImmutableSet<Instruction> supportedInstructions = ImmutableSet.of(
         ADD,
@@ -53,6 +54,15 @@ public class Simulator {
     Instruction i = instructionMemory.read(programCounter);
   }
 
+  public int getRegisterValue(String mnemonic) {
+    return registerFile.get(mnemonic).getValue();
+  }
+
+
+  public void setRegisterValue(String mnemonic, int value) {
+    registerFile.get(mnemonic).setValue(value);
+  }
+
   // add $t1,$t2,$t3
   // 1. The instruction is fetched, and the PC is incremented.
   // 2. Two registers, $t2 and $t3 , are read from the register file;
@@ -68,28 +78,31 @@ public class Simulator {
     aluControl.updateOperationType(i.getOpcode());
     // Instruction 25:21 read register 1 (rs)
     Register r1 = registerFile.get(OperationsKt.rs(i.getNumericRepresentation()));
-
     // Instruction 20:16 read register 2 (rt) + MUX1
     Register r2 = registerFile.get(OperationsKt.rt(i.getNumericRepresentation()));
     //MUX0
-    if (r2.getValue() > 0 ) {
+    //if
+    if (r2.getIndex() > 0 && r2.getValue() > 0 ) {
 
     } else {
 
     }
 
     // Instruction 15:0 sig-extend 16 -> 32 OR Instruction 5-0->ALU control
-    i.getNumericRepresentation();
-    long instrpart0to15 = 0;
-    int ret15to0 = OperationsKt.bits(instrpart0to15, 15,0);
-    int ret5to0 = OperationsKt.bits(instrpart0to15, 5,0);
+    int ret15to0 = OperationsKt.bits(i.getNumericRepresentation(), 15,0);
+    int ret5to0 = OperationsKt.bits(i.getNumericRepresentation(), 5,0);
 
-    if (aluControl.getAluOp0() || aluControl.getAluOp1()) {
-      aluOperationRegData.functionCode(ret5to0);
+    // Data part.
+    Operation aluArtOp = aluOperation.functionCode(aluControl.getAluOp0(),
+                                                   aluControl.getAluOp1(),
+                                                   ret5to0);
+    int artCalc = aluArithmetic.Arithmetic(aluArtOp, r1, r2);
+
+    //MUX1 instruction 20-16(0) : 15-11(1)
+    if (aluControl.getRegDst()) {
+      Register writeRegister = registerFile.get(OperationsKt.rd(i.getNumericRepresentation()));
+      writeRegister.setValue(artCalc);
     }
-
-
-
   }
 
   public void execute(String s) {
@@ -108,4 +121,5 @@ public class Simulator {
   public void loadProgram(Program p) {
     instructionMemory.addAll(p.getInstructions());
   }
+
 }
