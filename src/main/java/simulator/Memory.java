@@ -1,6 +1,6 @@
 package simulator;
 
-public interface Memory<T> {
-  T[] getMemoryContents();
+public interface Memory {
+  String[] displayMemoryContents();
   void resetMemory();
 }

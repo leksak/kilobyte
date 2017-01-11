@@ -15,10 +15,10 @@ import static java.lang.String.format;
 public abstract class MemoryPanel<T> extends JPanel {
   DefaultListModel<String> model = new DefaultListModel<>();
   JList<String> displayList = new JList<>(model);
-  Memory<T> memory;
+  Memory memory;
   String label;
 
-  public MemoryPanel(Memory<T> memory, String label) {
+  public MemoryPanel(Memory memory, String label) {
     super(new BorderLayout());
     this.memory = memory;
     this.label = label;
@@ -45,18 +45,18 @@ public abstract class MemoryPanel<T> extends JPanel {
   }
 
   private void populateList() {
-    T[] memoryContents = memory.getMemoryContents();
+    String[] memoryContents = memory.displayMemoryContents();
     int noOfEntries = memoryContents.length;
     log.info(format("Populating memory: %s with %d entries", label, noOfEntries));
     for (int i = 0; i < noOfEntries; i++) {
-      T entry = memoryContents[i];
+      String entry = memoryContents[i];
       if (entry == null) {
         log.warning("Found null entry in memory at index=" + i);
         break;
       }
 
       // invokeLater call is necessary
-      SwingUtilities.invokeLater(() -> model.addElement(entry.toString()));
+      SwingUtilities.invokeLater(() -> model.addElement(entry));
     }
   }
 

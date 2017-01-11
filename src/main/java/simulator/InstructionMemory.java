@@ -15,7 +15,7 @@ import lombok.extern.java.Log;
 
 @Value
 @Log
-public class InstructionMemory implements Memory<Long> {
+public class InstructionMemory implements Memory {
   // Each instruction is 32 bits, or 4 bytes. An int is 32 bits.
   // We need to support a minimum of 1000 bytes of instruction memory.
   // Hence, we need to be able to store _at least_ 250 instructions.
@@ -34,6 +34,15 @@ public class InstructionMemory implements Memory<Long> {
     this.SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS = numberOfBytes / 4;
     instructions = new Instruction[SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS];
     resetMemory();
+  }
+
+  @Override
+  public String[] displayMemoryContents() {
+    String[] d = new String[instructions.length];
+    for (int i = 0; i < d.length; i++) {
+      d[i] = instructions[i].toString();
+    }
+    return d;
   }
 
   public void resetMemory() {
@@ -84,17 +93,5 @@ public class InstructionMemory implements Memory<Long> {
 
   public void addAll(List<Instruction> instructions) {
     instructions.forEach(this::add);
-  }
-
-  @Override
-  public Long[] getMemoryContents() {
-    Long[] mem = new Long[SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS];
-    for (int i = 0; i < SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS; i++) {
-      if (instructions[i] == null) {
-        break;
-      }
-      mem[i] = instructions[i].asLong();
-    }
-    return mem;
   }
 }
