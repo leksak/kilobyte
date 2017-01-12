@@ -3,17 +3,19 @@ package simulator;
 import com.google.common.collect.ImmutableSet;
 import common.hardware.Register;
 import common.hardware.RegisterFile;
-import common.instruction.Format;
 import common.instruction.Instruction;
 import common.machinecode.OperationsKt;
 import lombok.Getter;
 import lombok.Value;
+import lombok.extern.java.Log;
 import simulator.ALUOperation.Operation;
+import simulator.hardware.PC;
 import simulator.program.Program;
 
 import static common.instruction.Instruction.*;
 
 @Value
+@Log
 public class Simulator {
   @Getter
   PC programCounter = new PC();
@@ -70,7 +72,6 @@ public class Simulator {
     programCounter.stepForward();
     // Instruction 31:26 - AluController
     aluControl.updateOperationType(i.getOpcode());
-
 
     switch(i.getFormat()) {
       case I:
@@ -156,16 +157,15 @@ public class Simulator {
     int signExtend = SignExtender.extend(ret15to0);
     signExtend = signExtend << 2;
     signExtend = signExtend | programCounter.getCurrentAddress();
-    /* 4.	The Zero result from the ALU is used to decide which adder result to
-     *    store into the PC.
+    /* 4.
+     * The Zero result from the ALU is used to decide which adder result to
+     * store into the PC.
      */
     if (aluReturnCalc == 0 && aluControl.getBranch()) {
-      System.err.println("aluRet" + aluReturnCalc);
+      log.info("Branching to address=" + signExtend);
       //can be off by 4 since the programCounter av incremented already? 8 lines up.
-      programCounter.increment(signExtend);
+      programCounter.setTo(signExtend);
     }
-
-
   }
 
   private void executeFormatR(Instruction i) {

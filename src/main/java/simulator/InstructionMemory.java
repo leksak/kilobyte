@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
+import simulator.hardware.PC;
 import simulator.ui.Radix;
 
 import java.util.List;
