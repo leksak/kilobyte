@@ -35,6 +35,35 @@ class SimulatorTestJUnit {
   }
 
 
+  @Test
+  public void testALUMockBEQFalse() {
+    int startPC = simulator.getProgramCounter().getCurrentAddress();
+    simulator.setRegisterValue("$t0", 5);
+    simulator.setRegisterValue("$t1", 3);
+    Instruction instruction = Instruction.from("beq $t0, $t1, 16");
+    simulator.execute(instruction);
+    int currentPC = simulator.getProgramCounter().getCurrentAddress();
+    assertEquals(startPC+4, currentPC);
+  }
+
+  @Test
+  public void testALUMockBEQTrue() {
+    int startPC = simulator.getProgramCounter().getCurrentAddress();
+    // 0000 0110 6
+    // 0001 1000 24
+    int branchValue = 6;
+    simulator.setRegisterValue("$t0", 5);
+    simulator.setRegisterValue("$t1", 5);
+
+    Instruction instruction = Instruction.from("beq $t0, $t1, "+String.valueOf(branchValue));
+    simulator.execute(instruction);
+    int currentPC = simulator.getProgramCounter().getCurrentAddress();
+
+    assertEquals(0+4+24, currentPC);
+  }
+
+
+
 
   @Test
   public void testALUADD() {

@@ -64,17 +64,10 @@ public class Simulator {
     registerFile.get(mnemonic).setValue(value);
   }
 
-  // add $t1,$t2,$t3
-  // 1. The instruction is fetched, and the PC is incremented.
-  // 2. Two registers, $t2 and $t3 , are read from the register file;
-  //    also, the main control unit computes the setting of the control lines during this step.
-  // 3. The ALU operates on the data read from the register file, using the function code
-  //    (bits 5:0, which is the funct field, of the instruction) to generate the ALU function.
-  // 4. The result from the ALU is written into the register file using
-  //    bits 15:11 of the instruction to select the destination register ( $t1 ).
-  public void execute(Instruction i) {
-    // PC increment
 
+  public void execute(Instruction i) {
+    // 1. The instruction is fetched, and the PC is incremented
+    programCounter.stepForward();
     // Instruction 31:26 - AluController
     aluControl.updateOperationType(i.getOpcode());
 
@@ -97,6 +90,44 @@ public class Simulator {
 
   }
 
+  /* lw $t1, offset($t2) in a style similar to Figure 4.19. Figure 4.20 shows
+   * the active functional units and asserted control lines for a load. We can
+   * think of a load instruction as operating in five steps (similar to the
+   * R-type executed in four):
+   * 1. An instruction is fetched from the instruction memory, and the PC is incremented.
+   * 2. A register ($t2) value is read from the register file.
+   * 3. The ALU computes the sum of the value read from the register file and the
+   *    sign-extended, lower 16 bits of the instruction (offset).
+   * 4. The sum from the ALU is used as the address for the data memory.
+   * 5. The data from the memory unit is written into the register file; the register
+   *    destination is given by bits 20:16 of the instruction ($t1) .
+   */
+
+  // add $t1, $t2,    $t3   - R -
+  // beq  rs, rt,     label - I - Conditionally branch the number of
+  //                              instructions specified by the offset if
+  //                              register rs equals rt.
+  // lw   rt, address       - I - Load the 32-bit quantity (word) at address
+  //                              into register rt.
+
+
+  /* Finally, we can show the operation of the branch-on-equal instruction,
+   * such as beq $t1,$t2,offset, in the same fashion. It operates much like an
+   * R-format instruction, but the ALU output is used to determine whether the
+   * PC is written with PC + 4 or the branch target address.
+   * Figure 4.21 shows the four steps in execution:
+   * 1. An instruction is fetched from the instruction memory, and the PC is
+   *    incremented.
+   * 2. Two registers, $t1 and $t2, are read from the register file.
+   * 3. The ALU performs a subtract on the data values read from the register
+   *    file. The value of PC + 4 is added to the sign-extended, lower 16 bits
+   *    of the instruction (offset) shifted left by two; the result is the
+   *    branch target address.
+   * 4. The Zero result from the ALU is used to decide which adder result to
+   *    store into the PC.
+   *
+   */
+
   private void executeFormatI(Instruction i) {
     /* 2. Two registers, $t1 and $t2 , are read from the register file. */
       // Instruction 25:21 read register 1 (rs)
@@ -109,25 +140,30 @@ public class Simulator {
        the instruction ( offset ) shifted left by two; the result is the branch target
        address.
      */
+
+    /* 3.1 The ALU performs a subtract on the data values read from the register file */
     Operation aluArtOp;
     int weReallyDoNotCare = 0;
     aluArtOp = aluOperation.functionCode(aluControl.getAluOp0(),
-          aluControl.getAluOp1(),
-          weReallyDoNotCare);
-
-    /* 3.1 The ALU performs a subtract on the data values read from the register file */
+                                         aluControl.getAluOp1(),
+                                         weReallyDoNotCare);
     int aluReturnCalc = aluArithmetic.Arithmetic(aluArtOp, r1, r2);
 
-    /* The value of PC + 4 is added to the sign-extended, lower 16 bits of the
-     * instruction ( offset ) shifted left by two; the result is the branch target address. */
+    /* 3.2 The value of PC + 4 is added to the sign-extended, lower 16 bits of
+     *     the instruction ( offset ) shifted left by two; the result is the
+     *     branch target address. */
     int ret15to0 = OperationsKt.offset(i.getNumericRepresentation());
-    int signExtend = SignExtender.extend(ret15to0+programCounter.getCurrentAddress()+4);
-
-
-    /* 4.	The Zero result from the ALU is used to decide which adder result to store
-          into the PC.
-    */
-    //TODO: this
+    int signExtend = SignExtender.extend(ret15to0);
+    signExtend = signExtend << 2;
+    signExtend = signExtend | programCounter.getCurrentAddress();
+    /* 4.	The Zero result from the ALU is used to decide which adder result to
+     *    store into the PC.
+     */
+    if (aluReturnCalc == 0 && aluControl.getBranch()) {
+      System.err.println("aluRet" + aluReturnCalc);
+      //can be off by 4 since the programCounter av incremented already? 8 lines up.
+      programCounter.increment(signExtend);
+    }
 
 
   }

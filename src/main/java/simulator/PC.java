@@ -15,8 +15,12 @@ public class PC {
   }
 
   public void increment(int howMuchInNumberOfBytes) {
-    Add.add(howMuchInNumberOfBytes, 4);
+    System.err.println("PC Before:"+currentAddress+" After:"+Add.add(howMuchInNumberOfBytes, 4));
+    currentAddress += Add.add(howMuchInNumberOfBytes, 4);
   }
 
+  public void stepForward() {
+    currentAddress += 32;
+  }
 
 }
