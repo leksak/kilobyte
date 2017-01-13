@@ -230,7 +230,6 @@ public class Simulator {
   public void loadProgram(Program p) {
     reset();
     instructionMemory.addAll(p.getInstructions());
-    dataMemory.setMemory(0, (byte) 4);
   }
 
   private void reset() {
