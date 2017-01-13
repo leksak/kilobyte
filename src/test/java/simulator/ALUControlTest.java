@@ -45,11 +45,6 @@ class ALUControlTest {
     assertFalse(aluC.getAluOp0());
   }
 
-  @Test
-  public void testMatch() {
-    assertTrue(ALUOperation.match(34, "XX0010"));
-    assertThat(ALUOperation.from(0b10, 0b100010), is(equalTo(ALUOperation.SUBTRACT)));
-  }
 
   private void assertLWFormat(Control aluC) {
     assertFalse(aluC.getRegDst());

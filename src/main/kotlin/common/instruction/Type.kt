@@ -14,5 +14,6 @@ enum class Type(val longName: String) {
   E("exception"),
   Interrupt("interrupt"),
   J("jump"), // Some jump instructions are on the r format such as jalr
+  SHIFT("shift"),
 }
 

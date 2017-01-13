@@ -6,6 +6,7 @@ import common.hardware.Register;
 import common.hardware.RegisterFile;
 import common.instruction.Format;
 import common.instruction.Instruction;
+import common.instruction.Type;
 import common.machinecode.OperationsKt;
 import lombok.Getter;
 import lombok.Value;
@@ -70,9 +71,7 @@ public class Simulator {
 
   public void setRegisterValue(String mnemonic, int value) {
     Register r = registerFile.get(mnemonic);
-    log.info("name: "+ r.toString());
     r.setValue(value);
-    System.err.println(getRegisterValue(mnemonic));
   }
 
 
@@ -179,7 +178,7 @@ public class Simulator {
     /* 3.1 The ALU performs a subtract on the data values read from the register file */
     boolean alu1 = control.getAluOp1();
     boolean alu0 = control.getAluOp0();
-    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i));
+    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i), i.getFormat());
     int result = aluArtOp.apply(r1Value, r2Value);
 
     /* 3.2 The value of PC + 4 is added to the sign-extended, lower 16 bits of
@@ -210,8 +209,15 @@ public class Simulator {
     checkArgument(i.getFormat() == Format.R);
     // Instruction 25:21 read register 1 (rs)
     Register r1 = registerFile.get(Field.RS, i);
+    int r1Value = r1.getValue();
+
     // Instruction 20:16 read register 2 (rt) + MUX1
     Register r2 = registerFile.get(Field.RT, i);
+    int r2Value = r2.getValue();
+    if (i.getType() == Type.SHIFT) {
+      r1Value = r2Value;
+      r2Value = OperationsKt.shamt(i.getNumericRepresentation());
+    }
 
     // Instruction 15:0 sig-extend 16 -> 32 OR Instruction 5-0->ALU control
     int funct = funct(i);
@@ -232,8 +238,8 @@ public class Simulator {
       return;
     }
 
-    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i));
-    int result = aluArtOp.apply(r1.getValue(), r2.getValue());
+    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i), i.getFormat());
+    int result = aluArtOp.apply(r1Value, r2Value);
 
     // If ALUC-RegDst save to register
     if (control.getRegDst()) {

@@ -492,6 +492,7 @@ data class Instruction private constructor(
                 "shifting \$t2 right by number of bits specified " +
                 "by immediate",
           format = Format.R,
+          type = Type.SHIFT,
           pattern = INAME_RD_RT_SHAMT)
 
 

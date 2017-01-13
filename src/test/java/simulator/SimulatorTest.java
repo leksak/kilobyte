@@ -91,7 +91,7 @@ class SimulatorTestJUnit {
     simulator.execute(Instruction.from("slt $v0, $t2, $t1"));
     assertEquals(0, simulator.getRegisterValue("$v0"));
 
-    simulator.execute(Instruction.from("nor $v1, $t1, $t1"));
+    simulator.execute(Instruction.from("slt $v1, $t1, $t1"));
     assertEquals(0, simulator.getRegisterValue("$v1"));
 
   }
@@ -169,7 +169,7 @@ class SimulatorTestJUnit {
   @Test
   public void testALUMockSRL() {
     simulator.setRegisterValue("$t2", 127);
-    //01111111(127_10) >>> 2 = 00011111(31_10)
+    //0111 1111(127_10) >>> 2 = 0001 1111(31_10)
 
     Instruction instruction = Instruction.from("srl $t1, $t2, 2");
     simulator.execute(instruction);
@@ -178,13 +178,14 @@ class SimulatorTestJUnit {
 
   //SRA - "Shift right arithmetic : Set \$t1 to result of sign-extended
   // shifting \$t2 right by number of bits specified by immediate:sra $t1, $t2, 10
+  @Test
   public void testALUMockSRA() {
     simulator.setRegisterValue("$t2", 80);
-    // 0101 0000 (80)
-    // 0000 1010 (10)
-    Instruction instruction = Instruction.from("sra $t1, $t2, 3");
+    // 0111 1111 (127)
+    // 0001 1111 (10)
+    Instruction instruction = Instruction.from("sra $t1, $t2, 2");
     simulator.execute(instruction);
-    assertEquals((80 >> 3), simulator.getRegisterValue("$t1"));
+    assertEquals((80 >> 2), simulator.getRegisterValue("$t1"));
   }
 
   //J

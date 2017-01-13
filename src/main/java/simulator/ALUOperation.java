@@ -1,6 +1,7 @@
 package simulator;
 
 import common.hardware.Register;
+import common.instruction.Format;
 import common.instruction.decomposedrepresentation.DecomposedRepresentation;
 import lombok.extern.java.Log;
 
@@ -15,7 +16,9 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
   AND(     "and",              (a, b) -> a & b,           0, 0, 0, 0),
   OR(      "or",               (a, b) -> a | b,           0, 0, 0, 1),
   SLT(     "set on less than", (a, b) -> (a < b ? 1 : 0), 0, 1, 1, 1),
-  NOR(     "nor",              (a, b) -> ~(a | b),        1, 1, 0, 0);
+  NOR(     "nor",              (a, b) -> ~(a | b),        1, 1, 0, 0),
+  SRL(     "srl",              (a, b) -> (a >>> b),       0, 0, 0, 0),
+  SRA(     "sra",              (a, b) -> (a >> b),        0, 0, 0, 0);
 
   final String desiredALUAction;
   private BiFunction<Integer, Integer, Integer> f;
@@ -56,16 +59,21 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
     return match(ALUOp10, ALUOpMask) && match(funct, functMask);
   }
   
-  static ALUOperation from(int ALUOp10, int funct) {
-    if (match("10", "100111", ALUOp10, funct)) return NOR;
-    if (match("1X", "XX0010", ALUOp10, funct)) return SUBTRACT; // Subtract
-    if (match("10", "XX0000", ALUOp10, funct)) return ADD; // CTRLLINES=0010=ADD
-    if (match("10", "XX0100", ALUOp10, funct)) return AND;
-    if (match("10", "XX0101", ALUOp10, funct)) return OR;
-    if (match("1X", "XX1010", ALUOp10, funct)) return SLT;
-    if (match("00", "XXXXXX", ALUOp10, funct)) return ADD;
-    if (match("01", "XXXXXX", ALUOp10, funct)) return SUBTRACT;
-
+  static ALUOperation from(int ALUOp10, int funct, Format format) {
+    if (format == Format.R) {
+      if (match("10", "100111", ALUOp10, funct)) return NOR;
+      if (match("10", "000010", ALUOp10, funct)) return SRL;
+      if (match("10", "000011", ALUOp10, funct)) return SRA;
+      if (match("1X", "XX0010", ALUOp10, funct)) return SUBTRACT; // Subtract
+      if (match("10", "XX0000", ALUOp10, funct)) return ADD; // CTRLLINES=0010=ADD
+      if (match("10", "XX0100", ALUOp10, funct)) return AND;
+      if (match("10", "XX0101", ALUOp10, funct)) return OR;
+      if (match("1X", "XX1010", ALUOp10, funct)) return SLT;
+    } else {
+      if (match("00", "XXXXXX", ALUOp10, funct)) return ADD;
+      if (match("01", "XXXXXX", ALUOp10, funct)) return SUBTRACT;
+      if (match("10", "XXXXXX", ALUOp10, funct)) return OR;
+    }
     throw new IllegalStateException("Unsupported operation");
   }
   
@@ -76,9 +84,9 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
     return res;
   }
 
-  static ALUOperation from(boolean alu1, boolean alu0, int funct) {
+  static ALUOperation from(boolean alu1, boolean alu0, int funct, Format format) {
     int ALUOp10 = ALUOp10(alu1, alu0);
-    ALUOperation op = from(ALUOp10, funct);
+    ALUOperation op = from(ALUOp10, funct, format);
     assert(op != null);
 
     String aluOp = aluOpToString(alu1, alu0);
@@ -99,6 +107,7 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
   }
 
   public Integer apply(Integer a, Integer b) {
+    log.info("ALUOperation"+a+", "+b);
     return f.apply(a, b);
   }
 }

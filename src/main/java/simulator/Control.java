@@ -2,7 +2,9 @@ package simulator;
 
 
 import lombok.Getter;
+import lombok.extern.java.Log;
 
+@Log
 public class Control {
 
   @Getter
@@ -85,6 +87,17 @@ public class Control {
       branch = false;
       aluOp1 = false;
       aluOp0 = false;
+    }else if (opCode == 0b1101) {
+      regDst    = false;
+      regWrite  = true;
+      aluSrc    = true;
+      memRead   = false;
+      memWrite  = false;
+      memtoReg  = false;
+      branch    = false;
+      aluOp1    = true;
+      aluOp0    = false;
     }
+    log.warning("No control settings found for "+opCode);
   }
 }
