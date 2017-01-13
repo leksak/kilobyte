@@ -160,10 +160,12 @@ public class Simulator {
       // Instruction 20:16 read register 2 (rt) + MUX1
       Register r2 = registerFile.get(Field.RT, i);
       r2Value = r2.getValue();
+      if (control.getRegDst()) {
+        r2 = registerFile.get(Field.RD, i);
+      }
       if (control.getAluSrc()) {
        r2Value = signExtend;
       }
-      //TODO: regdst gissa vad det ska göra
 
     /*3.The ALU performs a subtract on the data values read from the register
        file. The value of PC + 4 is added to the sign-extended, lower 16 bits of
@@ -193,10 +195,13 @@ public class Simulator {
     }
     if (control.getMemtoReg()) {
       r2.setValue(dataMemory.readWord(result));
-    }
+    } else
     if (control.getMemWrite() && control.getAluSrc()) {
       log.info(format("Writing word to Memory Address=%d Value=%d", result, r2.getValue()));
       dataMemory.setMemory(result, (byte)r2.getValue());
+    } else
+    if (control.getAluSrc()) {
+      r2.setValue(result);
     }
   }
 
