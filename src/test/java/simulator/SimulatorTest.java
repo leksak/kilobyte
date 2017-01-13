@@ -22,7 +22,6 @@ class SimulatorTestJUnit {
 
   }
 
-
   //ADD
   @Test
   public void testALUMockAdd() {
@@ -42,10 +41,61 @@ class SimulatorTestJUnit {
     simulator.execute(instruction);
     assertEquals(simulator.getRegisterValue("$v0"), 2);
   }
+
   //AND
+  @Test
+  public void testALUMockAND() {
+    simulator.setRegisterValue("$t0", 0);
+    simulator.setRegisterValue("$t1", 1);
+    simulator.setRegisterValue("$t2", 3);
+    simulator.execute(Instruction.from("and $v0, $t0, $t1"));
+    assertEquals(0, simulator.getRegisterValue("$v0"));
+    simulator.execute(Instruction.from("and $v0, $t2, $t1"));
+    assertEquals(1, simulator.getRegisterValue("$v0"));
+  }
+
   //OR
+  @Test
+  public void testALUMockOR() {
+    simulator.setRegisterValue("$t0", 5);
+    simulator.setRegisterValue("$t1", 3);
+    Instruction instruction = Instruction.from("sub $v0, $t0, $t1");
+    simulator.execute(instruction);
+    assertEquals(simulator.getRegisterValue("$v0"), 2);
+  }
+
   //NOR
-  //SLT
+  @Test
+  public void testALUMockNOR() {
+    simulator.setRegisterValue("$t1", 10);
+    simulator.setRegisterValue("$t2", 17);
+    simulator.setRegisterValue("$t3", 23);
+
+    simulator.execute(Instruction.from("nor $v0, $t1, $t2"));
+    assertEquals(~(10 | 17), simulator.getRegisterValue("$v0"));
+    simulator.execute(Instruction.from("nor $v1, $t2, $t3"));
+    assertEquals(~(17 | 23), simulator.getRegisterValue("$v1"));
+  }
+
+
+  //SLT Set less than : If \$t2 is less than $t3, then set $t1 to 1 else set $t1 to 0
+  @Test
+  public void testALUMockSLT() {
+    simulator.setRegisterValue("$t1", 1);
+    simulator.setRegisterValue("$t2", 2);
+    simulator.setRegisterValue("$t3", 1);
+
+    simulator.execute(Instruction.from("slt $v0, $t1, $t2"));
+    assertEquals(1, simulator.getRegisterValue("$v0"));
+
+    simulator.execute(Instruction.from("slt $v0, $t2, $t1"));
+    assertEquals(0, simulator.getRegisterValue("$v0"));
+
+    simulator.execute(Instruction.from("nor $v1, $t1, $t1"));
+    assertEquals(0, simulator.getRegisterValue("$v1"));
+
+  }
+
   //LW
   @Test
   public void testALUMockLW() {
@@ -104,9 +154,39 @@ class SimulatorTestJUnit {
     simulator.execute(instruction);
     assertEquals(7, simulator.getRegisterValue("$t1"));
   }
-  //ORI
-  //SRL
-  //SRA
+  //ORI - Bitwise OR immediate : Set \$t1 to bitwise OR of \$t2 and
+  // zero-extended 16-bit immediate: ori \$t1, \$t2, 4
+  @Test
+  public void testALUMockORI() {
+    simulator.setRegisterValue("$t2", 8);
+    Instruction instruction = Instruction.from("ori $t1, $t2, 4");
+    simulator.execute(instruction);
+    assertEquals((8 | 4), simulator.getRegisterValue("$t1"));
+  }
+
+  //SRL - Shift right logical : Set \$t1 to result of shifting \$t2 right by
+  // number of bits specified by immediate: srl \$t1, \$t2, 10
+  @Test
+  public void testALUMockSRL() {
+    simulator.setRegisterValue("$t2", 127);
+    //01111111(127_10) >>> 2 = 00011111(31_10)
+
+    Instruction instruction = Instruction.from("srl $t1, $t2, 2");
+    simulator.execute(instruction);
+    assertEquals((127 >>> 2), simulator.getRegisterValue("$t1"));
+  }
+
+  //SRA - "Shift right arithmetic : Set \$t1 to result of sign-extended
+  // shifting \$t2 right by number of bits specified by immediate:sra $t1, $t2, 10
+  public void testALUMockSRA() {
+    simulator.setRegisterValue("$t2", 80);
+    // 0101 0000 (80)
+    // 0000 1010 (10)
+    Instruction instruction = Instruction.from("sra $t1, $t2, 3");
+    simulator.execute(instruction);
+    assertEquals((80 >> 3), simulator.getRegisterValue("$t1"));
+  }
+
   //J
   @Test
   public void testJInstruction() {
