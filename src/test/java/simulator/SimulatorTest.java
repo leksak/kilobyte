@@ -60,8 +60,21 @@ class SimulatorTestJUnit {
     simulator.execute(instruction);
     int currentPC = simulator.getProgramCounter().getAddressPointer();
 
-    assertEquals(0+4+24, currentPC);
+    assertEquals(0+4+(24), currentPC);
   }
+
+
+  @Test
+  public void testALUMockLW() {
+    Byte startValue = Byte.valueOf("7");
+    simulator.setDataMemoryAtAddress(23, startValue);
+    simulator.setRegisterValue("$t0", 5);
+    simulator.setRegisterValue("$t1", 3);
+    Instruction instruction = Instruction.from("lw $t0, 20($t1)");
+    simulator.execute(instruction);
+    assertEquals(startValue.intValue(), simulator.getRegisterValue("$t0"));
+  }
+
 
 
 
