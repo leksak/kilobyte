@@ -88,9 +88,13 @@ public class SimulatorApplication {
     fileMenu.setMnemonic(VK_F);
     displaySettings.setMnemonic(VK_V);
     SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, displaySettings);
+
+    HelpMenu helpMenu = new HelpMenu(applicationFrame);
+    menuBar.add(helpMenu);
+
     applicationFrame.setJMenuBar(menuBar);
 
-    JToolBar controls = new SimulatorControlsToolbar();
+    JToolBar controls = new SimulatorControlsToolbar(this);
     applicationFrame.add(controls, BorderLayout.NORTH);
     JPanel applicationPanel = new JPanel(new BorderLayout());
 
@@ -147,11 +151,18 @@ public class SimulatorApplication {
       s.loadProgram(p);
       programView.display(p);
 
-      // Update the instruction memory
+      // All the values will be reset
+      registersPanel.update();
       instructionMemory.update();
+      dataMemory.update();
     } catch (IOException e) {
       // TODO: Catch sensibly
       e.printStackTrace();
     }
+  }
+
+  public void executeNextInstruction() {
+    s.executeNextInstruction();
+    registersPanel.update();
   }
 }

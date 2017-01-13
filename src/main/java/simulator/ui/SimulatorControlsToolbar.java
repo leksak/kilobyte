@@ -1,5 +1,7 @@
 package simulator.ui;
 
+import simulator.Simulator;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -18,18 +20,24 @@ import java.awt.*;
  * </ul>
  */
 public class SimulatorControlsToolbar extends JToolBar {
-  SimulatorControlsToolbar() {
+  SimulatorApplication s;
+
+  SimulatorControlsToolbar(SimulatorApplication s) {
     super();
     // Moves all the Icons to the far left AND (important) adds sensible
     // margins between them.
     this.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-    addControl(Icon.Name.PLAY,"Start the simulator");
-    addControl(Icon.Name.STEP_FORWARD, "Step forward the simulation one step");
-    addControl(Icon.Name.RESET, "Reset the simulation to its initial state");
+    JButton play = addControl(Icon.Name.PLAY,"Start the simulator");
+    JButton step = addControl(Icon.Name.STEP_FORWARD, "Step forward the simulation one step");
+    JButton reset = addControl(Icon.Name.RESET, "Reset the simulation to its initial state");
+
+    step.addActionListener(e -> {
+      s.executeNextInstruction();
+    });
   }
 
-  private void addControl(Icon.Name name, String tooltip) {
+  private JButton addControl(Icon.Name name, String tooltip) {
     Toolkit tk = Toolkit.getDefaultToolkit();
 
     JButton button = new JButton();
@@ -40,5 +48,6 @@ public class SimulatorControlsToolbar extends JToolBar {
     button.setContentAreaFilled(false);
 
     add(button);
+    return button;
   }
 }

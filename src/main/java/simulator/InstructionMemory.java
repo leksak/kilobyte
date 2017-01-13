@@ -57,7 +57,8 @@ public class InstructionMemory implements Memory {
         asMachineCode = Long.toString(numeric);
       }
 
-      arr[i] = String.format("%s %s %s",
+      arr[i] = String.format("%s: %s %s %s",
+            inst.getIname(),
             asMachineCode,
             format,
             decomposed);

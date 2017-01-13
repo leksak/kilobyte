@@ -10,5 +10,6 @@ public class SimulatorMenuBar extends JMenuBar {
   SimulatorMenuBar(JMenuItem... menuItems) {
     super();
     Arrays.stream(menuItems).forEach(this::add);
+
   }
 }

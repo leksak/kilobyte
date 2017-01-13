@@ -4,6 +4,7 @@ import common.annotations.InstantiateOnEDT;
 import common.hardware.Register;
 import common.hardware.RegisterFile;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.val;
 
 import javax.swing.*;
@@ -17,6 +18,14 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
   RegisterFile rf;
   JTable table;
   DefaultTableModel tableModel;
+  int indexOfValueColumn;
+  int noOfRows;
+
+  Function<Integer, String> displayAsHex = (i) -> "0x" + Integer.toHexString(i);
+  Function<Integer, String> displayAsDec = String::valueOf;
+
+  @NonFinal
+  Function<Integer, String> radixDisplayFunc = displayAsHex;
 
   RegistersPanel(RegisterFile rf) {
     super(new BorderLayout());
@@ -28,7 +37,8 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
     int noOfColumns = columnNames.length;
 
     Register[] registers = rf.getRegisters();
-    int noOfRows = registers.length;
+    noOfRows = registers.length;
+    indexOfValueColumn = noOfColumns - 1;
     Object[][] data = new Object[noOfRows][noOfColumns];
 
     for (int i = 0; i < noOfRows; i++) {
@@ -47,20 +57,16 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
     table = new JTable(tableModel);
     table.setShowGrid(false);
 
+
     add(table);
   }
 
   @Override
   public void setRadix(Radix radix) {
-    int indexOfValueColumn = tableModel.getColumnCount() - 1;
-    int noOfRows = tableModel.getRowCount();
-
-    Function<Integer, String> radixDisplayFunc;
-
     if (radix == Radix.HEX) {
-      radixDisplayFunc = (i) -> "0x" + Integer.toHexString(i);
+      radixDisplayFunc = displayAsHex;
     } else if (radix == Radix.DECIMAL) {
-      radixDisplayFunc = String::valueOf;
+      radixDisplayFunc = displayAsDec;
     } else {
       String e = "Trying to set the register radix display to: " +
             "\"" + radix.name() + "\""
@@ -68,6 +74,10 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
       throw new IllegalStateException(e);
     }
 
+    displayRegisterFile();
+  }
+
+  private void displayRegisterFile() {
     Register[] registers = rf.getRegisters();
     for (int rowIndex = 0; rowIndex < noOfRows; rowIndex++) {
       val actual = registers[rowIndex].getValue();
@@ -81,5 +91,9 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
         tableModel.setValueAt(displayedValue, finalRowIndex, indexOfValueColumn);
       });
     }
+  }
+
+  public void update() {
+    displayRegisterFile();
   }
 }

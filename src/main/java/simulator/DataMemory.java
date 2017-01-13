@@ -5,6 +5,7 @@ import lombok.extern.java.Log;
 import simulator.ui.Radix;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import static java.lang.String.format;
 @Log
@@ -13,26 +14,21 @@ public class DataMemory implements Memory {
 
   @Override
   public String[] toStringArray(Radix r) {
-    //TODO:
-    /*
-    String[] d = new String[memory.le];
+    String[] d = new String[250];
     for (int i = 0; i < d.length; i++) {
       if (r == Radix.HEX) {
-        d[i] = "0x" + Integer.toHexString(memory[i]);
+        d[i] = "0x" + Integer.toHexString(memory.get(i));
       } else if (r == Radix.DECIMAL) {
-        d[i] = Integer.toString(memory[i]);
+        d[i] = Integer.toString(memory.get(i));
       }
     }
 
-
     return d;
-    */
-    return new String[1];
   }
 
   @Override
   public void resetMemory() {
-    memory.reset();
+    memory = ByteBuffer.allocate(1000);
   }
 
   public void setMemory(int index, Byte value) {

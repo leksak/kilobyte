@@ -4,8 +4,6 @@ package common.hardware
 import com.google.common.base.Preconditions.checkArgument
 import common.instruction.Instruction
 import common.machinecode.*
-import java.util.function.Function
-import javax.crypto.Mac
 import kotlin.reflect.KFunction1
 
 class RegisterFile {
@@ -81,6 +79,12 @@ class RegisterFile {
 
   fun writeToRegister(f : Field, i : Instruction, value : Int) {
     get(f, i).value = value
+  }
+
+  fun reset() {
+    for (r in registers) {
+      r.value = 0
+    }
   }
 
   operator fun get(mnemonic: String): Register {
