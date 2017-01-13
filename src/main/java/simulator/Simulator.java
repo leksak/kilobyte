@@ -1,8 +1,10 @@
 package simulator;
 
 import com.google.common.collect.ImmutableSet;
+import common.hardware.Field;
 import common.hardware.Register;
 import common.hardware.RegisterFile;
+import common.instruction.Format;
 import common.instruction.Instruction;
 import common.machinecode.OperationsKt;
 import lombok.Getter;
@@ -12,7 +14,10 @@ import simulator.ALUOperation.Operation;
 import simulator.hardware.PC;
 import simulator.program.Program;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static common.instruction.Instruction.*;
+import static common.machinecode.OperationsKt.*;
+import static common.machinecode.OperationsKt.bits;
 
 @Value
 @Log
@@ -132,9 +137,9 @@ public class Simulator {
   private void executeFormatI(Instruction i) {
     /* 2. Two registers, $t1 and $t2 , are read from the register file. */
       // Instruction 25:21 read register 1 (rs)
-      Register r1 = registerFile.get(OperationsKt.rs(i.getNumericRepresentation()));
+      Register r1 = registerFile.get(Field.RS, i);
       // Instruction 20:16 read register 2 (rt) + MUX1
-      Register r2 = registerFile.get(OperationsKt.rt(i.getNumericRepresentation()));
+      Register r2 = registerFile.get(Field.RT, i);
 
     /*3.The ALU performs a subtract on the data values read from the register
        file. The value of PC + 4 is added to the sign-extended, lower 16 bits of
@@ -153,10 +158,10 @@ public class Simulator {
     /* 3.2 The value of PC + 4 is added to the sign-extended, lower 16 bits of
      *     the instruction ( offset ) shifted left by two; the result is the
      *     branch target address. */
-    int ret15to0 = OperationsKt.offset(i.getNumericRepresentation());
+    int ret15to0 = offset(i);
     int signExtend = SignExtender.extend(ret15to0);
     signExtend = signExtend << 2;
-    signExtend = signExtend | programCounter.getCurrentAddress();
+    signExtend = signExtend | programCounter.getAddressPointer();
     /* 4.
      * The Zero result from the ALU is used to decide which adder result to
      * store into the PC.
@@ -169,18 +174,18 @@ public class Simulator {
   }
 
   private void executeFormatR(Instruction i) {
+    checkArgument(i.getFormat() == Format.R);
     // Instruction 25:21 read register 1 (rs)
-    Register r1 = registerFile.get(OperationsKt.rs(i.getNumericRepresentation()));
+    Register r1 = registerFile.get(Field.RS, i);
     // Instruction 20:16 read register 2 (rt) + MUX1
-    Register r2 = registerFile.get(OperationsKt.rt(i.getNumericRepresentation()));
+    Register r2 = registerFile.get(Field.RT, i);
 
     // Instruction 15:0 sig-extend 16 -> 32 OR Instruction 5-0->ALU control
 
 
     //int ret15to0 = OperationsKt.bits(i.getNumericRepresentation(), 15,0);
-    int ret5to0 = OperationsKt.bits(i.getNumericRepresentation(), 5,0);
-
-
+    // int ret5to0 = bits(i.getNumericRepresentation(), 5,0);
+    int ret5to0 = funct(i);
 
     // ALU Control get ALU-Operation for arithmetic.
     Operation aluArtOp;
@@ -193,7 +198,7 @@ public class Simulator {
 
     //If ALUC-RegDst save to register then save in register.
     if (aluControl.getRegDst()) {
-      Register writeRegister = registerFile.get(OperationsKt.rd(i.getNumericRepresentation()));
+      Register writeRegister = registerFile.get(Field.RD, i);
       writeRegister.setValue(artCalc);
     }
 

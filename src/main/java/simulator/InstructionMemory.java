@@ -100,7 +100,7 @@ public class InstructionMemory implements Memory {
   }
 
   public Instruction read(PC programCounter) {
-    return fromAddress(programCounter.getCurrentAddress());
+    return fromAddress(programCounter.getAddressPointer());
   }
 
   /* Add a single instruction to memory */

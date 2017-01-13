@@ -2,7 +2,14 @@ package common.hardware
 
 
 import com.google.common.base.Preconditions.checkArgument
-
+import common.instruction.Instruction
+import common.machinecode.MachineCode
+import common.machinecode.rd
+import common.machinecode.rs
+import common.machinecode.rt
+import java.util.function.Function
+import javax.crypto.Mac
+import kotlin.reflect.KFunction1
 
 class RegisterFile {
   /**
@@ -73,6 +80,9 @@ class RegisterFile {
     return registers[machineCode]
   }
 
+  fun get(f :Field , i: Instruction) : Register = get(f.getFunc(i.numericRepresentation))
+
+
   operator fun get(mnemonic: String): Register {
     checkArgument(mnemonic.startsWith("$"), "Registers has to start with a \"$\". Got $mnemonic")
     val sansDollarSign = mnemonic.replace("$", "")
@@ -108,4 +118,11 @@ class RegisterFile {
      */
     @JvmStatic fun indexOf(mnemonic: String): Int = rf[mnemonic].index
   }
+
+}
+
+enum class Field(val getFunc: KFunction1<MachineCode, Int>) {
+  RD(MachineCode::rd),
+  RT(MachineCode::rt),
+  RS(MachineCode::rs)
 }

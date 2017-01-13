@@ -26,7 +26,7 @@ val fieldNameToIndexMap = mapOf(
       "offset" to 3,
       "address" to 3,
       "target" to 1,
-      "hint" to 2
+      "hint" to 2 // pseudo field
 )
 
 fun indexOf(fieldName: String): Int {

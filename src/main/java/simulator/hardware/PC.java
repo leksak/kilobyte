@@ -15,26 +15,24 @@ import static java.lang.String.*;
 public class PC {
   @NonFinal
   @Getter
-  int currentAddress;
+  int addressPointer;
+
+  private static final int INSTRUCTION_LENGTH_IN_NO_OF_BYTES = 4;
 
   public PC() {
     /* The program counter always starts at 0 - always given in the number of bytes */
-    currentAddress = 0;
-  }
-
-  private void increment(int noOfBytes) {
-    log.info(format("Incrementing %s with %d number of bytes", this, noOfBytes));
-    int prevAddress = currentAddress;
-    currentAddress += Add.add(currentAddress, noOfBytes);
-    System.err.println("PC Before:"+prevAddress+" After:"+ currentAddress);
+    addressPointer = 0;
   }
 
   public void stepForward() {
-    increment(4);
+    log.info(format("Incrementing %s with %d bytes", this, INSTRUCTION_LENGTH_IN_NO_OF_BYTES));
+    int prevAddress = addressPointer;
+    addressPointer += Add.add(addressPointer, 4);
+    log.info(format("PC={previousAddress=%d} PC={newAddress=%d}", prevAddress, addressPointer));
   }
 
   public void setTo(int addressInNoOfBytes) {
-    log.info(format("Setting PC={currentAddress=%d} to PC={currentAddress=%d}", currentAddress, addressInNoOfBytes));
-    currentAddress = addressInNoOfBytes;
+    log.info(format("Setting PC={addressPointer=%d} to PC={addressPointer=%d}", addressPointer, addressInNoOfBytes));
+    addressPointer = addressInNoOfBytes;
   }
 }
