@@ -819,7 +819,7 @@ data class Instruction private constructor(
     @JvmField val J = Instruction(
           iname = "j",
           opcode = 2, //0x02
-          mnemonicRepresentation = ",",
+          mnemonicRepresentation = "j 4",
           numericRepresentation = 0x08000004,
           description = "Jump unconditionally : Jump to statement at target address",
           format = Format.J,

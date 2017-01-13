@@ -66,7 +66,10 @@ public class Simulator {
 
 
   public void setRegisterValue(String mnemonic, int value) {
-    registerFile.get(mnemonic).setValue(value);
+    Register r = registerFile.get(mnemonic);
+    log.info("name: "+ r.toString());
+    r.setValue(value);
+    System.err.println(getRegisterValue(mnemonic));
   }
 
 
@@ -99,7 +102,7 @@ public class Simulator {
 
   private void executeFormatJ(Instruction i) {
     int jump = OperationsKt.target(i.getNumericRepresentation());
-    int currentPC = programCounter.getAddressPointer();
+    int currentPC = programCounter.getAddressPointer()-4;
 
     currentPC = OperationsKt.bits(currentPC,31,28);
     jump = jump << 2;
@@ -215,9 +218,12 @@ public class Simulator {
 
     //JR MUX before arithemtic
     if (alu1 && !alu0 && ret5to0 == 8) {
-      int newAddress = programCounter.getAddressPointer()+r1.getValue();
+      int offset = r1.getValue();
+      offset = offset << 2;
+      int newAddress = programCounter.getAddressPointer()-4+offset;
       log.info(format(
-            "JR Mux found, jumping from %d to %d (+%d).", programCounter.getAddressPointer(), newAddress, r1.getValue()));
+            "JR Mux found, jumping from 0 to %d (+%d).", newAddress, r1.getValue()));
+      System.err.println("numeric:"+i.getNumericRepresentation());
 
       programCounter.setTo(newAddress);
       return;
@@ -232,15 +238,18 @@ public class Simulator {
     }
 
   }
-
+//000000 10010 00000 00000 00000 010000
   public void execute(String s) {
     // Executes a single instruction
     execute(Instruction.from(s));
   }
 
+  public void loadRawProgram(Program p) {
+    instructionMemory.addAll(p.getInstructions());
+  }
   public void loadProgram(Program p) {
     reset();
-    instructionMemory.addAll(p.getInstructions());
+    loadRawProgram(p);
   }
 
   private void reset() {
