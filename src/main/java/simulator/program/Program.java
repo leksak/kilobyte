@@ -6,6 +6,7 @@ import lombok.Value;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Value
@@ -15,6 +16,10 @@ public class Program {
 
   private Program(List<Instruction> instructions) {
     this.instructions = ImmutableList.copyOf(instructions);
+  }
+
+  public static Program from(Instruction... instructions) {
+    return from(Arrays.asList(instructions));
   }
 
   public static Program from(String filename) throws IOException {

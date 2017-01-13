@@ -4,7 +4,11 @@ import common.instruction.Instruction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import simulator.program.Program;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -73,6 +77,17 @@ class SimulatorTestJUnit {
     Instruction instruction = Instruction.from("lw $t0, 20($t1)");
     simulator.execute(instruction);
     assertEquals(startValue.intValue(), simulator.getRegisterValue("$t0"));
+  }
+
+  @Test
+  public void testJInstruction() {
+    // 2 is an absolute address. 2 << 2 = 8
+    Instruction first = Instruction.from("j 2");
+    Instruction second = Instruction.from("nop");
+    Instruction third = Instruction.from("add $v0, $t0, $t1");
+    simulator.loadProgram(Program.from(first, second, third));
+    simulator.executeNextInstruction();
+    assertThat(simulator.getCurrentInstruction(), is(equalTo(third)));
   }
 
 

@@ -115,4 +115,8 @@ public class InstructionMemory implements Memory {
   public void addAll(List<Instruction> instructions) {
     instructions.forEach(this::add);
   }
+
+  public Instruction getInstructionAt(int addressPointer) {
+    return instructions[addressPointer];
+  }
 }

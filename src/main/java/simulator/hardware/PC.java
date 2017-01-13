@@ -5,7 +5,6 @@ import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
-import simulator.Add;
 
 import static java.lang.String.*;
 
@@ -27,7 +26,7 @@ public class PC {
   public void stepForward() {
     log.info(format("Incrementing %s with %d bytes", this, INSTRUCTION_LENGTH_IN_NO_OF_BYTES));
     int prevAddress = addressPointer;
-    addressPointer += Add.add(addressPointer, 4);
+    addressPointer += addressPointer + 4; // TODO: This looks very weird
     log.info(format("PC={previousAddress=%d} PC={newAddress=%d}", prevAddress, addressPointer));
   }
 
