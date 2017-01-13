@@ -23,6 +23,7 @@ class SimulatorTestJUnit {
   }
 
 
+  //ADD
   @Test
   public void testALUMockAdd() {
     simulator.setRegisterValue("$t0", 3);
@@ -31,6 +32,8 @@ class SimulatorTestJUnit {
     simulator.execute(add);
     assertEquals(simulator.getRegisterValue("$v0"), 8);
   }
+
+  //SUB
   @Test
   public void testALUMockSub() {
     simulator.setRegisterValue("$t0", 5);
@@ -39,8 +42,33 @@ class SimulatorTestJUnit {
     simulator.execute(instruction);
     assertEquals(simulator.getRegisterValue("$v0"), 2);
   }
+  //AND
+  //OR
+  //NOR
+  //SLT
+  //LW
+  @Test
+  public void testALUMockLW() {
+    Byte startValue = Byte.valueOf("7");
+    simulator.setDataMemoryAtAddress(23, startValue);
+    simulator.setRegisterValue("$t0", 5);
+    simulator.setRegisterValue("$t1", 3);
+    Instruction instruction = Instruction.from("lw $t0, 20($t1)");
+    simulator.execute(instruction);
+    assertEquals(startValue.intValue(), simulator.getRegisterValue("$t0"));
+  }
 
+  //SW
+  @Test
+  public void testALUMockSW() {
+    simulator.setRegisterValue("$t0", 5);
+    simulator.setRegisterValue("$t1", 3);
+    Instruction instruction = Instruction.from("sw $t0, 20($t1)");
+    simulator.execute(instruction);
+    assertEquals(simulator.getDataMemory(23), simulator.getRegisterValue("$t0"));
+  }
 
+  //BEQ
   @Test
   public void testALUMockBEQFalse() {
     int startPC = simulator.getProgramCounter().getAddressPointer();
@@ -51,7 +79,6 @@ class SimulatorTestJUnit {
     int currentPC = simulator.getProgramCounter().getAddressPointer();
     assertEquals(startPC+4, currentPC);
   }
-
   @Test
   public void testALUMockBEQTrue() {
     int startPC = simulator.getProgramCounter().getAddressPointer();
@@ -68,18 +95,7 @@ class SimulatorTestJUnit {
     assertEquals(0+4+(24), currentPC);
   }
 
-
-  @Test
-  public void testALUMockLW() {
-    Byte startValue = Byte.valueOf("7");
-    simulator.setDataMemoryAtAddress(23, startValue);
-    simulator.setRegisterValue("$t0", 5);
-    simulator.setRegisterValue("$t1", 3);
-    Instruction instruction = Instruction.from("lw $t0, 20($t1)");
-    simulator.execute(instruction);
-    assertEquals(startValue.intValue(), simulator.getRegisterValue("$t0"));
-  }
-
+  //ADDI
   @Test
   public void testALUMockADDI() {
     simulator.setRegisterValue("$t1", 0);
@@ -88,7 +104,10 @@ class SimulatorTestJUnit {
     simulator.execute(instruction);
     assertEquals(7, simulator.getRegisterValue("$t1"));
   }
-
+  //ORI
+  //SRL
+  //SRA
+  //J
   @Test
   public void testJInstruction() {
     // 2 is an absolute address. 2 << 2 = 8
@@ -110,6 +129,8 @@ class SimulatorTestJUnit {
     simulator.executeNextInstruction();
     assertThat(simulator.getCurrentInstruction(), is(equalTo(add)));
   }
+
+  //JR
   @Test
   public void testJRInstruction() {
     // 2 is an absolute address. 2 << 2 = 8
@@ -137,69 +158,33 @@ class SimulatorTestJUnit {
           Instruction.from("lw $t0, 2($t1)"),
           Instruction.from("lw $t0, 3($t1)"),
           Instruction.from("lw $t0, 4($t1)")
-          ));
+    ));
     simulator.setProgramCounterInstruction(5);
     simulator.executeNextInstruction();
     assertThat(simulator.getCurrentInstruction(), is(equalTo(add)));
   }
 
+  //NOP
+  @Test
+  public void testNOPInstruction() {
+    // 2 is an absolute address. 2 << 2 = 8
+
+    simulator.loadRawProgram(Program.from(
+          Instruction.from("nop")
+    ));
+    simulator.executeNextInstruction();
+  }
 
 
-  @Test
-  public void testALUMockSW() {
-    simulator.setRegisterValue("$t0", 5);
-    simulator.setRegisterValue("$t1", 3);
-    Instruction instruction = Instruction.from("sw $t0, 20($t1)");
-    simulator.execute(instruction);
-    assertEquals(simulator.getDataMemory(23), simulator.getRegisterValue("$t0"));
-  }
 
 
 
 
 
-  @Test
-  public void testALUADD() {
-    simulator.execute(Instruction.ADD);
-  }
 
-  @Test
-  public void testALUSUB() {
-    simulator.execute(Instruction.SUB);
-  }
 
-  @Test
-  public void testALUAND() {
-    simulator.execute(Instruction.AND);
-  }
-  @Test
-  public void testALULW() {
-    //Should add
-    simulator.execute(Instruction.LW);
-  }
-  @Test
-  public void testALUSW() {
-    //Should add
-    simulator.execute(Instruction.SW);
-  }
-  @Test
-  public void testALUBRANSWHEQUAL() {
-    //Should subtract
-    simulator.execute(Instruction.BEQ);
-  }
-  @Test
-  public void testALUOR() {
-    //Should subtract
-    simulator.execute(Instruction.OR);
-  }
-  @Disabled
-  public void testALUNOR() {
-    //Should NOR -- not implemented
-    fail("Not yet implemented");
-  }
-  @Test
-  public void testALUSLT() {
-    //Should Set less on
-    simulator.execute(Instruction.SLT);
-  }
+
+
+
+
 }

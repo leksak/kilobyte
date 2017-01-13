@@ -44,7 +44,7 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
     if ((alu1 && !alu0) && funct == 0b101010) op = SLT;
     if ((alu1 && !alu0) && funct == 0b100111) op = NOR;
 
-    if (!alu1 && alu0) op = SUBTRACT;
+    if (!alu1 && alu0)  op = SUBTRACT;
     if (!alu1 && !alu0) op = ADD;
 
     assert(op != null);
