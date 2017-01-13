@@ -3,10 +3,7 @@ package common.hardware
 
 import com.google.common.base.Preconditions.checkArgument
 import common.instruction.Instruction
-import common.machinecode.MachineCode
-import common.machinecode.rd
-import common.machinecode.rs
-import common.machinecode.rt
+import common.machinecode.*
 import java.util.function.Function
 import javax.crypto.Mac
 import kotlin.reflect.KFunction1
@@ -127,5 +124,6 @@ class RegisterFile {
 enum class Field(val getFunc: KFunction1<MachineCode, Int>) {
   RD(MachineCode::rd),
   RT(MachineCode::rt),
-  RS(MachineCode::rs)
+  RS(MachineCode::rs),
+  TARGET(MachineCode::target)
 }

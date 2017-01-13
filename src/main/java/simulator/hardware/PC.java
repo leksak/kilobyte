@@ -26,7 +26,7 @@ public class PC {
   public void stepForward() {
     log.info(format("Incrementing %s with %d bytes", this, INSTRUCTION_LENGTH_IN_NO_OF_BYTES));
     int prevAddress = addressPointer;
-    addressPointer += addressPointer + 4; // TODO: This looks very weird
+    addressPointer = addressPointer + 4; // TODO: This looks very weird
     log.info(format("PC={previousAddress=%d} PC={newAddress=%d}", prevAddress, addressPointer));
   }
 
