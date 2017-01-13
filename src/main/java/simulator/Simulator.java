@@ -15,6 +15,7 @@ import simulator.program.Program;
 import static com.google.common.base.Preconditions.checkArgument;
 import static common.instruction.Instruction.*;
 import static common.machinecode.OperationsKt.*;
+import static java.lang.String.format;
 
 @Value
 @Log
@@ -71,6 +72,7 @@ public class Simulator {
     programCounter.stepForward();
     // Instruction 31:26 - AluController
     control.updateOperationType(i.getOpcode());
+
 
     switch(i.getFormat()) {
       case I:
@@ -129,11 +131,19 @@ public class Simulator {
    */
 
   private void executeFormatI(Instruction i) {
+    int r1Value, r2Value;
+    int ret15to0 = offset(i);
+    int signExtend = SignExtender.extend(ret15to0);
     /* 2. Two registers, $t1 and $t2 , are read from the register file. */
       // Instruction 25:21 read register 1 (rs)
       Register r1 = registerFile.get(Field.RS, i);
+      r1Value = r1.getValue();
       // Instruction 20:16 read register 2 (rt) + MUX1
       Register r2 = registerFile.get(Field.RT, i);
+      r2Value = r2.getValue();
+      if (control.getAluSrc()) {
+       r2Value = signExtend;
+      }
 
     /*3.The ALU performs a subtract on the data values read from the register
        file. The value of PC + 4 is added to the sign-extended, lower 16 bits of
@@ -145,13 +155,11 @@ public class Simulator {
     boolean alu1 = control.getAluOp1();
     boolean alu0 = control.getAluOp0();
     ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i));
-    int result = aluArtOp.apply(r1, r2);
+    int result = aluArtOp.apply(r1Value, r2Value);
 
     /* 3.2 The value of PC + 4 is added to the sign-extended, lower 16 bits of
      *     the instruction ( offset ) shifted left by two; the result is the
      *     branch target address. */
-    int ret15to0 = offset(i);
-    int signExtend = SignExtender.extend(ret15to0);
     signExtend = signExtend << 2;
     signExtend = signExtend | programCounter.getAddressPointer();
     /* 4.
@@ -162,6 +170,14 @@ public class Simulator {
       log.info("Branching to address=" + signExtend);
       //can be off by 4 since the programCounter av incremented already? 8 lines up.
       programCounter.setTo(signExtend);
+    }
+    if (control.getMemtoReg()) {
+      //System.err.println("result"+result);
+      r2.setValue(dataMemory.readWord(result));
+    }
+    if (control.getMemWrite() && control.getAluSrc()) {
+      log.info(format("Writing word to Memory Address=%d Value=%d", result, r2.getValue()));
+      dataMemory.setMemory(result, (byte)r2.getValue());
     }
   }
 
@@ -181,7 +197,7 @@ public class Simulator {
     boolean alu1 = control.getAluOp1();
     boolean alu0 = control.getAluOp0();
     ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i));
-    int result = aluArtOp.apply(r1, r2);
+    int result = aluArtOp.apply(r1.getValue(), r2.getValue());
 
     // If ALUC-RegDst save to register
     if (control.getRegDst()) {
@@ -207,4 +223,11 @@ public class Simulator {
     instructionMemory.addAll(p.getInstructions());
   }
 
+  public void setDataMemoryAtAddress(int address, Byte value) {
+    dataMemory.setMemory(address, value);
+  }
+
+  public int getDataMemory(int address) {
+    return dataMemory.readWord(address);
+  }
 }

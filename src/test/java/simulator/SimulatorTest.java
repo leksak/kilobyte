@@ -77,6 +77,17 @@ class SimulatorTestJUnit {
 
 
 
+  @Test
+  public void testALUMockSW() {
+    simulator.setRegisterValue("$t0", 5);
+    simulator.setRegisterValue("$t1", 3);
+    Instruction instruction = Instruction.from("sw $t0, 20($t1)");
+    simulator.execute(instruction);
+    assertEquals(simulator.getDataMemory(23), simulator.getRegisterValue("$t0"));
+  }
+
+
+
 
 
   @Test

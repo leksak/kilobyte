@@ -1,10 +1,13 @@
 package simulator;
 
 import org.apache.commons.lang3.ArrayUtils;
+import lombok.extern.java.Log;
 import simulator.ui.Radix;
 
 import java.nio.ByteBuffer;
 
+import static java.lang.String.format;
+@Log
 public class DataMemory implements Memory {
   private ByteBuffer memory = ByteBuffer.allocate(1000);
 
@@ -33,10 +36,21 @@ public class DataMemory implements Memory {
   }
 
   public void setMemory(int index, Byte value) {
+    log.info(format(
+          "Put DataMemory={address=%d, byteValue=(hex=0x%02x, int=%d).",
+          index,
+          value,
+          value.intValue()));
     memory.put(index, value);
   }
 
   public int readWord(int address) {
-    return memory.getInt(address);
+    log.info(format(
+          "Fetching DataMemory={address=%d, byteValue=(hex=0x%02x, int=%d).",
+          address,
+          memory.get(address),
+          memory.get(address)));
+
+    return memory.get(address);
   }
 }
