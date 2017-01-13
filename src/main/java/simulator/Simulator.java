@@ -192,7 +192,6 @@ public class Simulator {
       programCounter.setTo(signExtend);
     }
     if (control.getMemtoReg()) {
-      //System.err.println("result"+result);
       r2.setValue(dataMemory.readWord(result));
     }
     if (control.getMemWrite() && control.getAluSrc()) {
@@ -209,22 +208,19 @@ public class Simulator {
     Register r2 = registerFile.get(Field.RT, i);
 
     // Instruction 15:0 sig-extend 16 -> 32 OR Instruction 5-0->ALU control
-
-
-    int ret5to0 = funct(i);
+    int funct = funct(i);
 
     // ALU Control get ALU-Operation for arithmetic.
     boolean alu1 = control.getAluOp1();
     boolean alu0 = control.getAluOp0();
 
     //JR MUX before arithemtic
-    if (alu1 && !alu0 && ret5to0 == 8) {
+    if (alu1 && !alu0 && funct == 8) {
       int offset = r1.getValue();
       offset = offset << 2;
       int newAddress = programCounter.getAddressPointer()-4+offset;
       log.info(format(
             "JR Mux found, jumping from 0 to %d (+%d).", newAddress, r1.getValue()));
-      System.err.println("numeric:"+i.getNumericRepresentation());
 
       programCounter.setTo(newAddress);
       return;
@@ -239,7 +235,8 @@ public class Simulator {
     }
 
   }
-//000000 10010 00000 00000 00000 010000
+
+  //000000 10010 00000 00000 00000 010000
   public void execute(String s) {
     // Executes a single instruction
     execute(Instruction.from(s));
