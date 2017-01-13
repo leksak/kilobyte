@@ -1,119 +1,68 @@
 package simulator;
 
-import org.jetbrains.annotations.Nullable;
+import common.hardware.Register;
+import lombok.extern.java.Log;
 
-public class ALUOperation {
-  enum Operation{
-    AND(0), OR(1), ADD(2), SUBTRACT(6), SETONLESSTHAN(7), NOR(12);
+import java.util.function.BiFunction;
 
-    private final int value;
-    Operation(int value) {
-      this.value = value;
+import static java.lang.String.format;
+
+@Log
+public enum ALUOperation implements BiFunction<Register, Register, Integer> {
+  ADD(     "add",              (a, b) -> a + b,      0, 0, 1, 0),
+  SUBTRACT("subtract",         (a, b) -> a - b,      0, 1, 1, 0),
+  AND(     "and",              (a, b) -> a & b,      0, 0, 0, 0),
+  OR(      "or",               (a, b) -> a | b,      0, 0, 0, 1),
+  SLT(     "set on less than", (a, b) -> a < b ? 1 : 0, 1, 1, 1),
+  ;
+
+  final String desiredALUAction;
+  private BiFunction<Integer, Integer, Integer> f;
+  private final int[] bits;
+
+  private static boolean[] boolArray(int... arr) {
+    boolean[] booleans = new boolean[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      booleans[i] = arr[i] == 1;
     }
-
-    public int getValue() {
-      return value;
-    }
-
-    @Nullable
-    public static Operation get(int i) {
-      for (Operation o: Operation.values()) {
-        if (o.getValue() == i) {
-          return o;
-        }
-      }
-      return null;
-    }
-
-    public static Operation getFunction(boolean[] operationBit) {
-      int val = 0;
-      int i = 0;
-      for (; i < operationBit.length; i++) {
-        //System.err.println("getFunc iterator:"+i + " pow:"+Math.pow(2, i));
-        if (operationBit[i]) {
-          val += Math.pow(2, i);
-          //System.err.println(" TRUE");
-        }
-      }
-      //System.err.println("getFunc:"+val);
-      return Operation.get(val);
-
-    }
-  }
-  DataMemory dataMemory;
-
-  public ALUOperation() {
-    this.dataMemory = dataMemory;
+    return booleans;
   }
 
+  ALUOperation(String desiredALUAction, BiFunction<Integer, Integer, Integer> f, int... bits) {
+    this.desiredALUAction = desiredALUAction;
+    this.f = f;
+    this.bits = bits;
+  }
 
-  public Operation functionCode(boolean alu0, boolean alu1, int ret5to0) {
-    boolean[] bit = new boolean[6];
-    boolean[] OperationBit = new boolean[4];
-    String s = "";
-    s += alu1 ? "1" : "0";
-    s += alu0 ? "1 " : "0 ";
+  static ALUOperation from(boolean alu1, boolean alu0, int funct) {
+    ALUOperation op = null;
+    if ((alu1 && !alu0) && funct == 0b100000) op = ADD;
+    if ((alu1 && !alu0) && funct == 0b100010) op = SUBTRACT;
+    if ((alu1 && !alu0) && funct == 0b100100) op = AND;
+    if ((alu1 && !alu0) && funct == 0b100101) op = OR;
+    if ((alu1 && !alu0) && funct == 0b101010) op = SLT;
+    if (!alu1 && alu0) op = SUBTRACT;
+    if (!alu1 && !alu0) op = ADD;
+    assert(op != null);
 
-    for (int i = 5; i >= 0; i--) {
-      bit[i] = (ret5to0 & (1 << i)) != 0;
-      s += bit[i] ? "1" : "0";
-    }
-  s+= "("+ret5to0+")";
-    System.err.println(s);
-    /* alu0-alu1 f5-f4-f3-f-2-f1-f0 == Operationbits*/
+    String aluOp = aluOpToString(alu1, alu0);
+    String bin = "0b" + Integer.toBinaryString(funct);
+    String action = op.desiredALUAction;
+    log.info(format(
+          "Fetching ALUOperation={ALUOp=%s funct=(bin=%s, dec=%d). Desired ALU action=\"%s\"", aluOp, bin, funct, action));
 
-    /* 00 XXXXX == 0010 */
-    if (!alu1 && !alu0) {
-      OperationBit[3] = false;
-      OperationBit[2] = false;
-      OperationBit[1] = true;
-      OperationBit[0] = false;
-    } else
-    /* 01 XXXXX == 0110 */
-    if (!alu1 && alu0) {
-       OperationBit[3] = false;
-       OperationBit[2] = true;
-       OperationBit[1] = true;
-       OperationBit[0] = false;
-     }else
-     /* 10 XX0000 = 0010 */
-    if (alu1 && !alu0 && !bit[3] && !bit[2] && !bit[1] && !bit[0] ) {
-      OperationBit[3] = false;
-      OperationBit[2] = false;
-      OperationBit[1] = true;
-      OperationBit[0] = false;
-    }else
-     /* 1X XX0010 = 0110 */
-     if (alu1 && !bit[3] && !bit[2] && bit[1] && !bit[0] ) {
-       OperationBit[3] = false;
-       OperationBit[2] = true;
-       OperationBit[1] = true;
-       OperationBit[0] = false;
-     }else
-     /* 10 XX0100 = 0000 */
-     if (alu1 && !alu0 && !bit[3] && bit[2] && !bit[1] && !bit[0] ) {
-       OperationBit[3] = false;
-       OperationBit[2] = false;
-       OperationBit[1] = false;
-       OperationBit[0] = false;
-     }else
-     /* 10 XX0101 =  0001 */
-     if (alu1 && !alu0 && !bit[3] && bit[2] && !bit[1] && bit[0] ) {
-       OperationBit[3] = false;
-       OperationBit[2] = false;
-       OperationBit[1] = false;
-       OperationBit[0] = true;
-     }else
-     /* 1X XX1010 = 0111 */
-     if (alu1 && bit[3] && !bit[2] && bit[1] && !bit[0] ) {
-       OperationBit[3] = false;
-       OperationBit[2] = true;
-       OperationBit[1] = true;
-       OperationBit[0] = true;
-     }
-     //TODO: NOR?
+    return op;
+  }
 
-    return Operation.getFunction(OperationBit);
+  private static String aluOpToString(boolean alu1, boolean alu0) {
+    return boolToString(alu1) + boolToString(alu0);
+  }
+  
+  private static String boolToString(boolean b) {
+    return b ? "1" : "0";
+  }
 
+  public Integer apply(Register r1, Register r2) {
+    return f.apply(r1.getValue(), r2.getValue());
   }
 }

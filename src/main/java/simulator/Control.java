@@ -3,13 +3,13 @@ package simulator;
 
 import lombok.Getter;
 
-public class ALUControl {
+public class Control {
 
   @Getter
   private Boolean regDst, aluSrc, memtoReg, regWrite, memRead, memWrite,
           branch, aluOp1, aluOp0;
 
-  public ALUControl() {
+  public Control() {
     regDst = false;
     aluSrc = false;
     memtoReg = false;

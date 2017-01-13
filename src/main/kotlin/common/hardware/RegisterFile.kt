@@ -82,6 +82,9 @@ class RegisterFile {
 
   fun get(f :Field , i: Instruction) : Register = get(f.getFunc(i.numericRepresentation))
 
+  fun writeToRegister(f : Field, i : Instruction, value : Int) {
+    get(f, i).value = value
+  }
 
   operator fun get(mnemonic: String): Register {
     checkArgument(mnemonic.startsWith("$"), "Registers has to start with a \"$\". Got $mnemonic")

@@ -6,18 +6,15 @@ import common.hardware.Register;
 import common.hardware.RegisterFile;
 import common.instruction.Format;
 import common.instruction.Instruction;
-import common.machinecode.OperationsKt;
 import lombok.Getter;
 import lombok.Value;
 import lombok.extern.java.Log;
-import simulator.ALUOperation.Operation;
 import simulator.hardware.PC;
 import simulator.program.Program;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static common.instruction.Instruction.*;
 import static common.machinecode.OperationsKt.*;
-import static common.machinecode.OperationsKt.bits;
 
 @Value
 @Log
@@ -26,7 +23,7 @@ public class Simulator {
   PC programCounter = new PC();
   @Getter
   RegisterFile registerFile = new RegisterFile();
-  ALUControl aluControl = new ALUControl();
+  Control control = new Control();
 
 
   @Getter
@@ -34,9 +31,6 @@ public class Simulator {
 
   @Getter
   DataMemory dataMemory = new DataMemory();
-
-  ALUOperation aluOperation = new ALUOperation();
-  ALUArithmetic aluArithmetic = new ALUArithmetic(dataMemory);
 
   ImmutableSet<Instruction> supportedInstructions = ImmutableSet.of(
         ADD,
@@ -76,7 +70,7 @@ public class Simulator {
     // 1. The instruction is fetched, and the PC is incremented
     programCounter.stepForward();
     // Instruction 31:26 - AluController
-    aluControl.updateOperationType(i.getOpcode());
+    control.updateOperationType(i.getOpcode());
 
     switch(i.getFormat()) {
       case I:
@@ -148,12 +142,10 @@ public class Simulator {
      */
 
     /* 3.1 The ALU performs a subtract on the data values read from the register file */
-    Operation aluArtOp;
-    int weReallyDoNotCare = 0;
-    aluArtOp = aluOperation.functionCode(aluControl.getAluOp0(),
-                                         aluControl.getAluOp1(),
-                                         weReallyDoNotCare);
-    int aluReturnCalc = aluArithmetic.Arithmetic(aluArtOp, r1, r2);
+    boolean alu1 = control.getAluOp1();
+    boolean alu0 = control.getAluOp0();
+    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i));
+    int result = aluArtOp.apply(r1, r2);
 
     /* 3.2 The value of PC + 4 is added to the sign-extended, lower 16 bits of
      *     the instruction ( offset ) shifted left by two; the result is the
@@ -166,7 +158,7 @@ public class Simulator {
      * The Zero result from the ALU is used to decide which adder result to
      * store into the PC.
      */
-    if (aluReturnCalc == 0 && aluControl.getBranch()) {
+    if (result == 0 && control.getBranch()) {
       log.info("Branching to address=" + signExtend);
       //can be off by 4 since the programCounter av incremented already? 8 lines up.
       programCounter.setTo(signExtend);
@@ -183,23 +175,17 @@ public class Simulator {
     // Instruction 15:0 sig-extend 16 -> 32 OR Instruction 5-0->ALU control
 
 
-    //int ret15to0 = OperationsKt.bits(i.getNumericRepresentation(), 15,0);
-    // int ret5to0 = bits(i.getNumericRepresentation(), 5,0);
     int ret5to0 = funct(i);
 
     // ALU Control get ALU-Operation for arithmetic.
-    Operation aluArtOp;
-    aluArtOp = aluOperation.functionCode(aluControl.getAluOp0(),
-                                         aluControl.getAluOp1(),
-                                         ret5to0);
+    boolean alu1 = control.getAluOp1();
+    boolean alu0 = control.getAluOp0();
+    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i));
+    int result = aluArtOp.apply(r1, r2);
 
-    // Execute ALU-Arithmetic and return output.
-    int artCalc = aluArithmetic.Arithmetic(aluArtOp, r1, r2);
-
-    //If ALUC-RegDst save to register then save in register.
-    if (aluControl.getRegDst()) {
-      Register writeRegister = registerFile.get(Field.RD, i);
-      writeRegister.setValue(artCalc);
+    // If ALUC-RegDst save to register
+    if (control.getRegDst()) {
+      registerFile.writeToRegister(Field.RD, i, result);
     }
 
   }

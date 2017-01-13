@@ -17,11 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ALUControlTest {
 
-  private ALUControl aluC;
+  private Control aluC;
 
   @BeforeEach
   void init(){
-    aluC = new ALUControl();
+    aluC = new Control();
   }
 
   @AfterEach
@@ -29,7 +29,7 @@ class ALUControlTest {
     aluC = null;
   }
 
-  private void assertRFormat(ALUControl aluC) {
+  private void assertRFormat(Control aluC) {
     assertTrue(aluC.getRegDst());
     assertFalse(aluC.getAluSrc());
     assertFalse(aluC.getMemtoReg());
@@ -41,7 +41,7 @@ class ALUControlTest {
     assertFalse(aluC.getAluOp0());
   }
 
-  private void assertLWFormat(ALUControl aluC) {
+  private void assertLWFormat(Control aluC) {
     assertFalse(aluC.getRegDst());
     assertTrue(aluC.getAluSrc());
     assertTrue(aluC.getMemtoReg());
@@ -54,7 +54,7 @@ class ALUControlTest {
   }
 
 
-  private void assertSWFormat(ALUControl aluC) {
+  private void assertSWFormat(Control aluC) {
     //assertFalse(aluC.getRegDst());
     assertTrue(aluC.getAluSrc());
     //assertFalse(aluC.getMemtoReg());
@@ -67,7 +67,7 @@ class ALUControlTest {
   }
 
 
-  private void assertBEQFormat(ALUControl aluC) {
+  private void assertBEQFormat(Control aluC) {
     //assertFalse(aluC.getRegDst());
     assertFalse(aluC.getAluSrc());
     //assertFalse(aluC.getMemtoReg());

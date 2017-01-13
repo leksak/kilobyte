@@ -1,5 +1,6 @@
 package common.instruction
 
+import common.hardware.Register
 import common.instruction.decomposedrepresentation.DecomposedRepresentation
 import common.instruction.exceptions.NoSuchInstructionException
 import common.instruction.mnemonic.iname
