@@ -106,6 +106,35 @@ class SimulatorTestJUnit {
     simulator.executeNextInstruction();
     assertThat(simulator.getCurrentInstruction(), is(equalTo(third)));
   }
+  @Test
+  public void testJRInstruction() {
+    // 2 is an absolute address. 2 << 2 = 8
+
+    simulator.setRegisterValue("$t1", 3);
+    Instruction first = Instruction.from("jr $t1");
+    Instruction second = Instruction.from("nop");
+    Instruction third = Instruction.from("add $v0, $t0, $t1");
+    simulator.loadProgram(Program.from(first, second, third,
+          Instruction.from("lw $t0, 20($t1)"),
+          Instruction.from("lw $t0, 21($t1)"),
+          Instruction.from("lw $t0, 22($t1)"),
+          Instruction.from("lw $t0, 23($t1)"),
+          Instruction.from("lw $t0, 24($t1)"),
+          Instruction.from("lw $t0, 25($t1)"),
+          Instruction.from("lw $t0, 26($t1)"),
+          Instruction.from("lw $t0, 27($t1)"),
+          Instruction.from("lw $t0, 28($t1)"),
+          Instruction.from("lw $t0, 29($t1)"),
+          Instruction.from("lw $t0, 30($t1)"),
+          Instruction.from("lw $t0, 31($t1)"),
+          Instruction.from("lw $t0, 1($t1)"),
+          Instruction.from("lw $t0, 2($t1)"),
+          Instruction.from("lw $t0, 3($t1)"),
+          Instruction.from("lw $t0, 4($t1)")
+          ));
+    simulator.executeNextInstruction();
+    assertThat(simulator.getCurrentInstruction(), is(equalTo(third)));
+  }
 
 
 
