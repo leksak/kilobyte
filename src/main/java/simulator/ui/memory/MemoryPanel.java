@@ -47,7 +47,7 @@ public abstract class MemoryPanel extends JPanel implements ChangeRadixDisplayCa
     SwingUtilities.invokeLater(() -> model.removeAllElements());
   }
 
-  private void populateList() {
+  public void populateList() {
     String[] memoryContents;
 
     if (currentRadix == Radix.HEX) {
