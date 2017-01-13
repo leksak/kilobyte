@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 import static java.lang.String.format;
 
 @Log
-public enum ALUOperation implements BiFunction<Register, Register, Integer> {
+public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
   ADD(     "add",              (a, b) -> a + b,      0, 0, 1, 0),
   SUBTRACT("subtract",         (a, b) -> a - b,      0, 1, 1, 0),
   AND(     "and",              (a, b) -> a & b,      0, 0, 0, 0),
@@ -62,7 +62,7 @@ public enum ALUOperation implements BiFunction<Register, Register, Integer> {
     return b ? "1" : "0";
   }
 
-  public Integer apply(Register r1, Register r2) {
-    return f.apply(r1.getValue(), r2.getValue());
+  public Integer apply(Integer a, Integer b) {
+    return f.apply(a, b);
   }
 }
