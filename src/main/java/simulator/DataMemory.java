@@ -3,12 +3,16 @@ package simulator;
 import org.apache.commons.lang3.ArrayUtils;
 import simulator.ui.Radix;
 
+import java.nio.ByteBuffer;
+
 public class DataMemory implements Memory {
-  private Byte[] memory = ArrayUtils.toObject(new byte[1000]);
+  private ByteBuffer memory = ByteBuffer.allocate(1000);
 
   @Override
   public String[] toStringArray(Radix r) {
-    String[] d = new String[memory.length];
+    //TODO:
+    /*
+    String[] d = new String[memory.le];
     for (int i = 0; i < d.length; i++) {
       if (r == Radix.HEX) {
         d[i] = "0x" + Integer.toHexString(memory[i]);
@@ -17,11 +21,22 @@ public class DataMemory implements Memory {
       }
     }
 
+
     return d;
+    */
+    return new String[1];
   }
 
   @Override
   public void resetMemory() {
-    memory = ArrayUtils.toObject(new byte[1000]);
+    memory.reset();
+  }
+
+  public void setMemory(int index, Byte value) {
+    memory.put(index, value);
+  }
+
+  public int readWord(int address) {
+    return memory.getInt(address);
   }
 }
