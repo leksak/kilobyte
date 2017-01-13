@@ -28,7 +28,7 @@ public class Control {
     }
 
     /* R-Format */
-    if (!op[0] && !op[1] && !op[2] && !op[3] && !op[4] && !op[5]) {
+    if (opCode == 0b0) {
       regDst = true;
       aluSrc = false;
       memtoReg = false;
@@ -40,7 +40,7 @@ public class Control {
       aluOp0 = false;
     }
     /* lw */
-    else if (op[0] && op[1] && !op[2] && !op[3] && !op[4] && op[5]) {
+    else if (opCode == 0b100011) {
       regDst = false;
       aluSrc = true;
       memtoReg = true;
@@ -52,7 +52,7 @@ public class Control {
       aluOp0 = false;
     }
     /* sw */
-    else if (op[0] && op[1] && !op[2] && op[3] && !op[4] && op[5]) {
+    else if (opCode == 0b101011) {
       //regDst = false;
       aluSrc = true;
       //memtoReg = false;
@@ -64,7 +64,7 @@ public class Control {
       aluOp0 = false;
     }
     /* beq */
-    else if (!op[0] && !op[1] && op[2] && !op[3] && !op[4] && !op[5]) {
+    else if (opCode == 0b000100) {
       //regDst = false;
       aluSrc = false;
       //memtoReg = false;
@@ -74,6 +74,17 @@ public class Control {
       branch = true;
       aluOp1 = false;
       aluOp0 = true;
+    }
+    else if (opCode == 0b001000) {
+      regDst = false;
+      regWrite = true;
+      aluSrc = true;
+      memRead = false;
+      memWrite = false;
+      memtoReg = false;
+      branch = false;
+      aluOp1 = false;
+      aluOp0 = false;
     }
   }
 }

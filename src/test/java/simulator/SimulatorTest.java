@@ -22,6 +22,7 @@ class SimulatorTestJUnit {
 
   }
 
+
   @Test
   public void testALUMockAdd() {
     simulator.setRegisterValue("$t0", 3);
@@ -80,6 +81,15 @@ class SimulatorTestJUnit {
   }
 
   @Test
+  public void testALUMockADDI() {
+    simulator.setRegisterValue("$t1", 0);
+    simulator.setRegisterValue("$t2", 3);
+    Instruction instruction = Instruction.from("addi $t1, $t2, 4");
+    simulator.execute(instruction);
+    assertEquals(7, simulator.getRegisterValue("$t1"));
+  }
+
+  @Test
   public void testJInstruction() {
     // 2 is an absolute address. 2 << 2 = 8
     Instruction jump = Instruction.from("j 5");
@@ -95,7 +105,7 @@ class SimulatorTestJUnit {
           Instruction.from("lw $t0, 24($t1)"),
           Instruction.from("lw $t0, 25($t1)"
           )));
-    simulator.getProgramCounter().setTo(4*3);
+    simulator.setProgramCounterInstruction(3);
     assertThat(simulator.getCurrentInstruction(), is(equalTo(jump)));
     simulator.executeNextInstruction();
     assertThat(simulator.getCurrentInstruction(), is(equalTo(add)));
@@ -128,7 +138,7 @@ class SimulatorTestJUnit {
           Instruction.from("lw $t0, 3($t1)"),
           Instruction.from("lw $t0, 4($t1)")
           ));
-    simulator.getProgramCounter().setTo(5*4);
+    simulator.setProgramCounterInstruction(5);
     simulator.executeNextInstruction();
     assertThat(simulator.getCurrentInstruction(), is(equalTo(add)));
   }

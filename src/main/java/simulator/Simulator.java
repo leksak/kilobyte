@@ -269,4 +269,8 @@ public class Simulator {
   public Instruction getCurrentInstruction() {
     return instructionMemory.getInstructionAt(programCounter.getAddressPointer());
   }
+
+  public void setProgramCounterInstruction(int absInstruction) {
+    programCounter.setTo(absInstruction*4);
+  }
 }
