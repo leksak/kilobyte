@@ -178,7 +178,7 @@ public class Simulator {
     /* 3.1 The ALU performs a subtract on the data values read from the register file */
     boolean alu1 = control.getAluOp1();
     boolean alu0 = control.getAluOp0();
-    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i), i.getFormat());
+    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0);
     int result = aluArtOp.apply(r1Value, r2Value);
 
     /* 3.2 The value of PC + 4 is added to the sign-extended, lower 16 bits of
@@ -238,7 +238,7 @@ public class Simulator {
       return;
     }
 
-    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i), i.getFormat());
+    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i));
     int result = aluArtOp.apply(r1Value, r2Value);
 
     // If ALUC-RegDst save to register

@@ -58,22 +58,27 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
   static boolean match(String ALUOpMask, String functMask, int ALUOp10, int funct) {
     return match(ALUOp10, ALUOpMask) && match(funct, functMask);
   }
-  
-  static ALUOperation from(int ALUOp10, int funct, Format format) {
-    if (format == Format.R) {
-      if (match("10", "100111", ALUOp10, funct)) return NOR;
-      if (match("10", "000010", ALUOp10, funct)) return SRL;
-      if (match("10", "000011", ALUOp10, funct)) return SRA;
-      if (match("1X", "XX0010", ALUOp10, funct)) return SUBTRACT; // Subtract
-      if (match("10", "XX0000", ALUOp10, funct)) return ADD; // CTRLLINES=0010=ADD
-      if (match("10", "XX0100", ALUOp10, funct)) return AND;
-      if (match("10", "XX0101", ALUOp10, funct)) return OR;
-      if (match("1X", "XX1010", ALUOp10, funct)) return SLT;
-    } else {
-      if (match("00", "XXXXXX", ALUOp10, funct)) return ADD;
-      if (match("01", "XXXXXX", ALUOp10, funct)) return SUBTRACT;
-      if (match("10", "XXXXXX", ALUOp10, funct)) return OR;
-    }
+
+  static ALUOperation from(boolean alu1, boolean alu0) {
+    return from(ALUOp10(alu1, alu0));
+  }
+
+  static ALUOperation from(int ALUOp10) {
+    if (match("00", "XXXXXX", ALUOp10, 0)) return ADD;
+    if (match("01", "XXXXXX", ALUOp10, 0)) return SUBTRACT;
+    if (match("10", "XXXXXX", ALUOp10, 0)) return OR;
+    throw new IllegalStateException("Unsupported operation");
+  }
+
+  static ALUOperation from(int ALUOp10, int funct) {
+    if (match("10", "100111", ALUOp10, funct)) return NOR;
+    if (match("10", "000010", ALUOp10, funct)) return SRL;
+    if (match("10", "000011", ALUOp10, funct)) return SRA;
+    if (match("1X", "XX0010", ALUOp10, funct)) return SUBTRACT; // Subtract
+    if (match("10", "XX0000", ALUOp10, funct)) return ADD; // CTRLLINES=0010=ADD
+    if (match("10", "XX0100", ALUOp10, funct)) return AND;
+    if (match("10", "XX0101", ALUOp10, funct)) return OR;
+    if (match("1X", "XX1010", ALUOp10, funct)) return SLT;
     throw new IllegalStateException("Unsupported operation");
   }
   
@@ -84,9 +89,9 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
     return res;
   }
 
-  static ALUOperation from(boolean alu1, boolean alu0, int funct, Format format) {
+  static ALUOperation from(boolean alu1, boolean alu0, int funct) {
     int ALUOp10 = ALUOp10(alu1, alu0);
-    ALUOperation op = from(ALUOp10, funct, format);
+    ALUOperation op = from(ALUOp10, funct);
     assert(op != null);
 
     String aluOp = aluOpToString(alu1, alu0);
