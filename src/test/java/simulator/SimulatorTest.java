@@ -111,6 +111,7 @@ class SimulatorTestJUnit {
     // 2 is an absolute address. 2 << 2 = 8
 
     simulator.setRegisterValue("$t1", 3);
+    assertEquals(simulator.getRegisterValue("$t1"), 3);
     Instruction first = Instruction.from("jr $t1");
     Instruction second = Instruction.from("nop");
     Instruction third = Instruction.from("add $v0, $t0, $t1");

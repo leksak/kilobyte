@@ -212,6 +212,17 @@ public class Simulator {
     // ALU Control get ALU-Operation for arithmetic.
     boolean alu1 = control.getAluOp1();
     boolean alu0 = control.getAluOp0();
+
+    //JR MUX before arithemtic
+    if (alu1 && !alu0 && ret5to0 == 8) {
+      int newAddress = programCounter.getAddressPointer()+r1.getValue();
+      log.info(format(
+            "JR Mux found, jumping from %d to %d (+%d).", programCounter.getAddressPointer(), newAddress, r1.getValue()));
+
+      programCounter.setTo(newAddress);
+      return;
+    }
+
     ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i));
     int result = aluArtOp.apply(r1.getValue(), r2.getValue());
 
