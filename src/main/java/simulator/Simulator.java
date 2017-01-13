@@ -198,12 +198,10 @@ public class Simulator {
     }
     if (control.getMemtoReg()) {
       r2.setValue(dataMemory.readWord(result));
-    } else
-    if (control.getMemWrite() && control.getAluSrc()) {
+    } else if (control.getMemWrite() && control.getAluSrc()) {
       log.info(format("Writing word to Memory Address=%d Value=%d", result, r2.getValue()));
       dataMemory.setMemory(result, (byte)r2.getValue());
-    } else
-    if (control.getAluSrc()) {
+    } else if (control.getAluSrc()) {
       r2.setValue(result);
     }
   }

@@ -38,7 +38,7 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
   private static String reverse(String s) {
     return new StringBuilder(s).reverse().toString();
   }
-
+  
   public static boolean match(int n, String mask) {
     String actual = reverse(DecomposedRepresentation.asBitPattern(n));
     mask = reverse(mask);
