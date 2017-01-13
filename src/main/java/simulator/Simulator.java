@@ -6,6 +6,7 @@ import common.hardware.Register;
 import common.hardware.RegisterFile;
 import common.instruction.Format;
 import common.instruction.Instruction;
+import common.machinecode.OperationsKt;
 import lombok.Getter;
 import lombok.Value;
 import lombok.extern.java.Log;
@@ -83,7 +84,7 @@ public class Simulator {
         executeFormatI(i);
         break;
       case J:
-        //executeFormatJ(i);
+        executeFormatJ(i);
         break;
       case R:
         executeFormatR(i);
@@ -94,6 +95,17 @@ public class Simulator {
 
     }
 
+  }
+
+  private void executeFormatJ(Instruction i) {
+    int jump = OperationsKt.target(i.getNumericRepresentation());
+    int currentPC = programCounter.getAddressPointer();
+
+    currentPC = OperationsKt.bits(currentPC,31,28);
+    jump = jump << 2;
+    jump |= currentPC;
+    log.info(format("Jumping from %d to %d", programCounter.getAddressPointer(), jump));
+    programCounter.setTo(jump);
   }
 
   /* lw $t1, offset($t2) in a style similar to Figure 4.19. Figure 4.20 shows

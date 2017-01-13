@@ -100,6 +100,7 @@ public class InstructionMemory implements Memory {
   }
 
   public Instruction read(PC programCounter) {
+    log.info("Reading from PC.addressPointer="+programCounter.getAddressPointer());
     return fromAddress(programCounter.getAddressPointer());
   }
 
@@ -116,7 +117,7 @@ public class InstructionMemory implements Memory {
     instructions.forEach(this::add);
   }
 
-  public Instruction getInstructionAt(int addressPointer) {
-    return instructions[addressPointer];
+  public Instruction getInstructionAt(int addressInNumberOfBytes) {
+    return instructions[addressInNumberOfBytes /4];
   }
 }
