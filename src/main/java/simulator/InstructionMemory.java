@@ -87,7 +87,7 @@ public class InstructionMemory implements Memory {
     return new InstructionMemory(numberOfBytes);
   }
 
-  public Instruction fromAddress(int address) {
+  private Instruction fromAddressGivenInBytes(int address) {
     // The program counter expects the memory to be laid out in bytes,
     // hence it will (should) always be divisible by 4. So, if
     // the address is 0 then the first instruction should be fetched.
@@ -102,7 +102,11 @@ public class InstructionMemory implements Memory {
 
   public Instruction read(PC programCounter) {
     log.info("Reading from PC.addressPointer="+programCounter.getAddressPointer());
-    return fromAddress(programCounter.getAddressPointer());
+    return fromAddressGivenInBytes(programCounter.getAddressPointer());
+  }
+
+  public Instruction getInstructionAt(int addressInNumberOfBytes) {
+    return instructions[addressInNumberOfBytes /4];
   }
 
   /* Add a single instruction to memory */
@@ -116,9 +120,5 @@ public class InstructionMemory implements Memory {
 
   public void addAll(List<Instruction> instructions) {
     instructions.forEach(this::add);
-  }
-
-  public Instruction getInstructionAt(int addressInNumberOfBytes) {
-    return instructions[addressInNumberOfBytes /4];
   }
 }

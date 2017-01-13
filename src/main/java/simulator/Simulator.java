@@ -56,8 +56,11 @@ public class Simulator {
 
   public void executeNextInstruction() {
     // Fetch the next instruction from memory.
-    Instruction i = instructionMemory.read(programCounter);
-    execute(i);
+    execute(getCurrentInstruction());
+  }
+
+  public Instruction getCurrentInstruction() {
+    return instructionMemory.read(programCounter);
   }
 
   public int getRegisterValue(String mnemonic) {
@@ -267,10 +270,6 @@ public class Simulator {
 
   public int getDataMemory(int address) {
     return dataMemory.readWord(address);
-  }
-
-  public Instruction getCurrentInstruction() {
-    return instructionMemory.getInstructionAt(programCounter.getAddressPointer());
   }
 
   public void setProgramCounterInstruction(int absInstruction) {

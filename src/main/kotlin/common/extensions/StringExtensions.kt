@@ -25,9 +25,9 @@ fun String.countCommas(): Int = StringUtils.countMatches(this, ",")
 /**
  * Returns true if given String contains a newline-character.
  */
-fun String.containsNewlineCharacter(): Boolean = {
-  this.contains(System.getProperty("line.separator"))
-}.invoke()
+fun String.containsNewlineCharacter(): Boolean {
+  return this.contains(System.getProperty("line.separator"))
+}
 
 fun String.remove(substring: String) = this.replace(substring, "")
 fun String.removeCommas() = this.remove(",")
@@ -42,9 +42,12 @@ fun String.removeCommas() = this.remove(",")
  *
  * @param delimiter the character that delimits tokens
  */
-fun String.tokenize(delimiter: String = ","): Array<String> = {
-  this.trim().replace(delimiter, " ").replace(Regex("\\s+"), " ").split(" ").toTypedArray()
-}.invoke()
+fun String.tokenize(delimiter: String = ","): Array<String> {
+  return this.trim().replace(delimiter, " ")
+        .replace(Regex("\\s+"), " ") // Collapse white-space to single spaces
+        .split(" ") // Create an array of tokens
+        .toTypedArray() // return it as an array
+}
 
 /**
  * For a String on the form OFFSET($REG) this function yields OFFSET, meaning that for
