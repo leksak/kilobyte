@@ -124,7 +124,7 @@ public class DecomposedRepresentation {
     return Integer.parseInt(requestedBits, 2);
   }
 
-  private static String asBitPattern(long number) {
+  public static String asBitPattern(long number) {
     String binaryString = Long.toBinaryString(number);
     int length = binaryString.length();
     String pad = "";

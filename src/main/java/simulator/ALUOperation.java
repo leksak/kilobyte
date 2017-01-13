@@ -1,6 +1,7 @@
 package simulator;
 
 import common.hardware.Register;
+import common.instruction.decomposedrepresentation.DecomposedRepresentation;
 import lombok.extern.java.Log;
 
 import java.util.function.BiFunction;
@@ -34,19 +35,50 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
     this.bits = bits;
   }
 
+  private static String reverse(String s) {
+    return new StringBuilder(s).reverse().toString();
+  }
+
+  public static boolean match(int n, String mask) {
+    String actual = reverse(DecomposedRepresentation.asBitPattern(n));
+    mask = reverse(mask);
+    for (int i = 0; i < mask.length(); i++) {
+      char maskChar = mask.charAt(i);
+      if (maskChar == 'X') continue;
+      if (maskChar != actual.charAt(i)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  static boolean match(String ALUOpMask, String functMask, int ALUOp10, int funct) {
+    return match(ALUOp10, ALUOpMask) && match(funct, functMask);
+  }
+  
+  static ALUOperation from(int ALUOp10, int funct) {
+    if (match("10", "100111", ALUOp10, funct)) return NOR;
+    if (match("1X", "XX0010", ALUOp10, funct)) return SUBTRACT; // Subtract
+    if (match("10", "XX0000", ALUOp10, funct)) return ADD; // CTRLLINES=0010=ADD
+    if (match("10", "XX0100", ALUOp10, funct)) return AND;
+    if (match("10", "XX0101", ALUOp10, funct)) return OR;
+    if (match("1X", "XX1010", ALUOp10, funct)) return SLT;
+    if (match("00", "XXXXXX", ALUOp10, funct)) return ADD;
+    if (match("01", "XXXXXX", ALUOp10, funct)) return SUBTRACT;
+
+    throw new IllegalStateException("Unsupported operation");
+  }
+  
+  static int ALUOp10(boolean alu1, boolean alu0) {
+    int res = 0;
+    if (alu1) res |= 0b10;
+    if (alu0) res |= 0b01;
+    return res;
+  }
+
   static ALUOperation from(boolean alu1, boolean alu0, int funct) {
-    System.err.println("ali1:"+alu1+", alu0:"+alu0+" funct:"+Integer.toBinaryString(funct));
-    ALUOperation op = null;
-    if ((alu1 && !alu0) && funct == 0b100000) op = ADD;
-    if ((alu1 && !alu0) && funct == 0b100010) op = SUBTRACT;
-    if ((alu1 && !alu0) && funct == 0b100100) op = AND;
-    if ((alu1 && !alu0) && funct == 0b100101) op = OR;
-    if ((alu1 && !alu0) && funct == 0b101010) op = SLT;
-    if ((alu1 && !alu0) && funct == 0b100111) op = NOR;
-
-    if (!alu1 && alu0) op = SUBTRACT;
-    if (!alu1 && !alu0) op = ADD;
-
+    int ALUOp10 = ALUOp10(alu1, alu0);
+    ALUOperation op = from(ALUOp10, funct);
     assert(op != null);
 
     String aluOp = aluOpToString(alu1, alu0);

@@ -10,6 +10,10 @@ import static common.instruction.Format.R;
 import static common.instruction.Instruction.BEQ;
 import static common.instruction.Instruction.LW;
 import static common.instruction.Instruction.SW;
+import static common.instruction.decomposedrepresentation.DecomposedRepresentation.asBitPattern;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -39,6 +43,12 @@ class ALUControlTest {
     assertFalse(aluC.getBranch());
     assertTrue(aluC.getAluOp1());
     assertFalse(aluC.getAluOp0());
+  }
+
+  @Test
+  public void testMatch() {
+    assertTrue(ALUOperation.match(34, "XX0010"));
+    assertThat(ALUOperation.from(0b10, 0b100010), is(equalTo(ALUOperation.SUBTRACT)));
   }
 
   private void assertLWFormat(Control aluC) {
