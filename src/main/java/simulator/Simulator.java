@@ -163,6 +163,7 @@ public class Simulator {
       if (control.getAluSrc()) {
        r2Value = signExtend;
       }
+      //TODO: regdst gissa vad det ska göra
 
     /*3.The ALU performs a subtract on the data values read from the register
        file. The value of PC + 4 is added to the sign-extended, lower 16 bits of
