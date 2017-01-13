@@ -33,7 +33,8 @@ public class Simulator {
   @Getter
   DataMemory dataMemory = new DataMemory();
 
-  ImmutableSet<Instruction> supportedInstructions = ImmutableSet.of(
+  @Getter
+  static ImmutableSet<Instruction> supportedInstructions = ImmutableSet.of(
         ADD,
         SUB,
         AND,
@@ -212,14 +213,6 @@ public class Simulator {
   public void execute(String s) {
     // Executes a single instruction
     execute(Instruction.from(s));
-  }
-
-  /**
-   * Prints the names of all the instructions contained in this set.
-   * Useful for technical documentation.
-   */
-  public void printSupportedInstructions() {
-    supportedInstructions.forEach(System.out::println);
   }
 
   public void loadProgram(Program p) {

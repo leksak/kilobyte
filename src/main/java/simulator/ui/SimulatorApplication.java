@@ -88,6 +88,10 @@ public class SimulatorApplication {
     fileMenu.setMnemonic(VK_F);
     displaySettings.setMnemonic(VK_V);
     SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, displaySettings);
+
+    HelpMenu helpMenu = new HelpMenu(applicationFrame);
+    menuBar.add(helpMenu);
+
     applicationFrame.setJMenuBar(menuBar);
 
     JToolBar controls = new SimulatorControlsToolbar();
