@@ -76,7 +76,7 @@ public class SimulatorApplication {
         this::loadProgram);
 
   RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
-  ProgramCounterView pc = new ProgramCounterView();
+  ProgramCounterView pc = new ProgramCounterView(s.getProgramCounter());
   InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(s.getInstructionMemory());
   DataMemoryPanel dataMemory = new DataMemoryPanel(s.getDataMemory());
   TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
@@ -164,5 +164,9 @@ public class SimulatorApplication {
   public void executeNextInstruction() {
     s.executeNextInstruction();
     registersPanel.update();
+    instructionMemory.update();
+    dataMemory.update();
+    programView.highlightLine(s.getProgramCounter().currentInstructionIndex());
+    pc.update();
   }
 }

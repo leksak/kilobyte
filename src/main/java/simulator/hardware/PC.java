@@ -30,6 +30,11 @@ public class PC {
     log.info(format("PC={previousAddress=%d} PC={newAddress=%d}", prevAddress, addressPointer));
   }
 
+
+  public int currentInstructionIndex() {
+    return addressPointer / 4;
+  }
+
   public void setTo(int addressInNoOfBytes) {
     log.info(format("Setting PC={addressPointer=%d} to PC={addressPointer=%d}", addressPointer, addressInNoOfBytes));
     addressPointer = addressInNoOfBytes;

@@ -3,6 +3,7 @@ package simulator.ui;
 import common.annotations.InstantiateOnEDT;
 import common.annotations.InvokeLaterNotNecessary;
 import lombok.Value;
+import simulator.hardware.PC;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,8 +12,10 @@ import java.awt.*;
 @Value
 public class ProgramCounterView extends JPanel {
   JLabel label = new JLabel();
-  public ProgramCounterView() {
+  PC programCounter;
+  public ProgramCounterView(PC programCounter) {
     super(new FlowLayout(FlowLayout.LEFT));
+    this.programCounter = programCounter;
     add(label);
     setText("PC: 0");
   }
@@ -20,5 +23,9 @@ public class ProgramCounterView extends JPanel {
   @InvokeLaterNotNecessary
   public void setText(String s) {
     SwingUtilities.invokeLater(() -> label.setText(s));
+  }
+
+  public void update() {
+    setText("PC: " + programCounter.getAddressPointer());
   }
 }

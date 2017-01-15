@@ -9,6 +9,7 @@ import lombok.experimental.NonFinal;
 import simulator.program.Program;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
@@ -19,55 +20,77 @@ import java.util.List;
 @Value
 @EqualsAndHashCode(callSuper = true)
 class ProgramView extends JPanel {
-  // Displays the entire program
-  JTextPane programFrontend = new JTextPane();
-  StyledDocument programDocument = programFrontend.getStyledDocument();
+  int INITIAL_NO_OF_ROWS = 0;
+  int NO_OF_COLUMNS = 2;
+  int INSTRUCTION_POINTER_COL_INDEX = 0;
 
-  // Contains all the instructions shown in the programFrontend
-  List<Instruction> instructionsInDisplayedProgram = new ArrayList<>();
+  @NonFinal
+  int currentRowIndex = 0;
+
+  List<Instruction> instructionsInTable = new ArrayList<>();
+  DefaultTableModel tableModel = new DefaultTableModel(INITIAL_NO_OF_ROWS, NO_OF_COLUMNS) {
+    @Override
+    public boolean isCellEditable(int row, int column) {
+      //all cells false
+      return false;
+    }
+  };
+  ImageIcon currentInstructionPointer = Icon.getIcon(Toolkit.getDefaultToolkit(), this.getClass(), Icon.Name.INSTRUCTION_POINTER);
+
+  JTable table = new JTable(tableModel) {
+      //  Returning the Class of each column will allow different
+      //  renderers to be used based on Class
+      public Class getColumnClass(int column) {
+        return getValueAt(0, column).getClass();
+      }
+  };
 
   public ProgramView() {
     // The BorderLayout is what allows us to fit the text pane to the panel
     super(new BorderLayout());
     this.setBorder(BorderFactory.createTitledBorder("Program"));
-    JScrollPane scrollPane = new JScrollPane(programFrontend);
+    JScrollPane scrollPane = new JScrollPane(table);
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     this.add(scrollPane, BorderLayout.CENTER);
-    programFrontend.setEditable(false);
-    append("No MIPS32 program has been loaded into memory.");
-    append("Try ALT+F by CTRL+L to open the file browser, or use the");
-    append("\"File\"-menu in the top-left corner.");
+    table.setShowGrid(false);
+    table.setTableHeader(null);
+    table.getColumn("A").setPreferredWidth(18);
+    table.getColumn("A").setMaxWidth(18);
+    table.getColumn("A").setMinWidth(18);
 
+
+    append("No program is loaded: Try ALT+F by CTRL+L to open the file browser, or use the \"File\" menu in the top left corner");
+    highlightLine(0);
   }
 
   @InvokeLaterNotNecessary
   public void display(Program p) {
     SwingUtilities.invokeLater(() -> {
-      // Clear the old instructions - if any
-      programFrontend.setText("");
+      // Clear the old instructions  if any
+      tableModel.getDataVector().removeAllElements();
+      instructionsInTable.clear();
+
+      // notifies the JTable that the model has changed
+      tableModel.fireTableDataChanged();
 
       // Adding the elements has to happen on the EDT
       p.getInstructions().forEach(this::append);
+      highlightLine(0);
     });
   }
 
-  @NonFinal
-  boolean displayingProgram = false;
-
   private void append(String s) {
-    try {
-      programDocument.insertString(programDocument.getLength(), s + "\n", null);
-    } catch (BadLocationException e) {
-      e.printStackTrace();
-    }
+    tableModel.addRow(new Object[]{null, s});
+  }
+
+  public void highlightLine(int rowIndex) {
+    tableModel.setValueAt(new EmptyIcon(16, 16), currentRowIndex, INSTRUCTION_POINTER_COL_INDEX);
+    tableModel.setValueAt(currentInstructionPointer, rowIndex, INSTRUCTION_POINTER_COL_INDEX);
+    currentRowIndex = rowIndex;
   }
 
   private void append(Instruction i) {
-    if (!displayingProgram) {
-      displayingProgram = true;
-    }
-
+    instructionsInTable.add(i);
     append(i.getMnemonicRepresentation());
-    instructionsInDisplayedProgram.add(i);
   }
 }
