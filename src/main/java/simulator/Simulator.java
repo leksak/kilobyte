@@ -9,7 +9,9 @@ import common.instruction.Instruction;
 import common.instruction.Type;
 import common.machinecode.OperationsKt;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
 import simulator.hardware.PC;
 import simulator.program.Program;
@@ -21,6 +23,7 @@ import static java.lang.String.format;
 
 @Value
 @Log
+@NoArgsConstructor
 public class Simulator {
   @Getter
   PC programCounter = new PC();
@@ -28,6 +31,8 @@ public class Simulator {
   RegisterFile registerFile = new RegisterFile();
   Control control = new Control();
 
+  @NonFinal
+  Program openProgram = null;
 
   @Getter
   InstructionMemory instructionMemory = InstructionMemory.init();
@@ -178,22 +183,27 @@ public class Simulator {
     /* 3.1 The ALU performs a subtract on the data values read from the register file */
     boolean alu1 = control.getAluOp1();
     boolean alu0 = control.getAluOp0();
-    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i), i.getFormat());
+    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0);
     int result = aluArtOp.apply(r1Value, r2Value);
 
-    /* 3.2 The value of PC + 4 is added to the sign-extended, lower 16 bits of
-     *     the instruction ( offset ) shifted left by two; the result is the
-     *     branch target address. */
-    signExtend = signExtend << 2;
-    signExtend = signExtend | programCounter.getAddressPointer();
     /* 4.
      * The Zero result from the ALU is used to decide which adder result to
      * store into the PC.
      */
     if (result == 0 && control.getBranch()) {
-      log.info("Branching to address=" + signExtend);
-      //can be off by 4 since the programCounter av incremented already? 8 lines up.
-      programCounter.setTo(signExtend);
+          /* 3.2 The value of PC + 4 is added to the sign-extended, lower 16 bits of
+     *     the instruction ( offset ) shifted left by two; the result is the
+     *     branch target address. */
+      // See http://www.cs.umd.edu/class/sum2003/cmsc311/Notes/Mips/jump.html
+      // We branch relatively to the current instruction. The PC has already
+      // been incremented by 4 when we reach this if-statement. Hence, if
+      // we do not enter this clause the PC will be PC_prev + 4, as expected.
+      int currentAddress = programCounter.getAddressPointer() - 4;
+      // However, now we want to branch. So, we take the 16 bit immediate value
+      // and shift it to the left twice,
+      int targetAddress = signExtend << 2;
+      log.info(format("Branching relatively from: address=%d by=%d. The 16-bit immediate is %d", currentAddress, targetAddress, signExtend));
+      programCounter.setRelativeToCurrentAddress(targetAddress - 4);
     }
     if (control.getMemtoReg()) {
       r2.setValue(dataMemory.readWord(result));
@@ -214,6 +224,7 @@ public class Simulator {
     // Instruction 20:16 read register 2 (rt) + MUX1
     Register r2 = registerFile.get(Field.RT, i);
     int r2Value = r2.getValue();
+
     if (i.getType() == Type.SHIFT) {
       r1Value = r2Value;
       r2Value = OperationsKt.shamt(i.getNumericRepresentation());
@@ -238,7 +249,7 @@ public class Simulator {
       return;
     }
 
-    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i), i.getFormat());
+    ALUOperation aluArtOp = ALUOperation.from(alu1, alu0, funct(i));
     int result = aluArtOp.apply(r1Value, r2Value);
 
     // If ALUC-RegDst save to register
@@ -255,17 +266,19 @@ public class Simulator {
   }
 
   public void loadRawProgram(Program p) {
+    openProgram = p;
     instructionMemory.addAll(p.getInstructions());
   }
   public void loadProgram(Program p) {
-    reset();
+    if (openProgram != null) reset();
     loadRawProgram(p);
   }
 
-  private void reset() {
+  public void reset() {
     registerFile.reset();
     instructionMemory.resetMemory();
     dataMemory.resetMemory();
+    instructionMemory.addAll(openProgram.getInstructions());
   }
 
   public void setDataMemoryAtAddress(int address, Byte value) {
@@ -278,5 +291,9 @@ public class Simulator {
 
   public void setProgramCounterInstruction(int absInstruction) {
     programCounter.setTo(absInstruction*4);
+  }
+
+  public boolean hasReachedExitInstruction() {
+    return (getCurrentInstruction() == Instruction.EXIT);
   }
 }

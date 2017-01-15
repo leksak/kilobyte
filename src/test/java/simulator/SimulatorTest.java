@@ -131,18 +131,14 @@ class SimulatorTestJUnit {
   }
   @Test
   public void testALUMockBEQTrue() {
-    int startPC = simulator.getProgramCounter().getAddressPointer();
-    // 0000 0110 6
-    // 0001 1000 24
-    int branchValue = 6;
     simulator.setRegisterValue("$t0", 5);
     simulator.setRegisterValue("$t1", 5);
 
-    Instruction instruction = Instruction.from("beq $t0, $t1, "+String.valueOf(branchValue));
+    Instruction instruction = Instruction.from("beq $t0, $t1, 6");
     simulator.execute(instruction);
     int currentPC = simulator.getProgramCounter().getAddressPointer();
 
-    assertEquals(0+4+(24), currentPC);
+    assertEquals((24), currentPC);
   }
 
   //ADDI

@@ -4,8 +4,7 @@ import common.annotations.InstantiateOnEDT;
 import lombok.Value;
 import simulator.Simulator;
 import simulator.program.Program;
-import simulator.ui.memory.DataMemoryPanel;
-import simulator.ui.memory.InstructionMemoryPanel;
+import simulator.ui.memory.MemoryPanel;
 import simulator.ui.memory.TabbedMemoryPane;
 
 import javax.swing.*;
@@ -76,9 +75,9 @@ public class SimulatorApplication {
         this::loadProgram);
 
   RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
-  ProgramCounterView pc = new ProgramCounterView();
-  InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(s.getInstructionMemory());
-  DataMemoryPanel dataMemory = new DataMemoryPanel(s.getDataMemory());
+  ProgramCounterView pc = new ProgramCounterView(s.getProgramCounter());
+  MemoryPanel instructionMemory = new MemoryPanel(s.getInstructionMemory(), "Instruction");
+  MemoryPanel dataMemory = new MemoryPanel(s.getDataMemory(), "Data");
   TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
   ViewMenu displaySettings = new ViewMenu(registersPanel, instructionMemory, dataMemory);
 
@@ -164,5 +163,22 @@ public class SimulatorApplication {
   public void executeNextInstruction() {
     s.executeNextInstruction();
     registersPanel.update();
+    instructionMemory.update();
+    dataMemory.update();
+    programView.highlightLine(s.getProgramCounter().currentInstructionIndex());
+    pc.update();
+  }
+
+  public boolean hasReachedExitInstruction() {
+    return s.hasReachedExitInstruction();
+  }
+
+  public void reset() {
+    // TODO: Maybe we should just reload the program entirely?
+    s.reset();
+    registersPanel.update();
+    instructionMemory.update();
+    dataMemory.update();
+    pc.update();
   }
 }

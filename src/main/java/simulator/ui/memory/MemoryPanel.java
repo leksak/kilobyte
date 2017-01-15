@@ -14,7 +14,7 @@ import static java.lang.String.format;
 
 @InstantiateOnEDT
 @Log
-public abstract class MemoryPanel extends JPanel implements ChangeRadixDisplayCapable {
+public class MemoryPanel extends JPanel implements ChangeRadixDisplayCapable {
   DefaultListModel<String> model = new DefaultListModel<>();
   JList<String> displayList = new JList<>(model);
   Memory memory;
@@ -35,7 +35,6 @@ public abstract class MemoryPanel extends JPanel implements ChangeRadixDisplayCa
 
   @InvokeLaterNotNecessary
   public void update() { // Call whenever the underlying memory has changed.
-    log.info("Updating: " + label);
     // Events on the EDT are performed in order, so this is
     // guaranteed to happen before we start adding data back
     // into the model.
@@ -57,7 +56,6 @@ public abstract class MemoryPanel extends JPanel implements ChangeRadixDisplayCa
     }
 
     int noOfEntries = memoryContents.length;
-    log.info(format("Populating memory: %s with %d entries", label, noOfEntries));
     for (int i = 0; i < noOfEntries; i++) {
       String entry = memoryContents[i];
       if (entry == null) {
