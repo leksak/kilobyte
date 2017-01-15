@@ -107,7 +107,7 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
   }
 
   public Integer apply(Integer a, Integer b) {
-    log.info("ALUOperation"+a+", "+b);
+    log.info("ALUOperation={a:"+a+", b:"+b+"}");
     return f.apply(a, b);
   }
 }
