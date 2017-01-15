@@ -9,7 +9,9 @@ import common.instruction.Instruction;
 import common.instruction.Type;
 import common.machinecode.OperationsKt;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
 import simulator.hardware.PC;
 import simulator.program.Program;
@@ -21,6 +23,7 @@ import static java.lang.String.format;
 
 @Value
 @Log
+@NoArgsConstructor
 public class Simulator {
   @Getter
   PC programCounter = new PC();
@@ -28,6 +31,8 @@ public class Simulator {
   RegisterFile registerFile = new RegisterFile();
   Control control = new Control();
 
+  @NonFinal
+  Program openProgram = null;
 
   @Getter
   InstructionMemory instructionMemory = InstructionMemory.init();
@@ -255,10 +260,11 @@ public class Simulator {
   }
 
   public void loadRawProgram(Program p) {
+    openProgram = p;
     instructionMemory.addAll(p.getInstructions());
   }
   public void loadProgram(Program p) {
-    reset();
+    if (openProgram != null) reset();
     loadRawProgram(p);
   }
 
@@ -266,6 +272,7 @@ public class Simulator {
     registerFile.reset();
     instructionMemory.resetMemory();
     dataMemory.resetMemory();
+    instructionMemory.addAll(openProgram.getInstructions());
   }
 
   public void setDataMemoryAtAddress(int address, Byte value) {

@@ -67,6 +67,7 @@ public class InstructionMemory implements Memory {
     return arr;
   }
 
+  @Override
   public void resetMemory() {
     // The memory should be set to zero initially
     for (int i = 0; i < SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS; i++) {
@@ -113,7 +114,7 @@ public class InstructionMemory implements Memory {
   private void add(Instruction i) {
     log.info("Adding instruction={" + i + "} to memory");
     if (index >= SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS) {
-      throw new IllegalStateException("Ran out of InstructionMemory");
+      throw new IllegalStateException("Ran out of instruction memory");
     }
     instructions[index++] = i;
   }

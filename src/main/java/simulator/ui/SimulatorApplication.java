@@ -4,8 +4,7 @@ import common.annotations.InstantiateOnEDT;
 import lombok.Value;
 import simulator.Simulator;
 import simulator.program.Program;
-import simulator.ui.memory.DataMemoryPanel;
-import simulator.ui.memory.InstructionMemoryPanel;
+import simulator.ui.memory.MemoryPanel;
 import simulator.ui.memory.TabbedMemoryPane;
 
 import javax.swing.*;
@@ -77,8 +76,8 @@ public class SimulatorApplication {
 
   RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
   ProgramCounterView pc = new ProgramCounterView(s.getProgramCounter());
-  InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(s.getInstructionMemory());
-  DataMemoryPanel dataMemory = new DataMemoryPanel(s.getDataMemory());
+  MemoryPanel instructionMemory = new MemoryPanel(s.getInstructionMemory(), "Instruction");
+  MemoryPanel dataMemory = new MemoryPanel(s.getDataMemory(), "Data");
   TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
   ViewMenu displaySettings = new ViewMenu(registersPanel, instructionMemory, dataMemory);
 
