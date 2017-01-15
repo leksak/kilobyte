@@ -112,7 +112,8 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
   }
 
   public Integer apply(Integer a, Integer b) {
-    log.info(format("Applying ALUOperation=%s to operands (v1=%d, v2=%d)", this.name(), a, b));
-    return f.apply(a, b);
+    int result = f.apply(a, b);
+    log.info(format("Applying ALUOperation=%s to operands (v1=%d, v2=%d). Result=%d", this.name(), a, b, result));
+    return result;
   }
 }
