@@ -169,4 +169,17 @@ public class SimulatorApplication {
     programView.highlightLine(s.getProgramCounter().currentInstructionIndex());
     pc.update();
   }
+
+  public boolean hasReachedExitInstruction() {
+    return s.hasReachedExitInstruction();
+  }
+
+  public void reset() {
+    // TODO: Maybe we should just reload the program entirely?
+    s.reset();
+    registersPanel.update();
+    instructionMemory.update();
+    dataMemory.update();
+    pc.update();
+  }
 }

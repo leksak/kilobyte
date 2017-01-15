@@ -9,6 +9,7 @@ import lombok.experimental.NonFinal;
 import simulator.program.Program;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
@@ -35,6 +36,7 @@ class ProgramView extends JPanel {
       return false;
     }
   };
+
   ImageIcon currentInstructionPointer = Icon.getIcon(Toolkit.getDefaultToolkit(), this.getClass(), Icon.Name.INSTRUCTION_POINTER);
 
   JTable table = new JTable(tableModel) {
@@ -54,6 +56,8 @@ class ProgramView extends JPanel {
     this.add(scrollPane, BorderLayout.CENTER);
     table.setShowGrid(false);
     table.setTableHeader(null);
+
+    // The A is the default column name
     table.getColumn("A").setPreferredWidth(18);
     table.getColumn("A").setMaxWidth(18);
     table.getColumn("A").setMinWidth(18);

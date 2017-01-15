@@ -35,6 +35,14 @@ public class SimulatorControlsToolbar extends JToolBar {
     step.addActionListener(e -> {
       s.executeNextInstruction();
     });
+    play.addActionListener(e -> {
+      while (!s.hasReachedExitInstruction()) {
+        s.executeNextInstruction();
+      }
+    });
+    reset.addActionListener(e -> {
+      s.reset();
+    });
   }
 
   private JButton addControl(Icon.Name name, String tooltip) {

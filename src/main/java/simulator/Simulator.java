@@ -262,7 +262,7 @@ public class Simulator {
     loadRawProgram(p);
   }
 
-  private void reset() {
+  public void reset() {
     registerFile.reset();
     instructionMemory.resetMemory();
     dataMemory.resetMemory();
@@ -278,5 +278,9 @@ public class Simulator {
 
   public void setProgramCounterInstruction(int absInstruction) {
     programCounter.setTo(absInstruction*4);
+  }
+
+  public boolean hasReachedExitInstruction() {
+    return (getCurrentInstruction() == Instruction.EXIT);
   }
 }
