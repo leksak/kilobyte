@@ -7,6 +7,10 @@ import lombok.extern.java.Log;
 @Log
 public class Control {
 
+  public Object[] asObjectArray() {
+    return new Object[]{regDst, aluSrc, memtoReg, regWrite, memRead, memWrite, branch, aluOp0, aluOp1};
+  }
+
   @Getter
   private Boolean regDst, aluSrc, memtoReg, regWrite, memRead, memWrite,
           branch, aluOp1, aluOp0;

@@ -57,7 +57,6 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
     table = new JTable(tableModel);
     table.setShowGrid(false);
 
-
     add(table);
   }
 

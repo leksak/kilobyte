@@ -83,6 +83,7 @@ public class SimulatorApplication {
   MemoryPanel dataMemory = new MemoryPanel(s.getDataMemory(), "Data");
   TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
   ViewMenu displaySettings = new ViewMenu(registersPanel, instructionMemory, dataMemory);
+  ControlLinesPanel controlLines = new ControlLinesPanel(s.getControl());
 
   Object interruptLock = new Object();
 
@@ -121,6 +122,7 @@ public class SimulatorApplication {
 
     JToolBar controls = new SimulatorControlsToolbar(this);
     applicationFrame.add(controls, BorderLayout.NORTH);
+    applicationFrame.add(controlLines, BorderLayout.SOUTH);
     JPanel applicationPanel = new JPanel(new BorderLayout());
 
     // Contains the program-counter and the registers in a stacked fashion
@@ -177,6 +179,8 @@ public class SimulatorApplication {
       registersPanel.update();
       instructionMemory.update();
       dataMemory.update();
+      controlLines.update();
+
     } catch (IOException e) {
       // TODO: Catch sensibly
       e.printStackTrace();
@@ -191,6 +195,7 @@ public class SimulatorApplication {
     dataMemory.update();
     programView.highlightLine(s.getProgramCounter().currentInstructionIndex());
     pc.update();
+    controlLines.update();
     return hasReadExitStatement;
   }
 
@@ -200,6 +205,7 @@ public class SimulatorApplication {
     registersPanel.update();
     instructionMemory.update();
     dataMemory.update();
+    controlLines.update();
     pc.update();
   }
 }
