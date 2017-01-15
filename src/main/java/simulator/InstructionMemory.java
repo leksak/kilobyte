@@ -73,6 +73,7 @@ public class InstructionMemory implements Memory {
     for (int i = 0; i < SIZE_IN_TOTAL_NUMBER_OF_INSTRUCTIONS; i++) {
       instructions[i] = Instruction.NOP.deepCopy();
     }
+    index = 0;
   }
 
   /**

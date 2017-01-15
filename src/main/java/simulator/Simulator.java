@@ -60,9 +60,9 @@ public class Simulator {
         NOP
   );
 
-  public void executeNextInstruction() {
+  public boolean executeNextInstruction() {
     // Fetch the next instruction from memory.
-    execute(getCurrentInstruction());
+    return execute(getCurrentInstruction());
   }
 
   public Instruction getCurrentInstruction() {
@@ -80,14 +80,14 @@ public class Simulator {
   }
 
 
-  public void execute(Instruction i) {
+  /* Returns false if an execution was executed, true if EXIT was encountered. */
+  public boolean execute(Instruction i) {
     log.info("Executing " + i);
 
     // 1. The instruction is fetched, and the PC is incremented
     programCounter.stepForward();
     // Instruction 31:26 - AluController
     control.updateOperationType(i.getOpcode());
-
 
     switch(i.getFormat()) {
       case I:
@@ -101,10 +101,12 @@ public class Simulator {
         break;
       case EXIT:
         // Exit
-        break;
-
+        return true;
+      default:
+        throw new IllegalStateException("Encountered an \"invalid\" format: " + i.getFormat());
     }
 
+    return false;
   }
 
   private void executeFormatJ(Instruction i) {
@@ -259,7 +261,6 @@ public class Simulator {
 
   }
 
-  //000000 10010 00000 00000 00000 010000
   public void execute(String s) {
     // Executes a single instruction
     execute(Instruction.from(s));
@@ -277,6 +278,7 @@ public class Simulator {
   public void reset() {
     registerFile.reset();
     instructionMemory.resetMemory();
+    programCounter.setTo(0);
     dataMemory.resetMemory();
     instructionMemory.addAll(openProgram.getInstructions());
   }
@@ -291,9 +293,5 @@ public class Simulator {
 
   public void setProgramCounterInstruction(int absInstruction) {
     programCounter.setTo(absInstruction*4);
-  }
-
-  public boolean hasReachedExitInstruction() {
-    return (getCurrentInstruction() == Instruction.EXIT);
   }
 }

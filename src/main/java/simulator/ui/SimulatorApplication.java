@@ -2,6 +2,8 @@ package simulator.ui;
 
 import common.annotations.InstantiateOnEDT;
 import lombok.Value;
+import lombok.experimental.NonFinal;
+import lombok.extern.java.Log;
 import simulator.Simulator;
 import simulator.program.Program;
 import simulator.ui.memory.MemoryPanel;
@@ -63,6 +65,7 @@ import static java.awt.event.WindowEvent.WINDOW_CLOSING;
  * </ul>
  */
 @InstantiateOnEDT // Important!
+@Log
 @Value
 public class SimulatorApplication {
   Simulator s = new Simulator();
@@ -80,6 +83,29 @@ public class SimulatorApplication {
   MemoryPanel dataMemory = new MemoryPanel(s.getDataMemory(), "Data");
   TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
   ViewMenu displaySettings = new ViewMenu(registersPanel, instructionMemory, dataMemory);
+
+  Object interruptLock = new Object();
+
+  @NonFinal
+  boolean wasInterrupted = false;
+
+  @NonFinal
+  boolean hasReadExitStatement = false;
+
+  public void run() {
+    wasInterrupted = false;
+    while(!(hasReadExitStatement || wasInterrupted)) {
+      log.info("Executing the next instruction: " + s.getCurrentInstruction());
+      executeNextInstruction();
+    }
+  }
+
+  public void stop() {
+    synchronized (interruptLock) {
+      log.info("Interrupting the simulation");
+      wasInterrupted = true;
+    }
+  }
 
   SimulatorApplication() {
     // DISPOSE_ON_CLOSE is cleaner than EXIT_ON_CLOSE
@@ -137,9 +163,6 @@ public class SimulatorApplication {
       // hence it has to be instantiated on the EDT
       SimulatorApplication app = new SimulatorApplication();
 
-      // Contains Run/Pause/Step/Reset
-      //JMenu simulatorMenu = new JMenu("Simulator");
-
       app.setVisible();
     });
   }
@@ -160,17 +183,15 @@ public class SimulatorApplication {
     }
   }
 
-  public void executeNextInstruction() {
-    s.executeNextInstruction();
+  public boolean executeNextInstruction() {
+    wasInterrupted = false;
+    hasReadExitStatement = s.executeNextInstruction();
     registersPanel.update();
     instructionMemory.update();
     dataMemory.update();
     programView.highlightLine(s.getProgramCounter().currentInstructionIndex());
     pc.update();
-  }
-
-  public boolean hasReachedExitInstruction() {
-    return s.hasReachedExitInstruction();
+    return hasReadExitStatement;
   }
 
   public void reset() {

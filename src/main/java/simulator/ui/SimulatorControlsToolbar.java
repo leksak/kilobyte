@@ -1,5 +1,6 @@
 package simulator.ui;
 
+import lombok.extern.java.Log;
 import simulator.Simulator;
 
 import javax.swing.*;
@@ -19,6 +20,7 @@ import java.awt.*;
  *              program is in (a possibly unending loop).</li>
  * </ul>
  */
+@Log
 public class SimulatorControlsToolbar extends JToolBar {
   SimulatorApplication s;
 
@@ -31,18 +33,27 @@ public class SimulatorControlsToolbar extends JToolBar {
     JButton play = addControl(Icon.Name.PLAY,"Start the simulator");
     JButton step = addControl(Icon.Name.STEP_FORWARD, "Step forward the simulation one step");
     JButton reset = addControl(Icon.Name.RESET, "Reset the simulation to its initial state");
+    JButton stop = addControl(Icon.Name.STOP, "Stops the simulation");
+
 
     step.addActionListener(e -> {
+      log.info("Executing the next instruction");
       s.executeNextInstruction();
     });
     play.addActionListener(e -> {
-      while (!s.hasReachedExitInstruction()) {
-        s.executeNextInstruction();
-      }
+      log.info("Running the simulation");
+      s.run();
     });
     reset.addActionListener(e -> {
+      log.info("Resetting the simulation");
+      //s.stop();
       s.reset();
     });
+    stop.addActionListener(e -> {
+      log.info("Stopping the simulation");
+      s.stop();
+    });
+
   }
 
   private JButton addControl(Icon.Name name, String tooltip) {
