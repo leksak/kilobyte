@@ -1,4 +1,4 @@
-package simulator;
+package simulator.hardware;
 
 
 import lombok.Getter;

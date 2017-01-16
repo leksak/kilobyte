@@ -1,6 +1,6 @@
-package simulator;
+package simulator.hardware;
 
-import simulator.ui.Radix;
+import simulator.ui.utils.Radix;
 
 public interface Memory {
   default String[] toHexStringArray() {

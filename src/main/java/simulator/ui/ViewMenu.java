@@ -4,6 +4,7 @@ import common.annotations.InstantiateOnEDT;
 import lombok.val;
 import simulator.ui.memory.DataMemoryPanel;
 import simulator.ui.memory.InstructionMemoryPanel;
+import simulator.ui.menu.RadixMenu;
 
 import javax.swing.*;
 
@@ -14,7 +15,7 @@ import static java.awt.event.KeyEvent.VK_R;
  * the display settings for different aspects of the application.
  */
 @InstantiateOnEDT
-class ViewMenu extends JMenu {
+public class ViewMenu extends JMenu {
   /**
    * To perform its responsibilities it requires that its constituent
    * entries (menu-items) all have a reference to the aspect of

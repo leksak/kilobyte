@@ -1,10 +1,10 @@
-package simulator;
+package simulator.hardware;
 
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
-import simulator.ui.Radix;
+import simulator.ui.utils.Radix;
 
 import java.nio.ByteBuffer;
 import static java.lang.String.format;

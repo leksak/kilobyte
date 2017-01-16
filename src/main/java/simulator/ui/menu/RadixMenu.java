@@ -1,10 +1,13 @@
-package simulator.ui;
+package simulator.ui.menu;
 
 import common.annotations.InstantiateOnEDT;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import net.jcip.annotations.NotThreadSafe;
+import simulator.ui.ChangeRadixDisplayCapable;
+import simulator.ui.utils.Radix;
+import simulator.ui.utils.ButtonGroupFactory;
 
 import javax.swing.*;
 
@@ -16,7 +19,7 @@ import javax.swing.*;
 @NotThreadSafe
 @Value
 @EqualsAndHashCode(callSuper = true)
-class RadixMenu extends JMenu {
+public class RadixMenu extends JMenu {
   JRadioButtonMenuItem hex = new JRadioButtonMenuItem("Hex", true);
   JRadioButtonMenuItem decimal = new JRadioButtonMenuItem("Decimal");
   ButtonGroup buttonGroup = ButtonGroupFactory.from(hex, decimal);
@@ -24,7 +27,7 @@ class RadixMenu extends JMenu {
   @NonFinal
   Radix radix = Radix.HEX; // Default setting
 
-  RadixMenu(String name, ChangeRadixDisplayCapable r) {
+  public RadixMenu(String name, ChangeRadixDisplayCapable r) {
     super(name);
     add(hex);
     add(decimal);

@@ -1,4 +1,4 @@
-package simulator;
+package simulator.hardware;
 
 import common.instruction.Format;
 import common.instruction.Instruction;
@@ -7,8 +7,7 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
-import simulator.hardware.PC;
-import simulator.ui.Radix;
+import simulator.ui.utils.Radix;
 
 import java.util.List;
 

@@ -1,19 +1,16 @@
 package simulator;
 
-import common.instruction.Example;
 import common.instruction.Instruction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import simulator.hardware.Control;
 
-import static common.instruction.Format.R;
 import static common.instruction.Instruction.BEQ;
 import static common.instruction.Instruction.LW;
 import static common.instruction.Instruction.SW;
-import static common.instruction.decomposedrepresentation.DecomposedRepresentation.asBitPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

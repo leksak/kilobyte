@@ -1,4 +1,4 @@
-package simulator.ui;
+package simulator.ui.utils;
 
 public enum Radix {
   HEX,

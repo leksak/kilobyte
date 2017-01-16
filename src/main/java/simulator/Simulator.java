@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
-import simulator.hardware.PC;
+import simulator.hardware.*;
 import simulator.program.Program;
 
 import static com.google.common.base.Preconditions.checkArgument;

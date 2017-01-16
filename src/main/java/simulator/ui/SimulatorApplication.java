@@ -9,6 +9,9 @@ import simulator.program.Program;
 import simulator.ui.memory.DataMemoryPanel;
 import simulator.ui.memory.InstructionMemoryPanel;
 import simulator.ui.memory.TabbedMemoryPane;
+import simulator.ui.menu.FileMenu;
+import simulator.ui.menu.HelpMenu;
+import simulator.ui.menu.SimulatorMenuBar;
 
 import javax.swing.*;
 import java.awt.*;

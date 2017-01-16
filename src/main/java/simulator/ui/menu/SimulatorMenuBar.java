@@ -1,4 +1,4 @@
-package simulator.ui;
+package simulator.ui.menu;
 
 import common.annotations.InstantiateOnEDT;
 

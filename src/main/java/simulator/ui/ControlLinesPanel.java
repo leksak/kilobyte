@@ -2,11 +2,10 @@ package simulator.ui;
 
 import common.annotations.InstantiateOnEDT;
 import lombok.Value;
-import simulator.Control;
+import simulator.hardware.Control;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import java.awt.*;
 
 @InstantiateOnEDT

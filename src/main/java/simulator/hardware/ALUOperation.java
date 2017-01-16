@@ -1,7 +1,5 @@
-package simulator;
+package simulator.hardware;
 
-import common.hardware.Register;
-import common.instruction.Format;
 import common.instruction.decomposedrepresentation.DecomposedRepresentation;
 import lombok.extern.java.Log;
 

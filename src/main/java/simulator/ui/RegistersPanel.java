@@ -6,11 +6,11 @@ import common.hardware.RegisterFile;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.val;
+import simulator.ui.utils.Radix;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.function.Function;
 
 import static java.lang.String.*;

@@ -1,4 +1,4 @@
-package simulator.ui;
+package simulator.ui.menu;
 
 import common.annotations.InstantiateOnEDT;
 import lombok.EqualsAndHashCode;
@@ -20,7 +20,7 @@ import static javax.swing.JFileChooser.APPROVE_OPTION;
 @InstantiateOnEDT
 @Value
 @EqualsAndHashCode(callSuper = true)
-class FileMenu extends JMenu {
+public class FileMenu extends JMenu {
   @NonFinal
   File currentlySelectedFile = null;
 

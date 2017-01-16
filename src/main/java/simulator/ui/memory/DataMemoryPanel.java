@@ -4,10 +4,9 @@ import common.annotations.InstantiateOnEDT;
 import common.machinecode.OperationsKt;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-import simulator.DataMemory;
-import simulator.Memory;
+import simulator.hardware.DataMemory;
 import simulator.ui.ChangeRadixDisplayCapable;
-import simulator.ui.Radix;
+import simulator.ui.utils.Radix;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -32,6 +31,8 @@ public class DataMemoryPanel extends JPanel implements ChangeRadixDisplayCapable
   @NonFinal
   Radix currentRadix = Radix.HEX;
 
+  boolean[] valuesThatHaveChanged;
+
   public DataMemoryPanel(DataMemory memory) {
     super(new BorderLayout());
     this.memory = memory;
@@ -39,6 +40,7 @@ public class DataMemoryPanel extends JPanel implements ChangeRadixDisplayCapable
     int noOfRows = memory.getNO_OF_BYTES()/4;
     int noOfColumns = columnNames.length;
     Object[][] data = new Object[noOfRows][noOfColumns];
+    valuesThatHaveChanged = new boolean[noOfRows];
 
     dtm = new DefaultTableModel(data, columnNames);
     table = new JTable(dtm);

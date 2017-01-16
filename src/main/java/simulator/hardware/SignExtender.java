@@ -1,4 +1,4 @@
-package simulator;
+package simulator.hardware;
 
 public class SignExtender {
   private static int MSB_INDEX = 15;

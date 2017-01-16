@@ -3,10 +3,9 @@ package simulator.ui.memory;
 import common.annotations.InstantiateOnEDT;
 import common.annotations.InvokeLaterNotNecessary;
 import lombok.extern.java.Log;
-import simulator.InstructionMemory;
-import simulator.Memory;
+import simulator.hardware.InstructionMemory;
 import simulator.ui.ChangeRadixDisplayCapable;
-import simulator.ui.Radix;
+import simulator.ui.utils.Radix;
 
 import javax.swing.*;
 import java.awt.*;
