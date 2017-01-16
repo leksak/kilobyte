@@ -25,8 +25,6 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
   DefaultTableModel tableModel;
   int indexOfValueColumn;
   int indexOfRegColumn = 0;
-  int indexOf
-  int noOfRows;
 
   Function<Integer, String> displayAsHex = (i) -> "0x" + Integer.toHexString(i);
   Function<Integer, String> displayAsDec = String::valueOf;
@@ -44,7 +42,7 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
     int noOfColumns = columnNames.length;
 
     Register[] registers = rf.getRegisters();
-    noOfRows = registers.length;
+    int noOfRows = registers.length;
     indexOfValueColumn = noOfColumns - 1;
     Object[][] data = new Object[noOfRows][noOfColumns];
 
@@ -104,7 +102,7 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
   private void displayRegisterFile() {
     Register[] registers = rf.getRegisters();
 
-    for (int rowIndex = 0; rowIndex < noOfRows; rowIndex++) {
+    for (int rowIndex = 0; rowIndex < registers.length; rowIndex++) {
       Register r = registers[rowIndex];
       val actual = r.getValue();
       val displayedValue = radixDisplayFunc.apply(actual);
@@ -127,7 +125,7 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
         c1 = html(bold(c1));
         mnemonic = html(bold(mnemonic));
         SwingUtilities.invokeLater(() -> {
-          tableModel.setValueAt();
+          //tableModel.setValueAt();
         });
       }
     }
