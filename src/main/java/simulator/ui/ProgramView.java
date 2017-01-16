@@ -1,5 +1,6 @@
 package simulator.ui;
 
+import common.annotations.CallOnEDT;
 import common.annotations.InstantiateOnEDT;
 import common.annotations.InvokeLaterNotNecessary;
 import common.instruction.Instruction;
@@ -32,7 +33,7 @@ class ProgramView extends JPanel {
   DefaultTableModel tableModel = new DefaultTableModel(INITIAL_NO_OF_ROWS, NO_OF_COLUMNS) {
     @Override
     public boolean isCellEditable(int row, int column) {
-      //all cells false
+      // Makes all cells uneditable
       return false;
     }
   };
@@ -62,7 +63,6 @@ class ProgramView extends JPanel {
     table.getColumn("A").setMaxWidth(18);
     table.getColumn("A").setMinWidth(18);
 
-
     append("No program is loaded: Try ALT+F by CTRL+L to open the file browser, or use the \"File\" menu in the top left corner");
     highlightLine(0);
   }
@@ -87,10 +87,17 @@ class ProgramView extends JPanel {
     tableModel.addRow(new Object[]{null, s});
   }
 
+  @InvokeLaterNotNecessary
   public void highlightLine(int rowIndex) {
     tableModel.setValueAt(new EmptyIcon(16, 16), currentRowIndex, INSTRUCTION_POINTER_COL_INDEX);
     tableModel.setValueAt(currentInstructionPointer, rowIndex, INSTRUCTION_POINTER_COL_INDEX);
     currentRowIndex = rowIndex;
+  }
+
+  public void reset() {
+    SwingUtilities.invokeLater(() -> {
+      highlightLine(0);
+    });
   }
 
   private void append(Instruction i) {

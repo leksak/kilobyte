@@ -173,10 +173,11 @@ public class SimulatorApplication {
     try {
       Program p = Program.from(f);
       s.loadProgram(p);
-      programView.display(p);
+      s.reset();
 
+      programView.display(p);
       // All the values will be reset
-      registersPanel.update();
+      registersPanel.reset();
       instructionMemory.update();
       dataMemory.update();
       controlLines.update();
@@ -202,10 +203,11 @@ public class SimulatorApplication {
   public void reset() {
     // TODO: Maybe we should just reload the program entirely?
     s.reset();
-    registersPanel.update();
+    registersPanel.reset();
     instructionMemory.update();
     dataMemory.update();
     controlLines.update();
+    programView.reset();
     pc.update();
   }
 }
