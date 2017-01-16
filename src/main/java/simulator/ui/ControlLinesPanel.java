@@ -39,6 +39,11 @@ public class ControlLinesPanel extends JPanel {
   public void update() {
     Object[][] data = new Object[1][noOfColumns];
     data[0] = control.asObjectArray();
+    for(Object o : data[0]) {
+      if (o.equals("true")) {
+
+      }
+    }
     tableModel.setDataVector(data, columnNames);
   }
 }

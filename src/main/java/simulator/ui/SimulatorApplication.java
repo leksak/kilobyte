@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.awt.event.KeyEvent.VK_F;
 import static java.awt.event.KeyEvent.VK_V;
@@ -92,24 +93,30 @@ public class SimulatorApplication {
   Object interruptLock = new Object();
 
   @NonFinal
-  boolean wasInterrupted = false;
+  AtomicBoolean wasInterrupted = new AtomicBoolean(false);
 
   @NonFinal
   boolean hasReadExitStatement = false;
 
   public void run() {
-    wasInterrupted = false;
-    while(!(hasReadExitStatement || wasInterrupted)) {
+    wasInterrupted.set(false);
+    while(!(hasReadExitStatement || wasInterrupted.get())) {
       log.info("Executing the next instruction: " + s.getCurrentInstruction());
       executeNextInstruction();
+      try {
+        Thread.sleep(300);
+      } catch (InterruptedException e) {
+      }
     }
   }
 
   public void stop() {
-    synchronized (interruptLock) {
-      log.info("Interrupting the simulation");
-      wasInterrupted = true;
-    }
+
+    log.info("Interrupting the simulation");
+
+
+    wasInterrupted.set(true);
+
   }
 
   SimulatorApplication() {
@@ -193,7 +200,7 @@ public class SimulatorApplication {
   }
 
   public boolean executeNextInstruction() {
-    wasInterrupted = false;
+    //wasInterrupted.set(false);
     hasReadExitStatement = s.executeNextInstruction();
     registersPanel.update();
     instructionMemory.update();

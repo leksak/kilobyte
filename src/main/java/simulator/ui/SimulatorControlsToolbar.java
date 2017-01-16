@@ -42,16 +42,18 @@ public class SimulatorControlsToolbar extends JToolBar {
     });
     play.addActionListener(e -> {
       log.info("Running the simulation");
-      s.run();
+      new Thread(() -> s.run()).start();
+
     });
     reset.addActionListener(e -> {
       log.info("Resetting the simulation");
       //s.stop();
-      s.reset();
+      new Thread(() -> s.reset()).start();
     });
     stop.addActionListener(e -> {
       log.info("Stopping the simulation");
-      s.stop();
+      new Thread(() -> s.stop()).start();
+
     });
 
   }
