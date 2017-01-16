@@ -40,11 +40,8 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
   int indexOfEqualsColumn = 2;
   int indexOfValueColumn = 3;
 
-  Function<Integer, String> displayAsHex = (i) -> "0x" + Integer.toHexString(i);
-  Function<Integer, String> displayAsDec = String::valueOf;
-
   @NonFinal
-  Function<Integer, String> radixDisplayFunc = displayAsHex;
+  Radix currentRadix = Radix.HEX;
 
   RegistersPanel(RegisterFile rf) {
     super(new BorderLayout());
@@ -72,17 +69,7 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
 
   @Override
   public void setRadix(Radix radix) {
-    if (radix == Radix.HEX) {
-      radixDisplayFunc = displayAsHex;
-    } else if (radix == Radix.DECIMAL) {
-      radixDisplayFunc = displayAsDec;
-    } else {
-      String e = "Trying to set the register radix display to: " +
-            "\"" + radix.name() + "\""
-            + "but there is no code-path for that radix";
-      throw new IllegalStateException(e);
-    }
-
+    currentRadix = radix;
     displayRegisterFile();
   }
 
@@ -119,7 +106,13 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
     String c1 = prettify(changed, "R[" + rowIndex + "]");
     String c2 = prettify(changed, "[" + RegisterFile.getMnemonic(rowIndex) + "]");
     String c3 = prettify(changed, "=");
-    String c4 = prettify(changed, radixDisplayFunc.apply(registerValue));
+    String displayedValue;
+    if (currentRadix == Radix.HEX) {
+      displayedValue = "0x" + Integer.toHexString(registerValue);
+    } else {
+      displayedValue = String.valueOf(registerValue);
+    }
+    String c4 = prettify(changed, displayedValue);
 
     // setValueAt calls "fireTableCellUpdated" which executes
     // operations on the EDT. Hence, it must be wrapped in an

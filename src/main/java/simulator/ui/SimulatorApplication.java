@@ -184,9 +184,8 @@ public class SimulatorApplication {
       // All the values will be reset
       registersPanel.reset();
       instructionMemory.update();
-      dataMemory.update();
+      dataMemory.reset();
       controlLines.update();
-
     } catch (IOException e) {
       // TODO: Catch sensibly
       e.printStackTrace();

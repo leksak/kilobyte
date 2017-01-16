@@ -57,7 +57,7 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
     return match(ALUOp10, ALUOpMask) && match(funct, functMask);
   }
 
-  static ALUOperation from(boolean alu1, boolean alu0) {
+  public static ALUOperation from(boolean alu1, boolean alu0) {
     return from(ALUOp10(alu1, alu0));
   }
 
@@ -87,7 +87,7 @@ public enum ALUOperation implements BiFunction<Integer, Integer, Integer> {
     return res;
   }
 
-  static ALUOperation from(boolean alu1, boolean alu0, int funct) {
+  public static ALUOperation from(boolean alu1, boolean alu0, int funct) {
     int ALUOp10 = ALUOp10(alu1, alu0);
     ALUOperation op = from(ALUOp10, funct);
     assert(op != null);

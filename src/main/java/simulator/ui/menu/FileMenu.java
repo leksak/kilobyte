@@ -69,9 +69,9 @@ public class FileMenu extends JMenu {
    * @param callOnFileLoad callback function to be called when a file is loaded
    * @return the FileMenu for use by the application
    */
-  static FileMenu withCloseAction(JFrame frame,
-                                  Runnable closeOperation,
-                                  Consumer<File> callOnFileLoad) {
+  public static FileMenu withCloseAction(JFrame frame,
+                                         Runnable closeOperation,
+                                         Consumer<File> callOnFileLoad) {
     return new FileMenu(frame, closeOperation, callOnFileLoad);
   }
 }
