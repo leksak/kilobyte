@@ -61,6 +61,108 @@ In the \tt{build/libs} directory you will now find a file named
 
 \subsection{Usage}
 
+When you first start the program you'll see a window displaying all
+the constituent elements of the program that are available for user
+display. In particular we observe in ~\autoref{fig:initial-gui} that
+there is a panel to the left for the registers and the program counter
+(PC), a panel to the right containing both instruction- and
+datamemory, in the middle is a pane for displaying programs, and at
+the bottom there is an additional panel displaying the values of all
+of the control lines.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/initial_gui.png} 
+  \caption{Initial look} 
+  \label{fig:initial-gui}
+\end{figure}
+
+Through the \emph{View} menu we can change the radix display for
+different components in the interface. In
+~\autoref{fig:change-radix-1} we see how the user can change the radix
+display setting for the Data memory. In
+~\autoref{fig:change-radix-1-result} we see the effect of applying the
+operation as the hexadecimal prefix ``0x'' dissappears.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/changing_data_memory_radix_to_dec.png} 
+  \caption{Changing the data memory radix display setting to decimal} 
+  \label{fig:change-radix-1}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/radix_display_result.png} 
+  \caption{Changing the data memory radix display setting to decimal} 
+  \label{fig:change-radix-1-result}
+\end{figure}
+
+The \emph{View} menu affords the user the possibility to modify the
+display settings for multiple components at any time during the
+simulation, viz. that the user is not restricted to selecting a
+display setting at the start of the simulation. This ability is
+afforded to the user at all times, pre-, post- and mid-simulation.
+The ability is retained even if the simulation is restarted, or
+stopped.
+
+\autoref{fig:inactive-controls} shows that before simulation has
+started the simulation controls are all inactive,
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/initial_gui_controls.png} 
+  \caption{The Simulator controls are inactive at first} 
+  \label{fig:inactive-controls}
+\end{figure}
+
+After loading a program through the \emph{File} menu the pertinent
+controls become active. Initially two remain greyed out: "reset" and
+"stop". "Stop" only becomes active once the green "play" button has been
+clicked. The controls are highlighted in ~\autoref{fig:active-controls}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/loaded_sw_controls.png} 
+  \caption{The Simulator controls become active once a file has been loaded} 
+  \label{fig:active-controls}
+\end{figure}
+
+By hovering over an instruction we get a brief description of it as
+well as a sample mnemonic- and numeric representation as shown in
+~\autoref{fig:tooltip}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/mouse_over_tooltip.png} 
+  \caption{Tooltip} 
+  \label{fig:tooltip}
+\end{figure}
+
+By clicking the "step" button we trigger the simulator to execute a
+single instruction. In ~\autoref{fig:executed-addi} the step forward
+icon has been highlighted and all of the changes that occurred have
+been highlighted as well. We note that the control lines at the bottom
+have been updated, that modified registers have been made bold, that
+the program counter has been incremented to 4 and that the arrow
+indicating the current instruction has stepped forward.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/modified_registers_are_emboldened.png} 
+  \caption{After the simulator has executed \texttt{addi}} 
+  \label{fig:executed-addi}
+\end{figure}
+
+\autoref{fig:datamemory-is-bold-too} shows that data memory is also
+shown in bold text once it has been modified and that all modified
+registers during the lifetime of the simulation are highlighted.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/data_memory_is_also_emboldened.png} 
+  \label{fig:datamemory-is-bold-too}
+\end{figure}
 
 
 \input{software-architecture.tex}
