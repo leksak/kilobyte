@@ -81,7 +81,7 @@ public class SimulatorApplication {
         // Clicking on exit in the file-menu closes the application
         () -> dispatchEvent(WINDOW_CLOSING),
         this::loadProgram);
-
+  SimulatorControlsToolbar controls;
   RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
   ProgramCounterView pc = new ProgramCounterView(s.getProgramCounter());
   InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(s.getInstructionMemory(), "Instruction");
@@ -89,7 +89,7 @@ public class SimulatorApplication {
   TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
   ViewMenu displaySettings = new ViewMenu(registersPanel, instructionMemory, dataMemory);
   ControlLinesPanel controlLines = new ControlLinesPanel(s.getControl());
-
+  SimulatorMenuBar menuBar;
   Object interruptLock = new Object();
 
   @NonFinal
@@ -100,23 +100,23 @@ public class SimulatorApplication {
 
   public void run() {
     wasInterrupted.set(false);
-    while(!(hasReadExitStatement || wasInterrupted.get())) {
+    controls.stateSwitcher(SimulatorControlsToolbar.ToolbarState.RUN);
+    while(!(hasReadExitStatement || wasInterrupted.get() || Thread.interrupted())) {
       log.info("Executing the next instruction: " + s.getCurrentInstruction());
       executeNextInstruction();
       try {
-        Thread.sleep(300);
+        Thread.sleep(400);
       } catch (InterruptedException e) {
       }
+    }
+    if (hasReadExitStatement) {
+      controls.stateSwitcher(SimulatorControlsToolbar.ToolbarState.STOP);
     }
   }
 
   public void stop() {
-
     log.info("Interrupting the simulation");
-
-
     wasInterrupted.set(true);
-
   }
 
   SimulatorApplication() {
@@ -124,14 +124,13 @@ public class SimulatorApplication {
     applicationFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     fileMenu.setMnemonic(VK_F);
     displaySettings.setMnemonic(VK_V);
-    SimulatorMenuBar menuBar = new SimulatorMenuBar(fileMenu, displaySettings);
+    menuBar = new SimulatorMenuBar(fileMenu, displaySettings);
 
     HelpMenu helpMenu = new HelpMenu(applicationFrame);
     menuBar.add(helpMenu);
 
     applicationFrame.setJMenuBar(menuBar);
-
-    JToolBar controls = new SimulatorControlsToolbar(this);
+    controls = new SimulatorControlsToolbar(this);
     applicationFrame.add(controls, BorderLayout.NORTH);
     applicationFrame.add(controlLines, BorderLayout.SOUTH);
     JPanel applicationPanel = new JPanel(new BorderLayout());
@@ -186,13 +185,13 @@ public class SimulatorApplication {
       Program p = Program.from(f);
       s.loadProgram(p);
       s.reset();
-
       programView.display(p);
       // All the values will be reset
       registersPanel.reset();
       instructionMemory.update();
       dataMemory.reset();
       controlLines.update();
+      controls.stateSwitcher(SimulatorControlsToolbar.ToolbarState.RESET);
     } catch (IOException e) {
       // TODO: Catch sensibly
       e.printStackTrace();
@@ -200,7 +199,6 @@ public class SimulatorApplication {
   }
 
   public boolean executeNextInstruction() {
-    //wasInterrupted.set(false);
     hasReadExitStatement = s.executeNextInstruction();
     registersPanel.update();
     instructionMemory.update();
