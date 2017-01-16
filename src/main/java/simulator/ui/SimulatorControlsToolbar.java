@@ -71,7 +71,6 @@ public class SimulatorControlsToolbar extends JToolBar {
 
   }
 
-
   private JButton addControl(Icon.Name name, String tooltip) {
     Toolkit tk = Toolkit.getDefaultToolkit();
 
