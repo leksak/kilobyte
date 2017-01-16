@@ -59,9 +59,9 @@ public class Control {
     }
     /* sw */
     else if (opCode == 0b101011) {
-      regDst = false;
+      //regDst = false;
       aluSrc = true;
-      memtoReg = false;
+      //memtoReg = false;
       regWrite = false;
       memRead = false;
       memWrite = true;
@@ -71,9 +71,9 @@ public class Control {
     }
     /* beq */
     else if (opCode == 0b000100) {
-      regDst = false;
+      //regDst = false;
       aluSrc = false;
-      memtoReg = false;
+      //memtoReg = false;
       regWrite = false;
       memRead = false;
       memWrite = false;

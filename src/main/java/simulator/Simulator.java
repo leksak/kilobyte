@@ -169,11 +169,10 @@ public class Simulator {
       // Instruction 20:16 read register 2 (rt) + MUX1
       Register r2 = registerFile.get(Field.RT, i);
       r2Value = r2.getValue();
-      if (control.getRegDst()) {
-        r2 = registerFile.get(Field.RD, i);
-      }
+
+      // MUX Between Register.Read_data_2 and ALU
       if (control.getAluSrc()) {
-       r2Value = signExtend;
+        r2Value = signExtend;
       }
 
     /*3.The ALU performs a subtract on the data values read from the register
@@ -207,9 +206,12 @@ public class Simulator {
       log.info(format("Branching relatively from: address=%d by=%d. The 16-bit immediate is %d", currentAddress, targetAddress, signExtend));
       programCounter.setRelativeToCurrentAddress(targetAddress - 4);
     }
+    //MUX between Data Memory -> Registers
     if (control.getMemtoReg()) {
       r2.setValue(dataMemory.readWordFrom(result));
-    } else if (control.getMemWrite() && control.getAluSrc()) {
+    }
+    // MUX ALU -> Data Memory AND if Memory
+    else if (control.getMemWrite() && control.getAluSrc()) {
       log.info(format("Writing %s=%d to address=%d", r2, r2.getValue(), result));
       dataMemory.writeWordTo(result, r2.getValue());
     } else if (control.getAluSrc()) {
