@@ -76,6 +76,15 @@ class SimulatorTestJUnit {
     simulator.execute(Instruction.from("nor $v1, $t2, $t3"));
     assertEquals(~(17 | 23), simulator.getRegisterValue("$v1"));
   }
+  //NOR
+  @Test
+  public void testALUMockNOR2() {
+    simulator.setRegisterValue("$t1", 0);
+    simulator.setRegisterValue("$t2", 0);
+
+    simulator.execute(Instruction.from("nor $v1, $t2, $t3"));
+    assertEquals(-1, simulator.getRegisterValue("$v1"));
+  }
 
 
   //SLT Set less than : If \$t2 is less than $t3, then set $t1 to 1 else set $t1 to 0
