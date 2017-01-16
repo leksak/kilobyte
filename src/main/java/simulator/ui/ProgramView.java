@@ -87,7 +87,7 @@ class ProgramView extends JPanel {
     tableModel.addRow(new Object[]{null, s});
   }
 
-  @InvokeLaterNotNecessary
+  @CallOnEDT
   public void highlightLine(int rowIndex) {
     tableModel.setValueAt(new EmptyIcon(16, 16), currentRowIndex, INSTRUCTION_POINTER_COL_INDEX);
     tableModel.setValueAt(currentInstructionPointer, rowIndex, INSTRUCTION_POINTER_COL_INDEX);
