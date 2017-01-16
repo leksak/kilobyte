@@ -310,6 +310,48 @@ class SimulatorTestJUnit {
     simulator.executeNextInstruction();
     assertEquals(22, simulator.getDataMemory(0));
     //exit
+  }
+
+  @Test
+  public void testSWWithZeros() {
+    // 2 is an absolute address. 2 << 2 = 8
+    simulator.loadRawProgram(Program.from(
+      Instruction.from("lw $6, 8($3)"),
+      Instruction.from("add $3, $6, $6"),
+      Instruction.from("sub $4, $3, $0"),
+      Instruction.from("sw $5, 4($2)"),
+      Instruction.from("sw $6, 4($3)"),
+      Instruction.from("sw $7, 8($4)"),
+      Instruction.from("sw $8, 24($5)")
+    ));
+    //lw $6, 8($3)
+    simulator.executeNextInstruction();
+    assertEquals(0, simulator.getRegisterValue("$6"));
+
+    //add $3, $6, $6
+    simulator.executeNextInstruction();
+    assertEquals(0, simulator.getRegisterValue("$3"));
+
+    //sub $4, $3, $0
+    simulator.executeNextInstruction();
+    assertEquals(0, simulator.getRegisterValue("$3"));
+
+    //sw $5, 4($2)
+    simulator.executeNextInstruction();
+    assertEquals(0, simulator.getDataMemory(4));
+
+    //sw $6, 4($3)
+    simulator.executeNextInstruction();
+    assertEquals(0, simulator.getDataMemory(4));
+
+    //sw $7, 8($4)
+    simulator.executeNextInstruction();
+    assertEquals(0, simulator.getDataMemory(8));
+
+    //sw $8, 24($5)
+    simulator.executeNextInstruction();
+    assertEquals(0, simulator.getDataMemory(24));
+
 
   }
   //NOP
