@@ -12,13 +12,20 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.function.Function;
 
+import static java.lang.String.*;
+
 @InstantiateOnEDT
 @Value
 class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
   RegisterFile rf;
+  @NonFinal
+  int[] previouslyDisplayedValues;
+
   JTable table;
   DefaultTableModel tableModel;
   int indexOfValueColumn;
+  int indexOfRegColumn = 0;
+  int indexOf
   int noOfRows;
 
   Function<Integer, String> displayAsHex = (i) -> "0x" + Integer.toHexString(i);
@@ -42,12 +49,7 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
     Object[][] data = new Object[noOfRows][noOfColumns];
 
     for (int i = 0; i < noOfRows; i++) {
-      String c1 = "R" + i; // column 1
-
-      Register r = registers[i];
-      String mnemonic = "[" + r.getName() + "]";
-      String value = String.valueOf(r.getValue());
-      data[i] = new Object[]{ c1, mnemonic, "=", value };
+      data[i] = greyRow(registers[i], i);
     }
 
     /* We assume that the caller instantiates this class on the EDT,
@@ -76,19 +78,58 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
     displayRegisterFile();
   }
 
+  static String bold(String s) {
+    return format("<b>%s</b>", s);
+  }
+
+  static String html(String s) {
+    return format("<html>%s</html>", s);
+  }
+
+  static String color(String s, String hex) {
+    return format("<p style=\"color: %s\">%s</p>", hex, s);
+  }
+
+  static String grey(String s) {
+    return color(s,"#B4B4B4");
+  }
+
+  static Object[] greyRow(Register r, int rowIndex) {
+    String c1 = html(grey("R" + rowIndex)); // column i
+    String mnemonic = html(grey("[" + r.getName() + "]"));
+    String value = html(grey(valueOf(r.getValue())));
+    return new Object[]{ c1, mnemonic, html(grey("=")), value };
+  }
+
   private void displayRegisterFile() {
     Register[] registers = rf.getRegisters();
-    for (int rowIndex = 0; rowIndex < noOfRows; rowIndex++) {
-      val actual = registers[rowIndex].getValue();
-      val displayedValue = radixDisplayFunc.apply(actual);
 
-      // setValueAt calls "fireTableCellUpdated" which executes
-      // operations on the EDT. Hence, it must be wrapped in an
-      // invokeLater call
-      int finalRowIndex = rowIndex;
-      SwingUtilities.invokeLater(() -> {
-        tableModel.setValueAt(displayedValue, finalRowIndex, indexOfValueColumn);
-      });
+    for (int rowIndex = 0; rowIndex < noOfRows; rowIndex++) {
+      Register r = registers[rowIndex];
+      val actual = r.getValue();
+      val displayedValue = radixDisplayFunc.apply(actual);
+      String c1 = "R" + rowIndex;
+      String mnemonic = r.getName();
+      if (previouslyDisplayedValues[rowIndex] == actual) {
+        // setValueAt calls "fireTableCellUpdated" which executes
+        // operations on the EDT. Hence, it must be wrapped in an
+        // invokeLater call. This clause usually happens when
+        // the radix is updated and not the register file, but also
+        // when the register file is updated but not on this particular row.
+        int finalRowIndex = rowIndex;
+
+        // We only need to re-render the register value (in case the radix display is changed)
+        SwingUtilities.invokeLater(() -> {
+          tableModel.setValueAt(displayedValue, finalRowIndex, indexOfValueColumn);
+        });
+      } else {
+        // We need to update the whole line
+        c1 = html(bold(c1));
+        mnemonic = html(bold(mnemonic));
+        SwingUtilities.invokeLater(() -> {
+          tableModel.setValueAt();
+        });
+      }
     }
   }
 
