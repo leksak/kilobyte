@@ -282,7 +282,9 @@ public class Simulator {
     instructionMemory.resetMemory();
     programCounter.setTo(0);
     dataMemory.resetMemory();
-    instructionMemory.addAll(openProgram.getInstructions());
+    if (openProgram != null) {
+      instructionMemory.addAll(openProgram.getInstructions());
+    }
   }
 
   public void setDataMemoryAtAddress(int address, Byte value) {

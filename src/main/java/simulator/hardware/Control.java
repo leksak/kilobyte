@@ -11,6 +11,18 @@ public class Control {
     return new Object[]{regDst, aluSrc, memtoReg, regWrite, memRead, memWrite, branch, aluOp0, aluOp1};
   }
 
+  public void reset() {
+    regDst = false;
+    aluSrc = false;
+    memtoReg = false;
+    regWrite = false;
+    memRead = false;
+    memWrite = false;
+    branch = false;
+    aluOp1 = false;
+    aluOp0 = false;
+  }
+
   @Getter
   private Boolean regDst, aluSrc, memtoReg, regWrite, memRead, memWrite,
           branch, aluOp1, aluOp0;

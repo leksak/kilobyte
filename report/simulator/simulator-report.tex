@@ -14,6 +14,57 @@
 \input{requirements.tex}
 \input{technical-background.tex}
 
+\section{Usage and compilation}
+
+We will now describe how to compile and use the supplied software, so
+that you may experiment with it later when the solution is described.
+
+The source code may be downloaded at the following two addresses,
+
+\begin{center}
+\url{https://github.com/leksak/kilobyte.git} \\
+\url{git@github.com:leksak/kilobyte.git}
+\end{center}
+
+Or viewed in the following folder
+\tt{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}filip/edu/kilobyte}
+on the institution's network.
+
+For the duration of this report the directory created by cloning
+the repository is referred to as the \emph{root directory}.
+
+\section{Compilation and usage}
+
+In this section the compilation of the software is described as
+is the usage of the software
+
+\subsection{Compilation}
+
+Navigate to the root directory of the project.
+
+Whilst there execute the following command to compile the program:
+
+\begin{lstlisting}[style=plain]
+$ gradle simulatorJar
+\end{lstlisting}
+
+You will require Gradle 3.2.1, which is available for
+\href{http://gradle.org/gradle-download/}{download here}, or
+executable through
+\tt{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}filip/bin/gradle}
+on the institution's network.
+
+In the \tt{build/libs} directory you will now find a file named
+\tt{kilobyte-all-1.0-SNAPSHOT.jar} which you can run using \tt{java -jar
+  kilobyte-all-1.0-SNAPSHOT.jar} given that you have Java 8 shown when running
+\tt{java -version}.
+
+\subsection{Usage}
+
+
+
+\input{software-architecture.tex}
+
 \clearpage
 
 \printbibliography

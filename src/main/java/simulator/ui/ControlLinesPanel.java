@@ -21,7 +21,6 @@ public class ControlLinesPanel extends JPanel {
     super(new BorderLayout());
     this.control = control;
 
-
     Object[][] data = new Object[1][noOfColumns];
     data[0] = control.asObjectArray();
 
@@ -39,11 +38,14 @@ public class ControlLinesPanel extends JPanel {
   public void update() {
     Object[][] data = new Object[1][noOfColumns];
     data[0] = control.asObjectArray();
-    for(Object o : data[0]) {
-      if (o.equals("true")) {
+    SwingUtilities.invokeLater(() -> {
+      tableModel.setDataVector(data, columnNames);
+      tableModel.fireTableDataChanged();
+    });
+  }
 
-      }
-    }
-    tableModel.setDataVector(data, columnNames);
+  public void reset() {
+    control.reset();
+    update();
   }
 }

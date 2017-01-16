@@ -81,7 +81,7 @@ public class SimulatorApplication {
         // Clicking on exit in the file-menu closes the application
         () -> dispatchEvent(WINDOW_CLOSING),
         this::loadProgram);
-  SimulatorControlsToolbar controls;
+
   RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
   ProgramCounterView pc = new ProgramCounterView(s.getProgramCounter());
   InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(s.getInstructionMemory(), "Instruction");
@@ -190,7 +190,7 @@ public class SimulatorApplication {
       registersPanel.reset();
       instructionMemory.update();
       dataMemory.reset();
-      controlLines.update();
+      controlLines.reset();
       controls.stateSwitcher(SimulatorControlsToolbar.ToolbarState.RESET);
     } catch (IOException e) {
       // TODO: Catch sensibly
@@ -199,6 +199,7 @@ public class SimulatorApplication {
   }
 
   public boolean executeNextInstruction() {
+    //wasInterrupted.set(false);
     hasReadExitStatement = s.executeNextInstruction();
     registersPanel.update();
     instructionMemory.update();
