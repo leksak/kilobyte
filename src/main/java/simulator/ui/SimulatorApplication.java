@@ -91,6 +91,7 @@ public class SimulatorApplication {
   ControlLinesPanel controlLines = new ControlLinesPanel(s.getControl());
   SimulatorMenuBar menuBar;
   Object interruptLock = new Object();
+  private final SimulatorControlsToolbar controls;
 
   @NonFinal
   AtomicBoolean wasInterrupted = new AtomicBoolean(false);
