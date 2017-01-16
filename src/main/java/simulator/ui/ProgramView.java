@@ -13,6 +13,8 @@ import simulator.ui.utils.EmptyIcon;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +65,20 @@ class ProgramView extends JPanel {
 
     append("No program is loaded: Try ALT+F by CTRL+L to open the file browser, or use the \"File\" menu in the top left corner");
     highlightLine(0);
+
+    table.addMouseMotionListener(new MouseMotionAdapter() {
+      @Override
+      public void mouseMoved(MouseEvent e) {
+        Point p = e.getPoint();
+        int row = table.rowAtPoint(p);
+        int col = table.columnAtPoint(p);
+
+        if ((row > -1 && row < table.getRowCount()) && (col > -1 && col < table.getColumnCount())) {
+
+        }
+      }
+    });
+
   }
 
   @InvokeLaterNotNecessary
