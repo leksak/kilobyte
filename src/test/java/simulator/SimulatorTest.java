@@ -104,7 +104,7 @@ class SimulatorTestJUnit {
     simulator.setRegisterValue("$t0", 5);
     simulator.setRegisterValue("$t1", 3);
     Instruction instruction = Instruction.from("lw $t0, 20($t1)");
-    System.out.println(simulator.getDataMemory().getMemory().getInt(23));
+    System.out.println(simulator.getDataMemory(23));
     simulator.execute(instruction);
     assertEquals(startValue.intValue(), simulator.getRegisterValue("$t0"));
   }
@@ -282,15 +282,50 @@ class SimulatorTestJUnit {
   }
 
 
+  //NOP
+  @Test
+  public void testADDIADDIADDSWEXIT() {
+    // 2 is an absolute address. 2 << 2 = 8
 
+    simulator.loadRawProgram(Program.from(
+      Instruction.from("addi $t1, $zero, 10"),
+      Instruction.from("addi $t2, $zero, 12"),
+      Instruction.from("add $t0, $t1, $t2"),
+      Instruction.from("sw $t0, 0($sp)"),
+      Instruction.from("exit")
+    ));
+    //addi $t1, $zero, 10
+    simulator.executeNextInstruction();
+    assertEquals(10, simulator.getRegisterValue("$t1"));
 
+    //addi $t2, $zero, 12
+    simulator.executeNextInstruction();
+    assertEquals(12, simulator.getRegisterValue("$t2"));
 
+    //add $t0, $t1, $t2
+    simulator.executeNextInstruction();
+    assertEquals(22, simulator.getRegisterValue("$t0"));
 
+    //sw $t0, 0($sp)
+    simulator.executeNextInstruction();
+    assertEquals(22, simulator.getDataMemory(0));
+    //exit
 
+  }
+  //NOP
+  @Test
+  public void testSW3() {
+    // 2 is an absolute address. 2 << 2 = 8
 
+    simulator.setRegisterValue("$t0", 22);
+    simulator.loadRawProgram(Program.from(
+      Instruction.from("sw $t0, 0($sp)")
+    ));
+    //sw $t0, 0($sp)
+    simulator.executeNextInstruction();
+    assertEquals(22, simulator.getDataMemory(0));
+    //exit
 
-
-
-
+  }
 
 }
