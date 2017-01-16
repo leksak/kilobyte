@@ -5,10 +5,11 @@ import java.awt.*;
 import java.util.Arrays;
 
 public class TabbedMemoryPane extends JTabbedPane {
-  public TabbedMemoryPane(MemoryPanel... memoryPanels) {
+  public TabbedMemoryPane(InstructionMemoryPanel imp, DataMemoryPanel dmp) {
     super();
     this.setBorder(BorderFactory.createTitledBorder("Memory"));
-    Arrays.stream(memoryPanels).forEach(i -> addTab(i.getLabel(), i));
-    this.setPreferredSize(new Dimension(300, 400));
+    add(imp, "Instruction");
+    add(dmp, "Data");
+    this.setPreferredSize(new Dimension(400, 400));
   }
 }

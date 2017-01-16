@@ -104,6 +104,7 @@ class SimulatorTestJUnit {
     simulator.setRegisterValue("$t0", 5);
     simulator.setRegisterValue("$t1", 3);
     Instruction instruction = Instruction.from("lw $t0, 20($t1)");
+    System.out.println(simulator.getDataMemory().getMemory().getInt(23));
     simulator.execute(instruction);
     assertEquals(startValue.intValue(), simulator.getRegisterValue("$t0"));
   }
@@ -115,7 +116,18 @@ class SimulatorTestJUnit {
     simulator.setRegisterValue("$t1", 3);
     Instruction instruction = Instruction.from("sw $t0, 20($t1)");
     simulator.execute(instruction);
+    assertEquals(simulator.getRegisterValue("$t0"), 5);
     assertEquals(simulator.getDataMemory(23), simulator.getRegisterValue("$t0"));
+  }
+
+  @Test
+  public void testALUMockSW2() {
+    simulator.setRegisterValue("$t0", 22);
+    simulator.setRegisterValue("$sp", 0);
+    Instruction instruction = Instruction.from("sw $t0, 0($sp)");
+    simulator.execute(instruction);
+    assertEquals(simulator.getRegisterValue("$t0"), 22);
+    assertEquals(simulator.getDataMemory(0), simulator.getRegisterValue("$t0"));
   }
 
   //BEQ

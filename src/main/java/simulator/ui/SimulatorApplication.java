@@ -6,7 +6,8 @@ import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
 import simulator.Simulator;
 import simulator.program.Program;
-import simulator.ui.memory.MemoryPanel;
+import simulator.ui.memory.DataMemoryPanel;
+import simulator.ui.memory.InstructionMemoryPanel;
 import simulator.ui.memory.TabbedMemoryPane;
 
 import javax.swing.*;
@@ -79,8 +80,8 @@ public class SimulatorApplication {
 
   RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
   ProgramCounterView pc = new ProgramCounterView(s.getProgramCounter());
-  MemoryPanel instructionMemory = new MemoryPanel(s.getInstructionMemory(), "Instruction");
-  MemoryPanel dataMemory = new MemoryPanel(s.getDataMemory(), "Data");
+  InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(s.getInstructionMemory(), "Instruction");
+  DataMemoryPanel dataMemory = new DataMemoryPanel(s.getDataMemory());
   TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
   ViewMenu displaySettings = new ViewMenu(registersPanel, instructionMemory, dataMemory);
   ControlLinesPanel controlLines = new ControlLinesPanel(s.getControl());
@@ -140,6 +141,7 @@ public class SimulatorApplication {
           pcAndRegistersPanel,
           programView);
     applicationPanel.add(splitPane, BorderLayout.CENTER);
+
     applicationPanel.add(tabbedMemories, BorderLayout.EAST);
     applicationFrame.add(applicationPanel);
 

@@ -3,6 +3,7 @@ package simulator.ui.memory;
 import common.annotations.InstantiateOnEDT;
 import common.annotations.InvokeLaterNotNecessary;
 import lombok.extern.java.Log;
+import simulator.InstructionMemory;
 import simulator.Memory;
 import simulator.ui.ChangeRadixDisplayCapable;
 import simulator.ui.Radix;
@@ -14,14 +15,14 @@ import static java.lang.String.format;
 
 @InstantiateOnEDT
 @Log
-public class MemoryPanel extends JPanel implements ChangeRadixDisplayCapable {
+public class InstructionMemoryPanel extends JPanel implements ChangeRadixDisplayCapable {
   DefaultListModel<String> model = new DefaultListModel<>();
   JList<String> displayList = new JList<>(model);
-  Memory memory;
+  InstructionMemory memory;
   String label;
   Radix currentRadix = Radix.HEX;
 
-  public MemoryPanel(Memory memory, String label) {
+  public InstructionMemoryPanel(InstructionMemory memory, String label) {
     super(new BorderLayout());
     this.memory = memory;
     this.label = label;
@@ -73,10 +74,5 @@ public class MemoryPanel extends JPanel implements ChangeRadixDisplayCapable {
     currentRadix = r;
     clearList();
     populateList();
-  }
-
-
-  public String getLabel() {
-    return label;
   }
 }

@@ -29,6 +29,9 @@ fun Instruction.bits(upperIndex: Int, lowerIndex: Int) : Int {
 
 fun Instruction.offset() = this.numericRepresentation.offset()
 
+// The 0-th byte is the lowest byte, i.e. the 0th byte contains the "1" in 0x01
+fun Int.nthByte(byteIndex : Int) : Byte = ((this shr (8 * byteIndex)) and 0xff).toByte()
+
   // Works as follows:
 //
 // val testNumber = 0b00000001010010110100100000100000

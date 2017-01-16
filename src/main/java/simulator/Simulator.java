@@ -208,10 +208,10 @@ public class Simulator {
       programCounter.setRelativeToCurrentAddress(targetAddress - 4);
     }
     if (control.getMemtoReg()) {
-      r2.setValue(dataMemory.readWord(result));
+      r2.setValue(dataMemory.readWordFrom(result));
     } else if (control.getMemWrite() && control.getAluSrc()) {
-      log.info(format("Writing word to Memory Address=%d Value=%d", result, r2.getValue()));
-      dataMemory.setMemory(result, (byte)r2.getValue());
+      log.info(format("Writing %s=%d to address=%d", r2, r2.getValue(), result));
+      dataMemory.writeWordTo(result, r2.getValue());
     } else if (control.getAluSrc()) {
       r2.setValue(result);
     }
@@ -284,11 +284,11 @@ public class Simulator {
   }
 
   public void setDataMemoryAtAddress(int address, Byte value) {
-    dataMemory.setMemory(address, value);
+    dataMemory.writeWordTo(address, value);
   }
 
   public int getDataMemory(int address) {
-    return dataMemory.readWord(address);
+    return dataMemory.readWordFrom(address);
   }
 
   public void setProgramCounterInstruction(int absInstruction) {

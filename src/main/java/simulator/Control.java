@@ -91,7 +91,7 @@ public class Control {
       branch = false;
       aluOp1 = false;
       aluOp0 = false;
-    }else if (opCode == 0b1101) {
+    } else if (opCode == 0b1101) {
       regDst    = false;
       regWrite  = true;
       aluSrc    = true;
@@ -101,7 +101,8 @@ public class Control {
       branch    = false;
       aluOp1    = true;
       aluOp0    = false;
+    } else {
+      log.warning("No control settings found for " + opCode);
     }
-    log.warning("No control settings found for "+opCode);
   }
 }
