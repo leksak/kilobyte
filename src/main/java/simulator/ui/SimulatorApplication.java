@@ -179,13 +179,12 @@ public class SimulatorApplication {
       Program p = Program.from(f);
       s.loadProgram(p);
       s.reset();
-
       programView.display(p);
       // All the values will be reset
       registersPanel.reset();
       instructionMemory.update();
       dataMemory.reset();
-      controlLines.update();
+      controlLines.reset();
     } catch (IOException e) {
       // TODO: Catch sensibly
       e.printStackTrace();
