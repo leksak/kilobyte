@@ -16,7 +16,6 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M3'
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
     }
 }
@@ -25,7 +24,6 @@ apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'application'
 apply plugin: 'java'
 apply plugin: 'kotlin'
-apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'project-report'
 apply plugin: 'org.jetbrains.dokka'
 
@@ -58,15 +56,19 @@ compileTestJava {
 }
 
 dependencies {
+    compile 'org.jetbrains:annotations:13.0'
+    compile 'org.jetbrains.kotlin:kotlin-runtime:1.1-M04'
+    testCompile 'org.jetbrains:annotations:13.0'
+    testCompile 'org.jetbrains.kotlin:kotlin-runtime:1.1-M04'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    // Used to remove a lot of Java boilerplate
-    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.8'
+    // Used to remove a lot of Java boilerplate. Nebula is wrong about this not
+    // being a compile time dependency
+    compileOnly 'org.projectlombok:lombok:1.16.8'
 
     // Used for the decompiler command line interface
     compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
 
-    compile group: 'org.jooq', name: 'jool', version: '0.9.12'
 
     // Used for StringUtils
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
@@ -79,21 +81,12 @@ dependencies {
     // Used for the Either monad
     compile 'io.atlassian.fugue:fugue:4.3.0'
 
-    // Used for the simulator gui
-    compile group: 'com.jgoodies', name: 'jgoodies-forms', version: '1.9.0'
-
-    compile group: 'org.pitest', name: 'pitest', version: '1.1.11'
-
-
-    testCompile("org.junit.jupiter:junit-jupiter-api:5.0.0-M3")
-    testCompile("org.junit.platform:junit-platform-gradle-plugin:1.0.0-M3")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.0-M3")
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.0.0-M3"
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.6.1'
     testCompile group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3'
 }
 
 mainClassName = "kilobyte.decompiler.CommandLineDecompiler"
-
 
 // Create a single Jar with all dependencies
 task fatJar(type: Jar) {
