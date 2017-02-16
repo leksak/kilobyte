@@ -15,7 +15,6 @@ import java.awt.*;
 import static java.lang.String.*;
 
 @InstantiateOnEDT
-@Value
 class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
   RegisterFile rf;
 

@@ -9,7 +9,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 @InstantiateOnEDT
-@Value
 public class ControlLinesPanel extends JPanel {
   DefaultTableModel tableModel;
   JTable table;

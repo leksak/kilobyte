@@ -9,8 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 
 @InstantiateOnEDT
-@Value
-public class ProgramCounterView extends JPanel {
+class ProgramCounterView extends JPanel {
   JLabel label = new JLabel();
   PC programCounter;
   public ProgramCounterView(PC programCounter) {

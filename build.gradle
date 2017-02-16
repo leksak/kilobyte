@@ -1,4 +1,4 @@
-group 'callisto'
+group 'kilobyte'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -18,11 +18,9 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M3'
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.10'
     }
 }
 
-apply plugin: "info.solidsoft.pitest"
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'application'
 apply plugin: 'java'

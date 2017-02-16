@@ -15,7 +15,6 @@ import java.awt.*;
 import static java.lang.String.format;
 
 @InstantiateOnEDT
-@Value
 public class DataMemoryPanel extends JPanel implements ChangeRadixDisplayCapable {
   DefaultTableModel dtm;
   JTable table;
