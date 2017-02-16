@@ -1,6 +1,15 @@
 group 'kilobyte'
 version '1.0-SNAPSHOT'
 
+repositories {
+    mavenCentral()
+    maven {
+        // Required for kotlin_version 1.1-M04
+        // Required both here and in the buildscript!
+        url 'https://dl.bintray.com/kotlin/kotlin-eap-1.1'
+    }
+}
+
 buildscript {
     ext.kotlin_version = '1.1-M04'
     ext.dokka_version = '0.9.11'
@@ -9,7 +18,7 @@ buildscript {
         mavenCentral()
         jcenter() // Required for Dokka
         maven {
-            // Required for kotlin_version 1.1-M03
+            // Required for kotlin_version 1.1-M04
             url 'https://dl.bintray.com/kotlin/kotlin-eap-1.1'
         }
     }
@@ -25,7 +34,6 @@ apply plugin: 'application'
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'project-report'
-apply plugin: 'org.jetbrains.dokka'
 
 test {
     reports {
@@ -36,39 +44,14 @@ test {
 
 sourceCompatibility = 1.8
 
-repositories {
-    mavenCentral()
-    maven {
-        // Required for kotlin_version 1.1-M03
-        // Required both here and in the buildscript!
-        url 'https://dl.bintray.com/kotlin/kotlin-eap-1.1'
-    }
-    maven {
-        // Required for jcip
-        url 'https://maven.repository.redhat.com/ga/'
-    }
-    flatDir dirs: "${rootDir}/lib"
-}
-
-compileTestJava {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-}
-
 dependencies {
-    compile 'org.jetbrains:annotations:13.0'
-    compile 'org.jetbrains.kotlin:kotlin-runtime:1.1-M04'
-    testCompile 'org.jetbrains:annotations:13.0'
-    testCompile 'org.jetbrains.kotlin:kotlin-runtime:1.1-M04'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    // Used to remove a lot of Java boilerplate. Nebula is wrong about this not
-    // being a compile time dependency
+    // Used to remove a lot of Java boilerplate.
     compileOnly 'org.projectlombok:lombok:1.16.8'
 
     // Used for the decompiler command line interface
     compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
-
 
     // Used for StringUtils
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
@@ -76,13 +59,10 @@ dependencies {
     // Used for checking Preconditions mostly
     compile 'com.google.guava:guava:19.0'
 
-    compile group: 'net.jcip', name: 'jcip-annotations', version: '1.0.0.redhat-8'
-
     // Used for the Either monad
     compile 'io.atlassian.fugue:fugue:4.3.0'
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.0.0-M3"
-    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.6.1'
     testCompile group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3'
 }
 

@@ -4,7 +4,6 @@ import kilobyte.common.annotations.InstantiateOnEDT;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-import net.jcip.annotations.NotThreadSafe;
 import kilobyte.simulator.ui.ChangeRadixDisplayCapable;
 import kilobyte.simulator.ui.utils.Radix;
 import kilobyte.simulator.ui.utils.ButtonGroupFactory;
@@ -16,7 +15,6 @@ import javax.swing.*;
  * JPanel
  */
 @InstantiateOnEDT
-@NotThreadSafe
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class RadixMenu extends JMenu {

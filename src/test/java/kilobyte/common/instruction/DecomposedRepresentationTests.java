@@ -7,7 +7,9 @@ import java.util.Arrays;
 
 import static kilobyte.common.instruction.decomposedrepresentation.DecomposedRepresentation.fromIntArray;
 import static kilobyte.common.instruction.decomposedrepresentation.DecomposedRepresentation.fromNumber;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -15,7 +17,7 @@ public class DecomposedRepresentationTests {
   @Test
   void testDecimalDecomposition() {
     DecomposedRepresentation d = fromNumber(0x71014802, 6, 5, 5, 5, 5, 6);
-    assertThat(d.asDecimalString()).isEqualTo("[28 8 1 9 0 2]");
+    assertThat(d.asDecimalString(), is(equalTo("[28 8 1 9 0 2]")));
   }
 
   @Test
