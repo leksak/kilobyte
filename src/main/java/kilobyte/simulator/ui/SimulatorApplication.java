@@ -73,7 +73,7 @@ import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 @Log
 @Value
 public class SimulatorApplication {
-  Simulator s = new Simulator();
+  Simulator simulator = new Simulator();
   JFrame applicationFrame = new JFrame("Kilobyte");
   ProgramView programView = new ProgramView();
   FileMenu fileMenu = FileMenu.withCloseAction(
@@ -82,13 +82,13 @@ public class SimulatorApplication {
         () -> dispatchEvent(WINDOW_CLOSING),
         this::loadProgram);
 
-  RegistersPanel registersPanel = new RegistersPanel(s.getRegisterFile());
-  ProgramCounterView pc = new ProgramCounterView(s.getProgramCounter());
-  InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(s.getInstructionMemory(), "Instruction");
-  DataMemoryPanel dataMemory = new DataMemoryPanel(s.getDataMemory());
+  RegistersPanel registersPanel = new RegistersPanel(simulator.getRegisterFile());
+  ProgramCounterView pc = new ProgramCounterView(simulator.getProgramCounter());
+  InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(simulator.getInstructionMemory(), "Instruction");
+  DataMemoryPanel dataMemory = new DataMemoryPanel(simulator.getDataMemory());
   TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
   ViewMenu displaySettings = new ViewMenu(registersPanel, instructionMemory, dataMemory);
-  ControlLinesPanel controlLines = new ControlLinesPanel(s.getControl());
+  ControlLinesPanel controlLines = new ControlLinesPanel(simulator.getControl());
   SimulatorMenuBar menuBar;
   Object interruptLock = new Object();
   private final SimulatorControlsToolbar controls;
@@ -103,11 +103,11 @@ public class SimulatorApplication {
     wasInterrupted.set(false);
     controls.stateSwitcher(SimulatorControlsToolbar.ToolbarState.RUN);
     while(!(hasReadExitStatement || wasInterrupted.get() || Thread.interrupted())) {
-      log.info("Executing the next instruction: " + s.getCurrentInstruction());
+      log.info("Executing the next instruction: " + simulator.getCurrentInstruction());
       executeNextInstruction();
       try {
         Thread.sleep(400);
-      } catch (InterruptedException e) {
+      } catch (InterruptedException ignored) {
       }
     }
     if (hasReadExitStatement) {
@@ -184,8 +184,8 @@ public class SimulatorApplication {
   public void loadProgram(File f) {
     try {
       Program p = Program.from(f);
-      s.loadProgram(p);
-      s.reset();
+      simulator.loadProgram(p);
+      simulator.reset();
       programView.display(p);
       // All the values will be reset
       registersPanel.reset();
@@ -201,11 +201,11 @@ public class SimulatorApplication {
 
   public boolean executeNextInstruction() {
     //wasInterrupted.set(false);
-    hasReadExitStatement = s.executeNextInstruction();
+    hasReadExitStatement = simulator.executeNextInstruction();
     registersPanel.update();
     instructionMemory.update();
     dataMemory.update();
-    programView.highlightLine(s.getProgramCounter().currentInstructionIndex());
+    programView.highlightLine(simulator.getProgramCounter().currentInstructionIndex());
     pc.update();
     controlLines.update();
     return hasReadExitStatement;
@@ -213,7 +213,7 @@ public class SimulatorApplication {
 
   public void reset() {
     // TODO: Maybe we should just reload the program entirely?
-    s.reset();
+    simulator.reset();
     registersPanel.reset();
     instructionMemory.update();
     dataMemory.update();
