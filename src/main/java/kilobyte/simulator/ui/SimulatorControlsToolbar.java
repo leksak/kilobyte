@@ -1,5 +1,6 @@
 package kilobyte.simulator.ui;
 
+import kilobyte.common.annotations.CallOnEDT;
 import lombok.extern.java.Log;
 
 import javax.swing.*;
@@ -27,7 +28,6 @@ public class SimulatorControlsToolbar extends JToolBar {
   JButton play, step, reset, stop;
   ToolbarState tbs;
   Thread backgroundThread = null;
-
 
   public enum ToolbarState{
     INIT, RESET, RUN, STOP, STEP;
@@ -85,6 +85,7 @@ public class SimulatorControlsToolbar extends JToolBar {
     return button;
   }
 
+  @CallOnEDT
   public void stateSwitcher(ToolbarState tbs) {
     switch(tbs){
       case INIT:
