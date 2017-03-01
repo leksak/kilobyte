@@ -94,7 +94,7 @@ class ProgramView extends JPanel {
   @InvokeLaterNotNecessary
   public void display(Program p) {
     SwingUtilities.invokeLater(() -> {
-      // Clear the old instructions  if any
+      // Clear the old instructions if any
       tableModel.getDataVector().removeAllElements();
       instructionsInTable.clear();
 
@@ -103,6 +103,7 @@ class ProgramView extends JPanel {
 
       // Adding the elements has to happen on the EDT
       p.getInstructions().forEach(this::append);
+      currentRowIndex = 0;
       highlightLine(0);
     });
   }

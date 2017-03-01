@@ -116,7 +116,7 @@ public class SimulatorApplication {
       }
     }
     if (hasReadExitStatement) {
-      controls.transitionToDisplayState(SimulatorControlsToolbar.ToolbarDisplayState.STOPPED);
+      controls.transitionToDisplayState(SimulatorControlsToolbar.ToolbarDisplayState.FINISHED);
     }
   }
 
@@ -197,7 +197,6 @@ public class SimulatorApplication {
 
   public void loadProgram(Program p) {
     currentlyOpenProgram = p;
-    programView.display(currentlyOpenProgram);
 
     // All the values will be display
     simulator = Simulator.executingProgram(currentlyOpenProgram);
@@ -207,6 +206,8 @@ public class SimulatorApplication {
     dataMemoryPanel.display(simulator.getDataMemory());
     controlLines.display(simulator.getControl());
     controls.transitionToDisplayState(SimulatorControlsToolbar.ToolbarDisplayState.RESET);
+
+    programView.display(currentlyOpenProgram);
   }
 
   public boolean executeNextInstruction() {
@@ -217,6 +218,9 @@ public class SimulatorApplication {
     programView.highlightLine(simulator.getProgramCounter().currentInstructionIndex());
     programCounterView.update();
     controlLines.update();
+    if (hasReadExitStatement) {
+      controls.transitionToDisplayState(SimulatorControlsToolbar.ToolbarDisplayState.FINISHED);
+    }
     return hasReadExitStatement;
   }
 

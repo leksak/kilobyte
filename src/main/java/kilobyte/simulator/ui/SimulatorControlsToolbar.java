@@ -43,7 +43,6 @@ public class SimulatorControlsToolbar extends JToolBar {
       return button;
   }
   
-  ToolbarDisplayState tbs;
   Thread backgroundThread = null;
 
   // Dictates what icons should/shouldn't be active in the given state
@@ -52,7 +51,8 @@ public class SimulatorControlsToolbar extends JToolBar {
     RESET(play, true, step, true, reset, false, stop, false),
     RUNNING(play, false, step, false, reset, false, stop, true),
     STOPPED(play, true, step, true, reset, true, stop, false),
-    STEP(play, true, step, true, reset, true, stop, false);
+    STEP(play, true, step, true, reset, true, stop, false),
+    FINISHED(play, false, step, false, reset, true, stop, false);
 
     @FunctionalInterface
     interface Action {
