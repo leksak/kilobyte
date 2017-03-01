@@ -119,12 +119,6 @@ class ProgramView extends JPanel {
     currentRowIndex = rowIndex;
   }
 
-  public void reset() {
-    SwingUtilities.invokeLater(() -> {
-      highlightLine(0);
-    });
-  }
-
   private void append(Instruction i) {
     instructionsInTable.add(i);
     append(i.getMnemonicRepresentation());
