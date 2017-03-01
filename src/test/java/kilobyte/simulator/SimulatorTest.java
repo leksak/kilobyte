@@ -1,7 +1,8 @@
 package kilobyte.simulator;
 
+import kilobyte.common.hardware.Register;
+import kilobyte.common.hardware.RegisterFile;
 import kilobyte.common.instruction.Instruction;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import kilobyte.simulator.program.Program;
 
@@ -10,78 +11,74 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Created by jwestin on 2017-01-11.
- */
-class SimulatorTestJUnit {
-  Simulator simulator;
-  @BeforeEach
-  public void setUp() {
-    simulator = new Simulator();
-
-  }
-
+class SimulatorTest {
   //ADD
   @Test
   public void testALUMockAdd() {
+    Simulator simulator = Simulator.withInstructionsInMemory("add $v0, $t0, $t1");
     simulator.setRegisterValue("$t0", 3);
     simulator.setRegisterValue("$t1", 5);
-    Instruction add = Instruction.from("add $v0, $t0, $t1");
-    simulator.execute(add);
+    simulator.executeNextInstruction();
     assertEquals(simulator.getRegisterValue("$v0"), 8);
   }
 
   //SUB
   @Test
   public void testALUMockSub() {
+    Simulator simulator = Simulator.withInstructionsInMemory("sub $v0, $t0, $t1");
     simulator.setRegisterValue("$t0", 5);
     simulator.setRegisterValue("$t1", 3);
-    Instruction instruction = Instruction.from("sub $v0, $t0, $t1");
-    simulator.execute(instruction);
+    simulator.executeNextInstruction();
     assertEquals(simulator.getRegisterValue("$v0"), 2);
   }
 
   //AND
   @Test
   public void testALUMockAND() {
+    Simulator simulator = Simulator.withInstructionsInMemory(
+          "and $v0, $t0, $t1",
+          "and $v0, $t2, $t1"
+    );
+
     simulator.setRegisterValue("$t0", 0);
     simulator.setRegisterValue("$t1", 1);
     simulator.setRegisterValue("$t2", 3);
-    simulator.execute(Instruction.from("and $v0, $t0, $t1"));
+    simulator.executeNextInstruction();
     assertEquals(0, simulator.getRegisterValue("$v0"));
-    simulator.execute(Instruction.from("and $v0, $t2, $t1"));
+    simulator.executeNextInstruction();
     assertEquals(1, simulator.getRegisterValue("$v0"));
   }
 
   //OR
   @Test
   public void testALUMockOR() {
+    Simulator simulator = Simulator.withInstructionsInMemory("or $v0, $t0, $t1");
     simulator.setRegisterValue("$t0", 5);
     simulator.setRegisterValue("$t1", 3);
-    Instruction instruction = Instruction.from("sub $v0, $t0, $t1");
-    simulator.execute(instruction);
-    assertEquals(simulator.getRegisterValue("$v0"), 2);
+    simulator.executeNextInstruction();
+    assertEquals((5 | 3), simulator.getRegisterValue("$v0"));
   }
 
   //NOR
   @Test
   public void testALUMockNOR() {
+    Simulator simulator = Simulator.withInstructionsInMemory("nor $v0, $t1, $t2", "nor $v1, $t2, $t3");
     simulator.setRegisterValue("$t1", 10);
     simulator.setRegisterValue("$t2", 17);
     simulator.setRegisterValue("$t3", 23);
 
-    simulator.execute(Instruction.from("nor $v0, $t1, $t2"));
+    simulator.executeNextInstruction();
     assertEquals(~(10 | 17), simulator.getRegisterValue("$v0"));
-    simulator.execute(Instruction.from("nor $v1, $t2, $t3"));
+    simulator.executeNextInstruction();
     assertEquals(~(17 | 23), simulator.getRegisterValue("$v1"));
   }
   //NOR
   @Test
   public void testALUMockNOR2() {
+    Simulator simulator = Simulator.withInstructionsInMemory("nor $v1, $t2, $t3");
     simulator.setRegisterValue("$t1", 0);
     simulator.setRegisterValue("$t2", 0);
-
-    simulator.execute(Instruction.from("nor $v1, $t2, $t3"));
+    simulator.executeNextInstruction();
     assertEquals(-1, simulator.getRegisterValue("$v1"));
   }
 
@@ -89,51 +86,58 @@ class SimulatorTestJUnit {
   //SLT Set less than : If \$t2 is less than $t3, then set $t1 to 1 else set $t1 to 0
   @Test
   public void testALUMockSLT() {
+    Simulator simulator = Simulator.withInstructionsInMemory(
+          "slt $v0, $t1, $t2",
+          "slt $v0, $t2, $t1",
+          "slt $v1, $t1, $t1"
+    );
     simulator.setRegisterValue("$t1", 1);
     simulator.setRegisterValue("$t2", 2);
     simulator.setRegisterValue("$t3", 1);
 
-    simulator.execute(Instruction.from("slt $v0, $t1, $t2"));
+    simulator.executeNextInstruction();
     assertEquals(1, simulator.getRegisterValue("$v0"));
 
-    simulator.execute(Instruction.from("slt $v0, $t2, $t1"));
+    simulator.executeNextInstruction();
     assertEquals(0, simulator.getRegisterValue("$v0"));
 
-    simulator.execute(Instruction.from("slt $v1, $t1, $t1"));
+    simulator.executeNextInstruction();
     assertEquals(0, simulator.getRegisterValue("$v1"));
-
   }
 
   //LW
   @Test
   public void testALUMockLW() {
     Byte startValue = Byte.valueOf("7");
-    simulator.setDataMemoryAtAddress(23, startValue);
-    simulator.setRegisterValue("$t0", 5);
+    Simulator simulator = Simulator.withInstructionsInMemory(
+          "lw $t0, 20($t1)"
+    );
     simulator.setRegisterValue("$t1", 3);
-    Instruction instruction = Instruction.from("lw $t0, 20($t1)");
-    System.out.println(simulator.getDataMemory(23));
-    simulator.execute(instruction);
+    simulator.setDataMemoryAtAddress(23, startValue);
+    simulator.executeNextInstruction();
     assertEquals(startValue.intValue(), simulator.getRegisterValue("$t0"));
   }
 
   //SW
   @Test
   public void testALUMockSW() {
+    Simulator simulator = Simulator.withInstructionsInMemory("sw $t0, 20($t1)");
     simulator.setRegisterValue("$t0", 5);
     simulator.setRegisterValue("$t1", 3);
-    Instruction instruction = Instruction.from("sw $t0, 20($t1)");
-    simulator.execute(instruction);
+    
+    simulator.executeNextInstruction();
+    
     assertEquals(simulator.getRegisterValue("$t0"), 5);
     assertEquals(simulator.getDataMemory(23), simulator.getRegisterValue("$t0"));
   }
 
   @Test
   public void testALUMockSW2() {
+    Simulator simulator = Simulator.withInstructionsInMemory("sw $t0, 0($sp)");
     simulator.setRegisterValue("$t0", 22);
     simulator.setRegisterValue("$sp", 0);
-    Instruction instruction = Instruction.from("sw $t0, 0($sp)");
-    simulator.execute(instruction);
+    simulator.executeNextInstruction();
+    
     assertEquals(simulator.getRegisterValue("$t0"), 22);
     assertEquals(simulator.getDataMemory(0), simulator.getRegisterValue("$t0"));
   }
@@ -141,42 +145,41 @@ class SimulatorTestJUnit {
   //BEQ
   @Test
   public void testALUMockBEQFalse() {
+    Simulator simulator = Simulator.withInstructionsInMemory("beq $t0, $t1, 16");
     int startPC = simulator.getProgramCounter().getAddressPointer();
     simulator.setRegisterValue("$t0", 5);
     simulator.setRegisterValue("$t1", 3);
-    Instruction instruction = Instruction.from("beq $t0, $t1, 16");
-    simulator.execute(instruction);
+    simulator.executeNextInstruction();
     int currentPC = simulator.getProgramCounter().getAddressPointer();
-    assertEquals(startPC+4, currentPC);
+    assertEquals(startPC + 4, currentPC);
   }
   @Test
   public void testALUMockBEQTrue() {
+    Simulator simulator = Simulator.withInstructionsInMemory("beq $t0, $t1, 6");
     simulator.setRegisterValue("$t0", 5);
     simulator.setRegisterValue("$t1", 5);
-
-    Instruction instruction = Instruction.from("beq $t0, $t1, 6");
-    simulator.execute(instruction);
+    simulator.executeNextInstruction();
     int currentPC = simulator.getProgramCounter().getAddressPointer();
 
-    assertEquals((24), currentPC);
+    assertEquals(24, currentPC);
   }
 
   //ADDI
   @Test
   public void testALUMockADDI() {
+    Simulator simulator = Simulator.withInstructionsInMemory("addi $t1, $t2, 4");
     simulator.setRegisterValue("$t1", 0);
     simulator.setRegisterValue("$t2", 3);
-    Instruction instruction = Instruction.from("addi $t1, $t2, 4");
-    simulator.execute(instruction);
+    simulator.executeNextInstruction();
     assertEquals(7, simulator.getRegisterValue("$t1"));
   }
   //ORI - Bitwise OR immediate : Set \$t1 to bitwise OR of \$t2 and
   // zero-extended 16-bit immediate: ori \$t1, \$t2, 4
   @Test
   public void testALUMockORI() {
+    Simulator simulator = Simulator.withInstructionsInMemory("ori $t1, $t2, 4");
     simulator.setRegisterValue("$t2", 8);
-    Instruction instruction = Instruction.from("ori $t1, $t2, 4");
-    simulator.execute(instruction);
+    simulator.executeNextInstruction();
     assertEquals((8 | 4), simulator.getRegisterValue("$t1"));
   }
 
@@ -184,19 +187,19 @@ class SimulatorTestJUnit {
   // number of bits specified by immediate: srl \$t1, \$t2, 10
   @Test
   public void testALUMockSRL() {
+    Simulator simulator = Simulator.withInstructionsInMemory("srl $t1, $t2, 2");
     simulator.setRegisterValue("$t2", 127);
-    //0111 1111(127_10) >>> 2 = 0001 1111(31_10)
 
-    Instruction instruction = Instruction.from("srl $t1, $t2, 2");
-    simulator.execute(instruction);
+    //0111 1111(127_10) >>> 2 = 0001 1111(31_10)
+    simulator.executeNextInstruction();
     assertEquals(31, simulator.getRegisterValue("$t1"));
   }
   @Test
   public void testALUMockSRL2() {
     //10000000 >>> 2 = 00100000
+    Simulator simulator = Simulator.withInstructionsInMemory("srl $t1, $t2, 2");
     simulator.setRegisterValue("$t2", 0b10000000);
-    Instruction instruction = Instruction.from("srl $t1, $t2, 2");
-    simulator.execute(instruction);
+    simulator.executeNextInstruction();
     assertEquals(0b00100000, simulator.getRegisterValue("$t1"));
   }
 
@@ -204,20 +207,20 @@ class SimulatorTestJUnit {
   // shifting \$t2 right by number of bits specified by immediate:sra $t1, $t2, 10
   @Test
   public void testALUMockSRA() {
+    Simulator simulator = Simulator.withInstructionsInMemory("sra $t1, $t2, 2");
     simulator.setRegisterValue("$t2", 127);
     // 0111 1111 (127)
     // 0001 1111 (31)
-    Instruction instruction = Instruction.from("sra $t1, $t2, 2");
-    simulator.execute(instruction);
+    simulator.executeNextInstruction();
     assertEquals(31, simulator.getRegisterValue("$t1"));
   }
   @Test
   public void testALUMockSRA2() {
+    Simulator simulator = Simulator.withInstructionsInMemory("sra $t1, $t2, 2");
     // 10000000 >> 2 = 11100000
     // 11100000
     simulator.setRegisterValue("$t2", 0b10000000);
-    Instruction instruction = Instruction.from("sra $t1, $t2, 2");
-    simulator.execute(instruction);
+    simulator.executeNextInstruction();
     assertEquals((0b10000000 >> 2), simulator.getRegisterValue("$t1"));
   }
 
@@ -225,9 +228,10 @@ class SimulatorTestJUnit {
   @Test
   public void testJInstruction() {
     // 2 is an absolute address. 2 << 2 = 8
+    Simulator simulator = new Simulator();
     Instruction jump = Instruction.from("j 5");
     Instruction add = Instruction.from("add $v0, $t0, $t1");
-    simulator.loadRawProgram(Program.from(
+    simulator.loadProgram(Program.from(
           Instruction.from("lw $t0, 20($t1)"),
           Instruction.from("lw $t0, 21($t1)"),
           Instruction.from("lw $t0, 22($t1)"),
@@ -249,11 +253,11 @@ class SimulatorTestJUnit {
   public void testJRInstruction() {
     // 2 is an absolute address. 2 << 2 = 8
 
+    Simulator simulator = new Simulator();
     simulator.setRegisterValue("$t1", 4);
-    assertEquals(simulator.getRegisterValue("$t1"), 4);
     Instruction jr = Instruction.from("jr $t1");
     Instruction add= Instruction.from("add $v0, $t0, $t1");
-    simulator.loadRawProgram(Program.from(
+    simulator.loadProgram(Program.from(
           Instruction.from("lw $t0, 20($t1)"),
           Instruction.from("lw $t0, 21($t1)"),
           Instruction.from("lw $t0, 22($t1)"),
@@ -280,22 +284,18 @@ class SimulatorTestJUnit {
 
   //NOP
   @Test
-  public void testNOPInstruction() {
-    // 2 is an absolute address. 2 << 2 = 8
-
-    simulator.loadRawProgram(Program.from(
-          Instruction.from("nop")
-    ));
-    simulator.executeNextInstruction();
+  public void executingANOPInstructionIncrementsThePC() {
+    Simulator simulator = Simulator.withInstructionsInMemory("nop");
+    simulator.executeNextInstruction(); // Check that nothing crashes
+    int pc = simulator.getProgramCounter().currentInstructionIndex();
+    assertThat(pc, is(equalTo(1)));
   }
 
-
-  //NOP
   @Test
   public void testADDIADDIADDSWEXIT() {
     // 2 is an absolute address. 2 << 2 = 8
 
-    simulator.loadRawProgram(Program.from(
+    Simulator simulator = Simulator.executingProgram(Program.from(
       Instruction.from("addi $t1, $zero, 10"),
       Instruction.from("addi $t2, $zero, 12"),
       Instruction.from("add $t0, $t1, $t2"),
@@ -323,7 +323,8 @@ class SimulatorTestJUnit {
   @Test
   public void testSWWithZeros() {
     // 2 is an absolute address. 2 << 2 = 8
-    simulator.loadRawProgram(Program.from(
+
+    Simulator simulator = Simulator.executingProgram(Program.from(
       Instruction.from("lw $6, 8($3)"),
       Instruction.from("add $3, $6, $6"),
       Instruction.from("sub $4, $3, $0"),
@@ -366,16 +367,10 @@ class SimulatorTestJUnit {
   @Test
   public void testSW3() {
     // 2 is an absolute address. 2 << 2 = 8
-
+    Simulator simulator = Simulator.withInstructionsInMemory("sw $t0, 0($sp)");
     simulator.setRegisterValue("$t0", 22);
-    simulator.loadRawProgram(Program.from(
-      Instruction.from("sw $t0, 0($sp)")
-    ));
-    //sw $t0, 0($sp)
     simulator.executeNextInstruction();
     assertEquals(22, simulator.getDataMemory(0));
-    //exit
-
   }
 
 }

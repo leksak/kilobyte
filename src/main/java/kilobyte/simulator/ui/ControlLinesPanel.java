@@ -12,7 +12,16 @@ import java.awt.*;
 public class ControlLinesPanel extends JPanel {
   DefaultTableModel tableModel;
   JTable table;
-  Object[] columnNames = new Object[]{"RegDst", "ALUSrc", "MemToReg", "RegWrite", "MemRead", "MemWrite", "Branch", "ALUOp1", "ALUOp2"};
+  Object[] columnNames = new Object[]{
+        "RegDst",
+        "ALUSrc",
+        "MemToReg",
+        "RegWrite",
+        "MemRead",
+        "MemWrite",
+        "Branch",
+        "ALUOp1",
+        "ALUOp2"};
   int noOfColumns = columnNames.length;
   private Control control;
 
@@ -43,8 +52,8 @@ public class ControlLinesPanel extends JPanel {
     });
   }
 
-  public void reset() {
-    control.reset();
+  public void display(Control control) {
+    this.control = control;
     update();
   }
 }

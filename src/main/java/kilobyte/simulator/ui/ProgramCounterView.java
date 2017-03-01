@@ -2,8 +2,7 @@ package kilobyte.simulator.ui;
 
 import kilobyte.common.annotations.InstantiateOnEDT;
 import kilobyte.common.annotations.InvokeLaterNotNecessary;
-import lombok.Value;
-import kilobyte.simulator.hardware.PC;
+import kilobyte.simulator.hardware.ProgramCounter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,8 +10,8 @@ import java.awt.*;
 @InstantiateOnEDT
 class ProgramCounterView extends JPanel {
   JLabel label = new JLabel();
-  PC programCounter;
-  public ProgramCounterView(PC programCounter) {
+  ProgramCounter programCounter;
+  public ProgramCounterView(ProgramCounter programCounter) {
     super(new FlowLayout(FlowLayout.LEFT));
     this.programCounter = programCounter;
     add(label);
@@ -26,5 +25,10 @@ class ProgramCounterView extends JPanel {
 
   public void update() {
     setText("PC: " + programCounter.getAddressPointer());
+  }
+
+  public void display(ProgramCounter programCounter) {
+    this.programCounter = programCounter;
+    update();
   }
 }

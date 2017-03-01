@@ -17,13 +17,13 @@ import static java.lang.String.format;
 public class InstructionMemoryPanel extends JPanel implements ChangeRadixDisplayCapable {
   DefaultListModel<String> model = new DefaultListModel<>();
   JList<String> displayList = new JList<>(model);
-  InstructionMemory memory;
+  InstructionMemory instructionMemory;
   String label;
   Radix currentRadix = Radix.HEX;
 
-  public InstructionMemoryPanel(InstructionMemory memory, String label) {
+  public InstructionMemoryPanel(InstructionMemory instructionMemory, String label) {
     super(new BorderLayout());
-    this.memory = memory;
+    this.instructionMemory = instructionMemory;
     this.label = label;
 
     JScrollPane scrollPane = new JScrollPane(displayList);
@@ -50,9 +50,9 @@ public class InstructionMemoryPanel extends JPanel implements ChangeRadixDisplay
     String[] memoryContents;
 
     if (currentRadix == Radix.HEX) {
-      memoryContents = memory.toHexStringArray();
+      memoryContents = instructionMemory.toHexStringArray();
     } else {
-      memoryContents = memory.toDecimalStringArray();
+      memoryContents = instructionMemory.toDecimalStringArray();
     }
 
     int noOfEntries = memoryContents.length;
@@ -73,5 +73,10 @@ public class InstructionMemoryPanel extends JPanel implements ChangeRadixDisplay
     currentRadix = r;
     clearList();
     populateList();
+  }
+
+  public void display(InstructionMemory instructionMemory) {
+    this.instructionMemory = instructionMemory;
+    update();
   }
 }

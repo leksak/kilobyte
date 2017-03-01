@@ -11,11 +11,11 @@ import javax.swing.*;
 import static java.awt.event.KeyEvent.VK_R;
 
 /**
- * The {@code ViewMenu} contains a set of menu items that affect
+ * The {@code DisplaySettings} contains a set of menu items that affect
  * the display settings for different aspects of the application.
  */
 @InstantiateOnEDT
-public class ViewMenu extends JMenu {
+public class DisplaySettings extends JMenu {
   /**
    * To perform its responsibilities it requires that its constituent
    * entries (menu-items) all have a reference to the aspect of
@@ -27,7 +27,7 @@ public class ViewMenu extends JMenu {
    * @param rp the {@see RegisterPanel} to wit we can change the
    *           radix display settings of.
    */
-  ViewMenu(RegistersPanel rp, InstructionMemoryPanel imp, DataMemoryPanel dmp) {
+  DisplaySettings(RegistersPanel rp, InstructionMemoryPanel imp, DataMemoryPanel dmp) {
     super("View");
     val registerRadixMenu = new RadixMenu("Registers", rp);
     val instructionMemoryMenu = new RadixMenu("Instruction Memory", imp);

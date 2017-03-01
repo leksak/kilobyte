@@ -66,6 +66,7 @@ class RegisterFile {
 
         Register(31, "\$ra", "Return offset  = Register(used by function call)")
   )
+
   // Creates a lookup table for getting the associate index given a specific name,
   // i.e. nameToIndexLookup["$zero"] == "$zero"
   val nameToRegisterLookup = registers.associateBy({ it.name })

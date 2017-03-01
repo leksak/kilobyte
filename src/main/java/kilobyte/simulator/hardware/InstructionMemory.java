@@ -101,7 +101,7 @@ public class InstructionMemory implements Memory {
     return instructions[address / 4];
   }
 
-  public Instruction read(PC programCounter) {
+  public Instruction read(ProgramCounter programCounter) {
     log.info("Reading from PC.addressPointer="+programCounter.getAddressPointer());
     return fromAddressGivenInBytes(programCounter.getAddressPointer());
   }

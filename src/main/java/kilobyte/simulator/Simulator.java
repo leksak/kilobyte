@@ -16,6 +16,9 @@ import lombok.extern.java.Log;
 import kilobyte.simulator.hardware.*;
 import kilobyte.simulator.program.Program;
 
+import java.io.File;
+import java.io.IOException;
+
 import static com.google.common.base.Preconditions.checkArgument;
 import static kilobyte.common.instruction.Instruction.*;
 import static kilobyte.common.machinecode.OperationsKt.*;
@@ -26,15 +29,15 @@ import static java.lang.String.format;
 @NoArgsConstructor
 public class Simulator {
   @Getter
-  PC programCounter = new PC();
+  ProgramCounter programCounter = new ProgramCounter();
+
   @Getter
   RegisterFile registerFile = new RegisterFile();
+
   Control control = new Control();
 
-  @NonFinal
-  Program openProgram = null;
-
   @Getter
+  @NonFinal
   InstructionMemory instructionMemory = InstructionMemory.init();
 
   @Getter
@@ -60,6 +63,20 @@ public class Simulator {
         NOP
   );
 
+  public static Simulator executingProgram(File f) throws IOException {
+    return executingProgram(Program.from(f));
+  }
+
+  public static Simulator executingProgram(Program p) {
+    Simulator s = new Simulator();
+    s.instructionMemory.addAll(p.getInstructions());
+    return s;
+  }
+
+  public static Simulator withInstructionsInMemory(String... instructions) {
+    return executingProgram(Program.from(instructions));
+  }
+
   public boolean executeNextInstruction() {
     // Fetch the next instruction from memory.
     return execute(getCurrentInstruction());
@@ -78,7 +95,6 @@ public class Simulator {
     Register r = registerFile.get(mnemonic);
     r.setValue(value);
   }
-
 
   /* Returns false if an execution was executed, true if EXIT was encountered. */
   public boolean execute(Instruction i) {
@@ -263,28 +279,9 @@ public class Simulator {
 
   }
 
-  public void execute(String s) {
-    // Executes a single instruction
-    execute(Instruction.from(s));
-  }
-
-  public void loadRawProgram(Program p) {
-    openProgram = p;
-    instructionMemory.addAll(p.getInstructions());
-  }
   public void loadProgram(Program p) {
-    if (openProgram != null) reset();
-    loadRawProgram(p);
-  }
-
-  public void reset() {
-    registerFile.reset();
-    instructionMemory.resetMemory();
-    programCounter.setTo(0);
-    dataMemory.resetMemory();
-    if (openProgram != null) {
-      instructionMemory.addAll(openProgram.getInstructions());
-    }
+    this.instructionMemory = InstructionMemory.init();
+    instructionMemory.addAll(p.getInstructions());
   }
 
   public void setDataMemoryAtAddress(int address, Byte value) {

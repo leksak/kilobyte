@@ -37,7 +37,7 @@ class ProgramView extends JPanel {
     }
   };
 
-  ImageIcon currentInstructionPointer = Icon.getIcon(Toolkit.getDefaultToolkit(), this.getClass(), Icon.Name.INSTRUCTION_POINTER);
+  ImageIcon currentInstructionPointer = Icon.INSTRUCTION_POINTER.getImageIcon();
 
   JTable table = new JTable(tableModel) {
     // Returning the Class of each column will allow different

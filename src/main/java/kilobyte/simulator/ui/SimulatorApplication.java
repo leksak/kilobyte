@@ -73,7 +73,9 @@ import static java.awt.event.WindowEvent.WINDOW_CLOSING;
 @Log
 @Value
 public class SimulatorApplication {
+  @NonFinal
   Simulator simulator = new Simulator();
+
   JFrame applicationFrame = new JFrame("Kilobyte");
   ProgramView programView = new ProgramView();
   FileMenu fileMenu = FileMenu.withCloseAction(
@@ -83,15 +85,18 @@ public class SimulatorApplication {
         this::loadProgram);
 
   RegistersPanel registersPanel = new RegistersPanel(simulator.getRegisterFile());
-  ProgramCounterView pc = new ProgramCounterView(simulator.getProgramCounter());
-  InstructionMemoryPanel instructionMemory = new InstructionMemoryPanel(simulator.getInstructionMemory(), "Instruction");
-  DataMemoryPanel dataMemory = new DataMemoryPanel(simulator.getDataMemory());
-  TabbedMemoryPane tabbedMemories = new TabbedMemoryPane(instructionMemory, dataMemory);
-  ViewMenu displaySettings = new ViewMenu(registersPanel, instructionMemory, dataMemory);
+  ProgramCounterView programCounterView = new ProgramCounterView(simulator.getProgramCounter());
+  InstructionMemoryPanel instructionMemoryPanel = new InstructionMemoryPanel(simulator.getInstructionMemory(), "Instruction");
+  DataMemoryPanel dataMemoryPanel = new DataMemoryPanel(simulator.getDataMemory());
+  TabbedMemoryPane tabbedMemoriesView = new TabbedMemoryPane(instructionMemoryPanel, dataMemoryPanel);
+  DisplaySettings displaySettings = new DisplaySettings(registersPanel, instructionMemoryPanel, dataMemoryPanel);
   ControlLinesPanel controlLines = new ControlLinesPanel(simulator.getControl());
   SimulatorMenuBar menuBar;
   Object interruptLock = new Object();
-  private final SimulatorControlsToolbar controls;
+  SimulatorControlsToolbar controls;
+
+  @NonFinal
+  Program currentlyOpenProgram = null;
 
   @NonFinal
   AtomicBoolean wasInterrupted = new AtomicBoolean(false);
@@ -101,7 +106,7 @@ public class SimulatorApplication {
 
   public void run() {
     wasInterrupted.set(false);
-    controls.stateSwitcher(SimulatorControlsToolbar.ToolbarState.RUN);
+    controls.transitionToDisplayState(SimulatorControlsToolbar.ToolbarDisplayState.RUNNING);
     while(!(hasReadExitStatement || wasInterrupted.get() || Thread.interrupted())) {
       log.info("Executing the next instruction: " + simulator.getCurrentInstruction());
       executeNextInstruction();
@@ -111,7 +116,7 @@ public class SimulatorApplication {
       }
     }
     if (hasReadExitStatement) {
-      controls.stateSwitcher(SimulatorControlsToolbar.ToolbarState.STOP);
+      controls.transitionToDisplayState(SimulatorControlsToolbar.ToolbarDisplayState.STOPPED);
     }
   }
 
@@ -141,9 +146,9 @@ public class SimulatorApplication {
 
     // BoxLayout let's us stack our components
     pcAndRegistersPanel.setLayout(new BoxLayout(pcAndRegistersPanel, BoxLayout.PAGE_AXIS));
-    pcAndRegistersPanel.add(pc);
+    pcAndRegistersPanel.add(programCounterView);
     pcAndRegistersPanel.add(registersPanel);
-    pc.setBorder(BorderFactory.createTitledBorder("Program Counter"));
+    programCounterView.setBorder(BorderFactory.createTitledBorder("Program Counter"));
     registersPanel.setBorder(BorderFactory.createTitledBorder("Registers"));
 
     JSplitPane splitPane = new JSplitPane(
@@ -152,7 +157,7 @@ public class SimulatorApplication {
           programView);
     applicationPanel.add(splitPane, BorderLayout.CENTER);
 
-    applicationPanel.add(tabbedMemories, BorderLayout.EAST);
+    applicationPanel.add(tabbedMemoriesView, BorderLayout.EAST);
     applicationFrame.add(applicationPanel);
 
     applicationFrame.setMinimumSize(applicationFrame.getSize());
@@ -183,42 +188,39 @@ public class SimulatorApplication {
 
   public void loadProgram(File f) {
     try {
-      Program p = Program.from(f);
-      simulator.loadProgram(p);
-      simulator.reset();
-      programView.display(p);
-      // All the values will be reset
-      registersPanel.reset();
-      instructionMemory.update();
-      dataMemory.reset();
-      controlLines.reset();
-      controls.stateSwitcher(SimulatorControlsToolbar.ToolbarState.RESET);
+      loadProgram(Program.from(f));
     } catch (IOException e) {
       // TODO: Catch sensibly
       e.printStackTrace();
     }
   }
 
+  public void loadProgram(Program p) {
+    currentlyOpenProgram = p;
+    programView.display(currentlyOpenProgram);
+
+    // All the values will be display
+    simulator = Simulator.executingProgram(currentlyOpenProgram);
+    programCounterView.display(simulator.getProgramCounter());
+    registersPanel.display(simulator.getRegisterFile());
+    instructionMemoryPanel.display(simulator.getInstructionMemory());
+    dataMemoryPanel.display(simulator.getDataMemory());
+    controlLines.display(simulator.getControl());
+    controls.transitionToDisplayState(SimulatorControlsToolbar.ToolbarDisplayState.RESET);
+  }
+
   public boolean executeNextInstruction() {
-    //wasInterrupted.set(false);
     hasReadExitStatement = simulator.executeNextInstruction();
     registersPanel.update();
-    instructionMemory.update();
-    dataMemory.update();
+    instructionMemoryPanel.update();
+    dataMemoryPanel.update();
     programView.highlightLine(simulator.getProgramCounter().currentInstructionIndex());
-    pc.update();
+    programCounterView.update();
     controlLines.update();
     return hasReadExitStatement;
   }
 
-  public void reset() {
-    // TODO: Maybe we should just reload the program entirely?
-    simulator.reset();
-    registersPanel.reset();
-    instructionMemory.update();
-    dataMemory.update();
-    controlLines.update();
-    programView.reset();
-    pc.update();
+  public void reloadProgram() {
+    loadProgram(currentlyOpenProgram);
   }
 }

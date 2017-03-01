@@ -1,9 +1,9 @@
 package kilobyte.simulator.ui;
 
+import com.google.common.base.Verify;
 import kilobyte.common.annotations.InstantiateOnEDT;
 import kilobyte.common.hardware.Register;
 import kilobyte.common.hardware.RegisterFile;
-import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.val;
 import kilobyte.simulator.ui.utils.Radix;
@@ -11,12 +11,14 @@ import kilobyte.simulator.ui.utils.Radix;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.function.Supplier;
 
+import static com.google.common.base.Verify.*;
 import static java.lang.String.*;
 
 @InstantiateOnEDT
 class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
-  RegisterFile rf;
+  RegisterFile registerFile;
 
   // Used to determine if a value has changed
   int[] previouslyDisplayedValues = new int[32];
@@ -41,11 +43,11 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
   @NonFinal
   Radix currentRadix = Radix.HEX;
 
-  RegistersPanel(RegisterFile rf) {
+  RegistersPanel(RegisterFile registerFile) {
     super(new BorderLayout());
-    this.rf = rf;
+    this.registerFile = registerFile;
 
-    Register[] registers = rf.getRegisters();
+    Register[] registers = this.registerFile.getRegisters();
     noOfRows = registers.length;
 
     Object[][] data = new Object[noOfRows][noOfColumns];
@@ -74,15 +76,12 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
   static String bold(String s) {
     return format("<b>%s</b>", s);
   }
-
   static String html(String s) {
     return format("<html>%s</html>", s);
   }
-
   static String color(String s, String hex) {
     return format("<p style=\"color: %s\">%s</p>", hex, s);
   }
-
   static String grey(String s) {
     return color(s,"#B4B4B4");
   }
@@ -100,7 +99,7 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
 
   void renderRow(int rowIndex) {
     boolean changed = valuesThatHaveChanged[rowIndex];
-    int registerValue = rf.getRegisters()[rowIndex].getValue();
+    int registerValue = registerFile.getRegisters()[rowIndex].getValue();
     String c1 = prettify(changed, "R[" + rowIndex + "]");
     String c2 = prettify(changed, "[" + RegisterFile.getMnemonic(rowIndex) + "]");
     String c3 = prettify(changed, "=");
@@ -126,7 +125,7 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
   }
 
   private void displayRegisterFile() {
-    Register[] registers = rf.getRegisters();
+    Register[] registers = registerFile.getRegisters();
 
     for (int rowIndex = 0; rowIndex < registers.length; rowIndex++) {
       Register r = registers[rowIndex];
@@ -138,7 +137,7 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
       }
 
       // We need to re-write the entire line just in case it has been bold before
-      // this happens when the display has been reset
+      // this happens when the display has been display
       renderRow(rowIndex);
     }
   }
@@ -147,12 +146,17 @@ class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
     displayRegisterFile();
   }
 
-  public void reset() {
-    Register[] registers = rf.getRegisters();
-    for (int i = 0; i < 32; i++) {
+  public void display(RegisterFile registerFile) {
+    this.registerFile = registerFile;
+    Register[] registers = this.registerFile.getRegisters();
+
+    verify(registers.length == 32);
+
+    for (int i = 0; i < registers.length; i++) {
       valuesThatHaveChanged[i] = false;
       previouslyDisplayedValues[i] = registers[i].getValue();
     }
+
     update();
   }
 }

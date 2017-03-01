@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Value
 public class Program {
@@ -17,13 +18,12 @@ public class Program {
   private Program(List<Instruction> instructions) {
     this.instructions = ImmutableList.copyOf(instructions);
   }
-
   public static Program from(Instruction... instructions) {
     return from(Arrays.asList(instructions));
   }
 
-  public static Program from(String filename) throws IOException {
-    return from(new File(filename));
+  public static Program from(String... instructions) {
+    return from(Arrays.stream(instructions).map(Instruction::from).collect(Collectors.toList()));
   }
 
   public static Program from(File f) throws IOException {

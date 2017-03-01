@@ -2,7 +2,6 @@ package kilobyte.simulator.ui.memory;
 
 import kilobyte.common.annotations.InstantiateOnEDT;
 import kilobyte.common.machinecode.OperationsKt;
-import lombok.Value;
 import lombok.experimental.NonFinal;
 import kilobyte.simulator.hardware.DataMemory;
 import kilobyte.simulator.ui.ChangeRadixDisplayCapable;
@@ -18,7 +17,7 @@ import static java.lang.String.format;
 public class DataMemoryPanel extends JPanel implements ChangeRadixDisplayCapable {
   DefaultTableModel dtm;
   JTable table;
-  DataMemory memory;
+  DataMemory dataMemory;
 
   Object[] columnNames = new Object[]{
         "Addr", "[31:0]", "[31:24]", "[23:16]", "[15:8]", "[7:0]"};
@@ -35,11 +34,11 @@ public class DataMemoryPanel extends JPanel implements ChangeRadixDisplayCapable
   boolean[] valuesThatHaveChanged;
   int[] previousValues;
   int noOfRows;
-  public DataMemoryPanel(DataMemory memory) {
+  public DataMemoryPanel(DataMemory dataMemory) {
     super(new BorderLayout());
-    this.memory = memory;
+    this.dataMemory = dataMemory;
 
-    noOfRows = memory.getNO_OF_BYTES()/4;
+    noOfRows = dataMemory.getNO_OF_BYTES()/4;
     int noOfColumns = columnNames.length;
     Object[][] data = new Object[noOfRows][noOfColumns];
     valuesThatHaveChanged = new boolean[noOfRows];
@@ -96,13 +95,14 @@ public class DataMemoryPanel extends JPanel implements ChangeRadixDisplayCapable
           html(bold(prettify(highestByte))));
   }
 
-  public void reset() {
-    memory.resetMemory();
+  public void display(DataMemory dataMemory) {
+    this.dataMemory = dataMemory;
 
     for (int i = 0; i < noOfRows; i++) {
       valuesThatHaveChanged[i] = false;
       previousValues[i] = 0;
     }
+
     update();
   }
 
@@ -125,7 +125,7 @@ public class DataMemoryPanel extends JPanel implements ChangeRadixDisplayCapable
   public void update() {
     for (int rowIndex = 0; rowIndex < noOfRows; rowIndex++) {
       int address = rowIndex * 4;
-      int _32bitWord = memory.readWordFrom(address);
+      int _32bitWord = dataMemory.readWordFrom(address);
       byte lowestByte = OperationsKt.nthByte(_32bitWord, 0);
       byte byte2 = OperationsKt.nthByte(_32bitWord, 1);
       byte byte3 = OperationsKt.nthByte(_32bitWord, 2);

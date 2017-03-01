@@ -11,14 +11,14 @@ import static java.lang.String.*;
 @Value
 @Log
 @ToString
-public class PC {
+public class ProgramCounter {
   @NonFinal
   @Getter
   int addressPointer;
 
   private static final int INSTRUCTION_LENGTH_IN_NO_OF_BYTES = 4;
 
-  public PC() {
+  public ProgramCounter() {
     /* The program counter always starts at 0 - always given in the number of bytes */
     addressPointer = 0;
   }
