@@ -26,8 +26,13 @@ sealed class DecompiledInstruction {
         if (eitherFormatOrString.isLeft) {
           // We were able to infer a format so we can decompose the machineCode
           val actualFormat = eitherFormatOrString.left().get()
-          sj.add("Format=\"${actualFormat.name}\".")
-          sj.add("Decomposition=${actualFormat.decompose(machineCode)}")
+
+          // The EXIT-instruction is not a real instruction, so check that
+          // we are dealing with some other kind of format.
+          if (actualFormat != Format.EXIT) {
+            sj.add("Format=\"${actualFormat.name}\".")
+            sj.add("Decomposition=${actualFormat.decompose(machineCode)}")
+          }
         } else {
           sj.add(eitherFormatOrString.right().get())
         }
