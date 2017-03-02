@@ -12,6 +12,7 @@ import kilobyte.simulator.ui.menu.SimulatorMenuBar;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
+import org.apache.commons.cli.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +20,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import static java.awt.event.KeyEvent.VK_F;
 import static java.awt.event.KeyEvent.VK_V;
@@ -176,7 +179,35 @@ public class SimulatorApplication {
     applicationFrame.setVisible(true);
   }
 
+  static Options options = new Options()
+        .addOption("h", "help", false, "print this message")
+        .addOption("D", "debug", false, "activates logging")
+        .addOption(null, "supported", false, "prints all supported instructions");
+  static CommandLineParser parser = new DefaultParser();
+  static HelpFormatter formatter = new HelpFormatter();
+
+  private static CommandLine parse(String... args) throws ParseException {
+    return parser.parse(options, args);
+  }
   public static void main(String[] args) {
+    CommandLine line;
+    try {
+      line = parse(args);
+    } catch (ParseException e) {
+      return;
+    }
+
+    if (line.hasOption("supported")) {
+      Simulator.getSupportedInstructions().forEach(System.out::println);
+      return;
+    }
+
+    if (!(line.hasOption("debug") || line.hasOption("D"))) {
+      LogManager.getLogManager().reset();
+    } else {
+      log.info("Logging is activated");
+    }
+
     SwingUtilities.invokeLater(() -> {
       // The application itself is conglomeration of Swing components
       // hence it has to be instantiated on the EDT
