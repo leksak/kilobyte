@@ -9,9 +9,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class SimulatorTest {
-  //ADD
+  /**
+   * Addition with overflow. Put the
+   * sum of registers $t0 and $t1 into register
+   * $v0. 
+   */
   @Test
   public void testALUMockAdd() {
     val simulator = Simulator.withInstructionsInMemory("add $v0, $t0, $t1");
@@ -21,7 +26,10 @@ class SimulatorTest {
     assertEquals(simulator.getRegisterValue("$v0"), 8);
   }
 
-  //SUB
+
+  /**
+   * Subtraction with overflow: set $v0 to ($t0 minus $t1)
+   */
   @Test
   public void testALUMockSub() {
     val simulator = Simulator.withInstructionsInMemory("sub $v0, $t0, $t1");
@@ -31,7 +39,9 @@ class SimulatorTest {
     assertEquals(simulator.getRegisterValue("$v0"), 2);
   }
 
-  //AND
+  /**
+   * Bitwise AND: Set $v0 to bitwise AND (&) of $t0 and $t1
+   */
   @Test
   public void testALUMockAND() {
     val simulator = Simulator.withInstructionsInMemory(
@@ -48,7 +58,9 @@ class SimulatorTest {
     assertEquals(1, simulator.getRegisterValue("$v0"));
   }
 
-  //OR
+  /**
+   * Bitwise OR: Set $v0 to bitwise OR (|) of $t0 and $t1
+   */
   @Test
   public void testALUMockOR() {
     val simulator = Simulator.withInstructionsInMemory("or $v0, $t0, $t1");
@@ -58,10 +70,14 @@ class SimulatorTest {
     assertEquals((5 | 3), simulator.getRegisterValue("$v0"));
   }
 
-  //NOR
+  /**
+   * Set $v0 to bitwise NOR of $t1 and $t2
+   */
   @Test
   public void testALUMockNOR() {
-    val simulator = Simulator.withInstructionsInMemory("nor $v0, $t1, $t2", "nor $v1, $t2, $t3");
+    val simulator = Simulator.withInstructionsInMemory(
+          "nor $v0, $t1, $t2",
+          "nor $v1, $t2, $t3");
     simulator.setRegisterValue("$t1", 10);
     simulator.setRegisterValue("$t2", 17);
     simulator.setRegisterValue("$t3", 23);
@@ -82,7 +98,7 @@ class SimulatorTest {
   }
 
 
-  //SLT Set less than : If \$t2 is less than $t3, then set $t1 to 1 else set $t1 to 0
+  //SLT Set less than : If $t1 is less than $t2, then set $v0 to 1 else set $v0 to 0
   @Test
   public void testALUMockSLT() {
     val simulator = Simulator.withInstructionsInMemory(
@@ -104,7 +120,9 @@ class SimulatorTest {
     assertEquals(0, simulator.getRegisterValue("$v1"));
   }
 
-  //LW
+  /**
+   * Load word: Set $t0 to contents of effective memory word address
+   */
   @Test
   public void testALUMockLW() {
     Byte startValue = Byte.valueOf("7");
@@ -117,7 +135,9 @@ class SimulatorTest {
     assertEquals(startValue.intValue(), simulator.getRegisterValue("$t0"));
   }
 
-  //SW
+  /**
+   * Store the word from register $t0 at offset
+   */
   @Test
   public void testALUMockSW() {
     val simulator = Simulator.withInstructionsInMemory("sw $t0, 20($t1)");
@@ -141,7 +161,9 @@ class SimulatorTest {
     assertEquals(simulator.getDataMemory(0), simulator.getRegisterValue("$t0"));
   }
 
-  //BEQ
+  /**
+   * Branch if equal: Branch to statement at the address of the label if \$t0 and \$t1 are equal",
+   */
   @Test
   public void testALUMockBEQFalse() {
     val simulator = Simulator.withInstructionsInMemory("beq $t0, $t1, 16");
@@ -152,6 +174,7 @@ class SimulatorTest {
     int currentPC = simulator.getProgramCounter().getAddressPointer();
     assertEquals(startPC + 4, currentPC);
   }
+
   @Test
   public void testALUMockBEQTrue() {
     val simulator = Simulator.withInstructionsInMemory("beq $t0, $t1, 6");
@@ -163,7 +186,9 @@ class SimulatorTest {
     assertEquals(24, currentPC);
   }
 
-  //ADDI
+  /**
+   * Addition immediate with overflow: set $t1 to (\$t2 plus the signed 16-bit immediate)
+   */
   @Test
   public void testALUMockADDI() {
     val simulator = Simulator.withInstructionsInMemory("addi $t1, $t2, 4");
@@ -172,6 +197,7 @@ class SimulatorTest {
     simulator.executeNextInstruction();
     assertEquals(7, simulator.getRegisterValue("$t1"));
   }
+
   //ORI - Bitwise OR immediate : Set \$t1 to bitwise OR of \$t2 and
   // zero-extended 16-bit immediate: ori \$t1, \$t2, 4
   @Test
@@ -182,24 +208,18 @@ class SimulatorTest {
     assertEquals((8 | 4), simulator.getRegisterValue("$t1"));
   }
 
-  //SRL - Shift right logical : Set \$t1 to result of shifting \$t2 right by
-  // number of bits specified by immediate: srl \$t1, \$t2, 10
+  /**
+   * SRL - Shift right logical: Set $t1 to result of shifting $t2 right by
+   * number of bits specified by the immediate
+   */
   @Test
   public void testALUMockSRL() {
     val simulator = Simulator.withInstructionsInMemory("srl $t1, $t2, 2");
-    simulator.setRegisterValue("$t2", 127);
-
-    //0111 1111(127_10) >>> 2 = 0001 1111(31_10)
+    val registerValue = 0b01111111; // 127
+    val expected = registerValue >>> 2; // >>> 2 is the logical shift right operator
+    simulator.setRegisterValue("$t2", registerValue);
     simulator.executeNextInstruction();
-    assertEquals(31, simulator.getRegisterValue("$t1"));
-  }
-  @Test
-  public void testALUMockSRL2() {
-    //10000000 >>> 2 = 00100000
-    val simulator = Simulator.withInstructionsInMemory("srl $t1, $t2, 2");
-    simulator.setRegisterValue("$t2", 0b10000000);
-    simulator.executeNextInstruction();
-    assertEquals(0b00100000, simulator.getRegisterValue("$t1"));
+    assertEquals(expected, simulator.getRegisterValue("$t1"));
   }
 
   //SRA - "Shift right arithmetic : Set \$t1 to result of sign-extended
@@ -207,11 +227,11 @@ class SimulatorTest {
   @Test
   public void testALUMockSRA() {
     val simulator = Simulator.withInstructionsInMemory("sra $t1, $t2, 2");
-    simulator.setRegisterValue("$t2", 127);
-    // 0111 1111 (127)
-    // 0001 1111 (31)
+    val registerValue = 0b01111111; // 127
+    val expected = registerValue >> 2; // >> 2 is the arithmetic shift right operator
+    simulator.setRegisterValue("$t2", registerValue);
     simulator.executeNextInstruction();
-    assertEquals(31, simulator.getRegisterValue("$t1"));
+    assertEquals(expected, simulator.getRegisterValue("$t1"));
   }
   @Test
   public void testALUMockSRA2() {

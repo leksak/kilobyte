@@ -156,7 +156,7 @@ data class Instruction private constructor(
           numericRepresentation = Integer.toUnsignedLong(numericRepresentation.toInt()))
   }
 
-  fun deepCopy() : Instruction {
+  fun deepCopy(): Instruction {
     // Create a deep copy of this instruction
     return copy()
   }
@@ -203,7 +203,7 @@ data class Instruction private constructor(
           funct = 32,
           mnemonicRepresentation = "add \$t1, \$t2, \$t3",
           numericRepresentation = 0x014b4820,
-          description = "Addition with overflow,. Put the" +
+          description = "Addition with overflow. Put the" +
                 " sum of registers rs and rt into register" +
                 " rd. Is only valid if shamt is 0.",
           format = Format.R,
@@ -215,7 +215,7 @@ data class Instruction private constructor(
           funct = 33,
           mnemonicRepresentation = "addu \$t1, \$t2, \$t3",
           numericRepresentation = 0x014B4821,
-          description = "Addition unsigned without overflow : set \$t1 to " +
+          description = "Addition unsigned without overflow: set \$t1 to " +
                 "(\$t2 plus \$t3), no overflow",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
@@ -225,7 +225,7 @@ data class Instruction private constructor(
           opcode = 8, //0x08
           mnemonicRepresentation = "addi \$t1, \$10, 4",
           numericRepresentation = 0x21490004,
-          description = "Addition immediate with overflow : set \$t1 to (\$10 " +
+          description = "Addition immediate with overflow: set \$t1 to (\$10 " +
                 "plus signed 16-bit immediate)",
           format = Format.I,
           pattern = INAME_RT_RS_OFFSET)
@@ -235,7 +235,7 @@ data class Instruction private constructor(
           opcode = 9, //0x09
           mnemonicRepresentation = "addiu \$t1, \$t2, 4",
           numericRepresentation = 0x25490004,
-          description = "Addition immediate with overflow : set \$t1 to (\$t2 " +
+          description = "Addition immediate with overflow: set \$t1 to (\$t2 " +
                 "plus signed 16-bit immediate)",
           format = Format.I,
           pattern = INAME_RT_RS_OFFSET)
@@ -246,7 +246,7 @@ data class Instruction private constructor(
           funct = 36,
           mnemonicRepresentation = "and \$t1, \$t2, \$t3",
           numericRepresentation = 0x014B4824,
-          description = "Bitwise AND : Set \$t1 to bitwise " +
+          description = "Bitwise AND: Set \$t1 to bitwise " +
                 "AND of \$t2 and \$t3",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
@@ -256,7 +256,7 @@ data class Instruction private constructor(
           opcode = 12, //0x0c
           mnemonicRepresentation = "andi \$t1, \$t2, 4",
           numericRepresentation = 0x31490004,
-          description = "Bitwise AND immediate : Set \$t1 to bitwise AND of " +
+          description = "Bitwise AND immediate: Set \$t1 to bitwise AND of " +
                 "\$t2 and zero-extended 16-bit immediate",
           format = Format.I,
           pattern = INAME_RT_RS_OFFSET)
@@ -267,7 +267,7 @@ data class Instruction private constructor(
           funct = 33,
           mnemonicRepresentation = "clo \$t1, \$t2",
           numericRepresentation = 0x71404821,
-          description = "Count number of leading ones : Set \$t1 to the count of " +
+          description = "Count number of leading ones: Set \$t1 to the count of " +
                 "leading one bits in \$t2 starting at most significant bit position.",
           format = Format.R,
           pattern = INAME_RD_RS)
@@ -278,7 +278,7 @@ data class Instruction private constructor(
           funct = 32,
           mnemonicRepresentation = "clz \$t1, \$t2",
           numericRepresentation = 0x71404820,
-          description = "Count number of leading zeroes : Set \$t1 to the count " +
+          description = "Count number of leading zeroes: Set \$t1 to the count " +
                 "of leading zero bits in \$t2 starting at most significant bit position.",
           format = Format.R,
           pattern = INAME_RD_RS)
@@ -289,7 +289,7 @@ data class Instruction private constructor(
           funct = 26,
           mnemonicRepresentation = "div \$t1, \$t2",
           numericRepresentation = 0x012A001A,
-          description = " Division with overflow : Divide \$t1 by " +
+          description = " Division with overflow: Divide \$t1 by " +
                 "\$t2 then set LO to quotient and HI to remainder " +
                 "(use mfhi to access HI, mflo to access LO)",
           format = Format.R,
@@ -301,7 +301,7 @@ data class Instruction private constructor(
           funct = 27,
           mnemonicRepresentation = "divu \$t1, \$t2",
           numericRepresentation = 0x012A001B,
-          description = "Division unsigned without overflow : Divide " +
+          description = "Division unsigned without overflow: Divide " +
                 "unsigned \$t1 by \$t2 then set LO to quotient and " +
                 "HI to remainder (use mfhi to access HI, mflo to access " +
                 "LO)",
@@ -314,7 +314,7 @@ data class Instruction private constructor(
           funct = 24,
           mnemonicRepresentation = "mult \$t1, \$t2",
           numericRepresentation = 0x012A0018,
-          description = "Multiplication : Set hi to high-order 32 bits, " +
+          description = "Multiplication: Set hi to high-order 32 bits, " +
                 "lo to low-order 32 bits of the product of \$t1 and " +
                 "\$t2 (use mfhi to access hi, mflo to access lo)",
           format = Format.R,
@@ -326,7 +326,7 @@ data class Instruction private constructor(
           funct = 25,
           mnemonicRepresentation = "multu \$t1, \$t2",
           numericRepresentation = 0x012A0019,
-          description = "Multiplication unsigned : Set HI to high-order " +
+          description = "Multiplication unsigned: Set HI to high-order " +
                 "32 bits, LO to low-order 32 bits of the product of " +
                 "unsigned \$t1 and \$t2 (use mfhi to access HI, " +
                 "mflo to access LO)",
@@ -339,7 +339,7 @@ data class Instruction private constructor(
           funct = 2,
           mnemonicRepresentation = "mul \$v0, \$a0, \$v0",
           numericRepresentation = 0x70821002,
-          description = "Multiplication without overflow  : Set HI to " +
+          description = "Multiplication without overflow : Set HI to " +
                 "high-order 32 bits, LO and \$t1 to low-order 32 bits of " +
                 "the product of \$t2 and \$t3 (use mfhi to access HI, mflo " +
                 "to access LO)",
@@ -352,7 +352,7 @@ data class Instruction private constructor(
           funct = 0,
           mnemonicRepresentation = "madd \$t1, \$t2",
           numericRepresentation = 0x712A0000,
-          description = "Multiply add : Multiply \$t1 by \$t2 then " +
+          description = "Multiply add: Multiply \$t1 by \$t2 then " +
                 "increment HI by high-order 32 bits of product, " +
                 "increment LO by low-order 32 bits of product (use mfhi " +
                 "to access HI, mflo to access LO)",
@@ -365,7 +365,7 @@ data class Instruction private constructor(
           funct = 1,
           mnemonicRepresentation = "maddu \$t1, \$t2",
           numericRepresentation = 0x712A0001,
-          description = "Multiply add unsigned : Multiply \$t1 by \$t2 " +
+          description = "Multiply add unsigned: Multiply \$t1 by \$t2 " +
                 "then increment HI by high-order 32 bits of product, " +
                 "increment LO by low-order 32 bits of product, " +
                 "unsigned (use mfhi to access HI, mflo to access LO",
@@ -378,7 +378,7 @@ data class Instruction private constructor(
           funct = 4,
           mnemonicRepresentation = "msub \$t1, \$t2",
           numericRepresentation = 0x712A0004,
-          description = "Multiply subtract : Multiply \$t1 by \$t2 then " +
+          description = "Multiply subtract: Multiply \$t1 by \$t2 then " +
                 "decrement HI by high-order 32 bits of product, decrement LO by " +
                 "low-order 32 bits of product (use mfhi to access HI, " +
                 "mflo to access LO)",
@@ -391,7 +391,7 @@ data class Instruction private constructor(
           funct = 5,
           mnemonicRepresentation = "msubu \$t1, \$t2",
           numericRepresentation = 0x712A0005,
-          description = "Multiply subtract unsigned : Multiply \$t1 by \$t2" +
+          description = "Multiply subtract unsigned: Multiply \$t1 by \$t2" +
                 " then decrement HI by high-order 32 bits of product, " +
                 "decement LO by low-order 32 bits of product, unsigned " +
                 "(use mfhi to access HI, mflo to access LO)",
@@ -404,7 +404,7 @@ data class Instruction private constructor(
           funct = 39,
           mnemonicRepresentation = "nor \$t1, \$t2, \$t3",
           numericRepresentation = 0x014B4827,
-          description = "Bitwise NOR : Set \$t1 to bitwise NOR of \$t2 " +
+          description = "Bitwise NOR: Set \$t1 to bitwise NOR of \$t2 " +
                 "and \$t3",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
@@ -415,7 +415,7 @@ data class Instruction private constructor(
           funct = 37,
           mnemonicRepresentation = "or \$t1, \$t2, \$t3",
           numericRepresentation = 0x014B4825,
-          description = "Bitwise OR : Set \$t1 to bitwise OR of \$t2 " +
+          description = "Bitwise OR: Set \$t1 to bitwise OR of \$t2 " +
                 "and \$t3",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
@@ -425,7 +425,7 @@ data class Instruction private constructor(
           opcode = 13, //0x0d
           mnemonicRepresentation = "ori \$t1, \$t2, 4",
           numericRepresentation = 0x35490004,
-          description = "Bitwise OR immediate : Set \$t1 to bitwise OR of \$t2 " +
+          description = "Bitwise OR immediate: Set \$t1 to bitwise OR of \$t2 " +
                 "and zero-extended 16-bit immediate",
           format = Format.I,
           pattern = INAME_RT_RS_OFFSET)
@@ -439,7 +439,7 @@ data class Instruction private constructor(
           additionalExamples = mapOf(
                 "sll \$s1, \$t1, 19" to 0x00098cc0
           ),
-          description = "Shift left logical : Set \$t1 to result of " +
+          description = "Shift left logical: Set \$t1 to result of " +
                 "shifting \$t2 left by number of bits specified by " +
                 "the shamt amount",
           format = Format.R,
@@ -451,7 +451,7 @@ data class Instruction private constructor(
           funct = 4,
           mnemonicRepresentation = "sllv \$t1, \$t2, \$t3",
           numericRepresentation = 0x014b4804,
-          description = "Shift left logical variable : Set \$t1 to result " +
+          description = "Shift left logical variable: Set \$t1 to result " +
                 "of shifting \$t2 left by number of bits specified by " +
                 "value in low-order 5 bits of \$t3",
           format = Format.R,
@@ -463,7 +463,7 @@ data class Instruction private constructor(
           funct = 3,
           mnemonicRepresentation = "sra \$t1, \$t2, 10",
           numericRepresentation = 0xa4a83,
-          description = "Shift right arithmetic : Set \$t1 to result of " +
+          description = "Shift right arithmetic: Set \$t1 to result of " +
                 "sign-extended shifting \$t2 right by number of bits " +
                 "specified by immediate",
           format = Format.R,
@@ -476,7 +476,7 @@ data class Instruction private constructor(
           funct = 7,
           mnemonicRepresentation = "srav \$t1, \$t2, \$t3",
           numericRepresentation = 0x014b4807,
-          description = "Shift right arithmetic variable : Set \$t1 to " +
+          description = "Shift right arithmetic variable: Set \$t1 to " +
                 "result of sign-extended shifting \$t2 right by number " +
                 "of bits specified by value in low-order 5 bits of \$t3",
           format = Format.R,
@@ -488,7 +488,7 @@ data class Instruction private constructor(
           funct = 2,
           mnemonicRepresentation = "srl \$t1, \$t2, 10",
           numericRepresentation = 0xa4a82,
-          description = "Shift right logical : Set \$t1 to result of " +
+          description = "Shift right logical: Set \$t1 to result of " +
                 "shifting \$t2 right by number of bits specified " +
                 "by immediate",
           format = Format.R,
@@ -502,7 +502,7 @@ data class Instruction private constructor(
           funct = 6,
           mnemonicRepresentation = "srlv \$t1, \$t2, \$t3",
           numericRepresentation = 0x014b4806,
-          description = "Shift right logical variable : Set \$t1 to result " +
+          description = "Shift right logical variable: Set \$t1 to result " +
                 "of shifting \$t2 right by number of bits specified by " +
                 "value in low-order 5 bits of \$t3",
           format = Format.R,
@@ -514,7 +514,7 @@ data class Instruction private constructor(
           funct = 34,
           mnemonicRepresentation = "sub \$t1, \$t2, \$t3",
           numericRepresentation = 0x014b4822,
-          description = "Subtraction with overflow : " +
+          description = "Subtraction with overflow: " +
                 "set \$t1 to (\$t2 minus \$t3)",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
@@ -525,7 +525,7 @@ data class Instruction private constructor(
           funct = 35,
           mnemonicRepresentation = "subu \$t1, \$t2, \$t3",
           numericRepresentation = 0x014B4823,
-          description = "Subtraction unsigned without overflow : set " +
+          description = "Subtraction unsigned without overflow: set " +
                 "\$t1 to (\$t2 minus \$t3), no overflow",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
@@ -536,7 +536,7 @@ data class Instruction private constructor(
           funct = 38,
           mnemonicRepresentation = "xor \$t1, \$t2, \$t3",
           numericRepresentation = 0x014B4826,
-          description = "Bitwise XOR (exclusive OR) : Set \$t1 to bitwise " +
+          description = "Bitwise XOR (exclusive OR): Set \$t1 to bitwise " +
                 "XOR of \$t2 and \$t3",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
@@ -546,7 +546,7 @@ data class Instruction private constructor(
           opcode = 14, //0x0e
           mnemonicRepresentation = "xori \$t1, \$t2, 4",
           numericRepresentation = 0x39490004,
-          description = "Bitwise XOR immediate : Set \$t1 to bitwise XOR " +
+          description = "Bitwise XOR immediate: Set \$t1 to bitwise XOR " +
                 "of \$t2 and zero-extended 16-bit immediate",
           format = Format.I,
           pattern = INAME_RT_RS_OFFSET)
@@ -556,7 +556,7 @@ data class Instruction private constructor(
           opcode = 15, //0x0f
           mnemonicRepresentation = "lui \$t1, 4",
           numericRepresentation = 0x3C090004,
-          description = "Load upper immediate : Set high-order 16 bits of \$t1 " +
+          description = "Load upper immediate: Set high-order 16 bits of \$t1 " +
                 "to 16-bit immediate and low-order 16 bits to 0",
           format = Format.I,
           pattern = INAME_RT_OFFSET)
@@ -567,7 +567,7 @@ data class Instruction private constructor(
           funct = 42,
           mnemonicRepresentation = "slt \$t1, \$t2, \$t3",
           numericRepresentation = 0x014B482A,
-          description = "Set less than : If \$t2 is less than \$t3, then " +
+          description = "Set less than: If \$t2 is less than \$t3, then " +
                 "set \$t1 to 1 else set \$t1 to 0",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
@@ -578,7 +578,7 @@ data class Instruction private constructor(
           funct = 43,
           mnemonicRepresentation = "sltu \$t1, \$t2, \$t3",
           numericRepresentation = 0x014B482B,
-          description = "Set less than unsigned : If \$t2 is less than " +
+          description = "Set less than unsigned: If \$t2 is less than " +
                 "\$t3 using unsigned comparision, then set \$t1 to 1 " +
                 "else set \$t1 to 0",
           format = Format.R,
@@ -589,7 +589,7 @@ data class Instruction private constructor(
           opcode = 10, //0x0a
           mnemonicRepresentation = "slti \$t1, \$t2, 4",
           numericRepresentation = 0x29490004,
-          description = "Set less than immediate : If \$t2 is less than " +
+          description = "Set less than immediate: If \$t2 is less than " +
                 "sign-extended 16-bit immediate, then set \$t1 to 1 else set \$t1 to 0",
           format = Format.I,
           pattern = INAME_RT_RS_OFFSET)
@@ -599,7 +599,7 @@ data class Instruction private constructor(
           opcode = 11, //0x0b
           mnemonicRepresentation = "sltiu \$t1, \$t2, 4",
           numericRepresentation = 0x2D490004,
-          description = "Set less than immediate unsigned : If \$t2 is less than" +
+          description = "Set less than immediate unsigned: If \$t2 is less than" +
                 " sign-extended 16-bit immediate using unsigned comparison, " +
                 "then set \$t1 to 1 else set \$t1 to 0",
           format = Format.I,
@@ -612,7 +612,7 @@ data class Instruction private constructor(
           opcode = 4, //0x04
           mnemonicRepresentation = "beq \$t1, \$t2, 4",
           numericRepresentation = 0x112A0004,
-          description = "Branch if equal : Branch to statement at label's " +
+          description = "Branch if equal: Branch to statement at label's " +
                 "address if \$t1 and \$t2 are equal",
           format = Format.I,
           type = Type.B,
@@ -642,7 +642,7 @@ data class Instruction private constructor(
           rt = 1,
           mnemonicRepresentation = "bgez \$t1, 5",
           numericRepresentation = 0x05210005,
-          description = "Branch if greater than or equal to zero : Branch to " +
+          description = "Branch if greater than or equal to zero: Branch to " +
                 "statement at label's address if \$t1 is greater than or equal to zero",
           format = Format.I,
           type = Type.B,
@@ -701,7 +701,7 @@ data class Instruction private constructor(
           opcode = 7, //0x07
           mnemonicRepresentation = "bgtz \$t1, 4",
           numericRepresentation = 0x1D200004,
-          description = "Branch if greater than zero : Branch to statement at " +
+          description = "Branch if greater than zero: Branch to statement at " +
                 "label's address if \$t1 is greater than zero",
           format = Format.I,
           type = Type.B,
@@ -732,7 +732,7 @@ data class Instruction private constructor(
           opcode = 6, //0x06
           mnemonicRepresentation = "blez \$t1, 4",
           numericRepresentation = 0x19200004,
-          description = "Branch if less than or equal to zero : Branch to " +
+          description = "Branch if less than or equal to zero: Branch to " +
                 "statement at label's address if \$t1 is less than or equal to zero",
           format = Format.I,
           type = Type.B,
@@ -744,7 +744,7 @@ data class Instruction private constructor(
           rt = 16,
           mnemonicRepresentation = "bltzal \$t1, 10",
           numericRepresentation = 0x0530000A,
-          description = "Branch if less than zero and link : If \$t1 is less " +
+          description = "Branch if less than zero and link: If \$t1 is less " +
                 "than or equal to zero, then set \$ra to the Program Counter and " +
                 "branch to statement at label's address",
           format = Format.I,
@@ -770,7 +770,7 @@ data class Instruction private constructor(
           rt = 0,
           mnemonicRepresentation = "bltz \$t1, 5",
           numericRepresentation = 0x05200005,
-          description = "Branch if less than zero : Branch to statement at " +
+          description = "Branch if less than zero: Branch to statement at " +
                 "label's address if \$t1 is less than zero",
           format = Format.I,
           type = Type.B,
@@ -782,7 +782,7 @@ data class Instruction private constructor(
           rt = 2,
           mnemonicRepresentation = "bltzl \$t1, 5",
           numericRepresentation = 0x05220005,
-          description = "Branch if less than zero likely : Branch to statement at " +
+          description = "Branch if less than zero likely: Branch to statement at " +
                 "label's address if \$t1 is less than zero",
           format = Format.I,
           type = Type.B,
@@ -793,7 +793,7 @@ data class Instruction private constructor(
           opcode = 5, //0x05
           mnemonicRepresentation = "bne \$t1, \$t2, 4",
           numericRepresentation = 0x152A0004,
-          description = "Branch if not equal : Branch to statement at label's " +
+          description = "Branch if not equal: Branch to statement at label's " +
                 "address if \$t1 and \$t2 are not equal",
           format = Format.I,
           type = Type.B,
@@ -822,7 +822,7 @@ data class Instruction private constructor(
           opcode = 2, //0x02
           mnemonicRepresentation = "j 4",
           numericRepresentation = 0x08000004,
-          description = "Jump unconditionally : Jump to statement at target address",
+          description = "Jump unconditionally: Jump to statement at target address",
           format = Format.J,
           pattern = INAME_TARGET)
 
@@ -831,7 +831,7 @@ data class Instruction private constructor(
           opcode = 3, //0x03
           mnemonicRepresentation = "jal 0x00400000",
           numericRepresentation = 0x0c100000,
-          description = "Jump and link : Set \$ra to Program Counter " +
+          description = "Jump and link: Set \$ra to Program Counter " +
                 "(return address) then jump to statement at target address",
           format = Format.J,
           pattern = INAME_TARGET)
@@ -843,7 +843,7 @@ data class Instruction private constructor(
           funct = 9,
           mnemonicRepresentation = "jalr \$t1, \$t2",
           numericRepresentation = 0x01404809,
-          description = "Jump and link register : Set \$t1 to Program Counter " +
+          description = "Jump and link register: Set \$t1 to Program Counter " +
                 "(return offset) then jump to statement whose offset is " +
                 "in \$t2",
           format = Format.R,
@@ -856,7 +856,7 @@ data class Instruction private constructor(
           funct = 8,
           mnemonicRepresentation = "jr \$t1",
           numericRepresentation = 0x01200008,
-          description = "Jump register unconditionally : Jump to statement " +
+          description = "Jump register unconditionally: Jump to statement " +
                 "whose offset is in \$t1",
           format = Format.R,
           type = Type.J,
@@ -868,7 +868,7 @@ data class Instruction private constructor(
           funct = 52,
           mnemonicRepresentation = "teq \$t1, \$t2",
           numericRepresentation = 0x012A0034,
-          description = "Trap if equal : Trap if \$t1 is equal to \$t2",
+          description = "Trap if equal: Trap if \$t1 is equal to \$t2",
           format = Format.R,
           type = Type.T,
           pattern = INAME_RS_RT)
@@ -879,7 +879,7 @@ data class Instruction private constructor(
           rt = 12,
           mnemonicRepresentation = "teqi \$t1, 5",
           numericRepresentation = 0x052C0005,
-          description = "Trap if equal to immediate : Trap if \$t1 " +
+          description = "Trap if equal to immediate: Trap if \$t1 " +
                 "is equal to sign-extended 16 bit immediate",
           format = Format.I,
           type = Type.T,
@@ -891,7 +891,7 @@ data class Instruction private constructor(
           funct = 54,
           mnemonicRepresentation = "tne \$t1, \$t2",
           numericRepresentation = 0x012A0036,
-          description = "Trap if not equal : Trap if \$t1 is not " +
+          description = "Trap if not equal: Trap if \$t1 is not " +
                 "equal to \$t2",
           format = Format.R,
           type = Type.T,
@@ -915,7 +915,7 @@ data class Instruction private constructor(
           funct = 48,
           mnemonicRepresentation = "tge \$t1, \$t2",
           numericRepresentation = 0x012A0030,
-          description = "Trap if greater or equal : Trap if \$t1 is " +
+          description = "Trap if greater or equal: Trap if \$t1 is " +
                 "greater than or equal to \$t2",
           format = Format.R,
           type = Type.T,
@@ -927,7 +927,7 @@ data class Instruction private constructor(
           funct = 49,
           mnemonicRepresentation = "tgeu \$t1, \$t2",
           numericRepresentation = 0x012A0031,
-          description = "Trap if greater or equal : Trap if \$t1 is " +
+          description = "Trap if greater or equal: Trap if \$t1 is " +
                 "greater than or equal to \$t2",
           format = Format.R,
           type = Type.T,
@@ -939,7 +939,7 @@ data class Instruction private constructor(
           rt = 8,
           mnemonicRepresentation = "tgei \$t1, 5",
           numericRepresentation = 0x05280005,
-          description = "Trap if greater than or equal to immediate : " +
+          description = "Trap if greater than or equal to immediate: " +
                 "Trap if \$t1 greater than or equal to sign-extended 16 bit immediate",
           format = Format.I,
           type = Type.T,
@@ -951,7 +951,7 @@ data class Instruction private constructor(
           rt = 9,
           mnemonicRepresentation = "tgeiu \$t1, 5",
           numericRepresentation = 0x05290005,
-          description = "Trap if greater or equal to immediate unsigned : " +
+          description = "Trap if greater or equal to immediate unsigned: " +
                 "Trap if \$t1 greater than or equal to sign-extended 16 bit " +
                 "immediate, unsigned comparison",
           format = Format.I,
@@ -975,7 +975,7 @@ data class Instruction private constructor(
           funct = 51,
           mnemonicRepresentation = "tltu \$t1, \$t2",
           numericRepresentation = 0x012A0033,
-          description = "Trap if less than unsigned : Trap if \$t1 less " +
+          description = "Trap if less than unsigned: Trap if \$t1 less " +
                 "than \$t2, unsigned comparison",
           format = Format.R,
           type = Type.T,
@@ -987,7 +987,7 @@ data class Instruction private constructor(
           rt = 10,
           mnemonicRepresentation = "tlti \$t1, 5",
           numericRepresentation = 0x052A0005,
-          description = "Trap if less than immediate : Trap if \$t1 less than " +
+          description = "Trap if less than immediate: Trap if \$t1 less than " +
                 "sign-extended 16-bit immediate",
           format = Format.I,
           type = Type.T,
@@ -999,7 +999,7 @@ data class Instruction private constructor(
           rt = 11,
           mnemonicRepresentation = "tltiu \$t1, 5",
           numericRepresentation = 0x052B0005,
-          description = "Trap if less than immediate unsigned : Trap if \$t1 " +
+          description = "Trap if less than immediate unsigned: Trap if \$t1 " +
                 "less than sign-extended 16-bit immediate, unsigned comparison",
           format = Format.I,
           type = Type.T,
@@ -1035,7 +1035,7 @@ data class Instruction private constructor(
       funct = 12,
       mnemonicRepresentation = "syscall",
       numericRepresentation = 0x0000000c,
-      description = "Issue a system call : Execute the system call " +
+      description = "Issue a system call: Execute the system call " +
         "specified by value in \$v0",
       format = Format.R,
       pattern = INAME)
@@ -1046,7 +1046,7 @@ data class Instruction private constructor(
       funct = 13,
       mnemonicRepresentation = "break",
       numericRepresentation = 0x0000000d,
-      description = "Break execution : Terminate program execution " +
+      description = "Break execution: Terminate program execution " +
         "with exception",
       format = Format.R,
       pattern = INAME)
@@ -1087,7 +1087,7 @@ data class Instruction private constructor(
           opcode = 32,
           mnemonicRepresentation = "lb \$t1, 7(\$t2)",
           numericRepresentation = 0x81490007,
-          description = "Load byte : Set \$t1 to sign-extended 8-bit value " +
+          description = "Load byte: Set \$t1 to sign-extended 8-bit value " +
                 "from effective memory byte address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1097,7 +1097,7 @@ data class Instruction private constructor(
           opcode = 36,
           mnemonicRepresentation = "lbu \$t1, 11(\$t2)",
           numericRepresentation = 0x9149000B,
-          description = "Load byte unsigned : Set \$t1 to zero-extended 8-bit " +
+          description = "Load byte unsigned: Set \$t1 to zero-extended 8-bit " +
                 "value from effective memory byte address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1107,7 +1107,7 @@ data class Instruction private constructor(
           opcode = 33,
           mnemonicRepresentation = "lh \$t1, 8(\$t2)",
           numericRepresentation = 0x85490008,
-          description = "Load halfword : Set \$t1 to sign-extended 16-bit " +
+          description = "Load halfword: Set \$t1 to sign-extended 16-bit " +
                 "value from effective memory halfword address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1117,7 +1117,7 @@ data class Instruction private constructor(
           opcode = 37,
           mnemonicRepresentation = "lhu \$t1, 12(\$t2)",
           numericRepresentation = 0x9549000C,
-          description = "Load halfword unsigned : Set \$t1 to zero-extended " +
+          description = "Load halfword unsigned: Set \$t1 to zero-extended " +
                 "16-bit value from effective memory halfword address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1127,7 +1127,7 @@ data class Instruction private constructor(
           opcode = 35,
           mnemonicRepresentation = "lw \$t1, 10(\$t2)",
           numericRepresentation = 0x8D49000a,
-          description = "Load word : Set \$t1 to contents of effective memory " +
+          description = "Load word: Set \$t1 to contents of effective memory " +
                 "word address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1137,7 +1137,7 @@ data class Instruction private constructor(
           opcode = 49, // 0x31
           mnemonicRepresentation = "lwc1 \$ra, 4(\$sp)",
           numericRepresentation = 0xC7BF0004,
-          description = "Load word into Coprocessor 1 (FPU) : Set \$ra to 32-bit " +
+          description = "Load word into Coprocessor 1 (FPU): Set \$ra to 32-bit " +
                 "value from effective memory word address.",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1147,7 +1147,7 @@ data class Instruction private constructor(
           opcode = 50, // 0x32
           mnemonicRepresentation = "lwc2 \$ra, 4(\$sp)",
           numericRepresentation = 0xCBBF0004,
-          description = "Load word into Coprocessor 2 (FPU) : Set \$ra to 32-bit " +
+          description = "Load word into Coprocessor 2 (FPU): Set \$ra to 32-bit " +
                 "value from effective memory word address.",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1157,7 +1157,7 @@ data class Instruction private constructor(
           opcode = 34,
           mnemonicRepresentation = "lwl \$t1, 9(\$t2)",
           numericRepresentation = 0x89490009,
-          description = "Load word left : Load from 1 to 4 bytes left-justified " +
+          description = "Load word left: Load from 1 to 4 bytes left-justified " +
                 "into \$t1, starting with effective memory byte address and " +
                 "continuing through the low-order byte of its word",
           format = Format.I,
@@ -1168,7 +1168,7 @@ data class Instruction private constructor(
           opcode = 38,
           mnemonicRepresentation = "lwr \$t1, 13(\$t2)",
           numericRepresentation = 0x9949000D,
-          description = "Load word right : Load from 1 to 4 bytes right-justified" +
+          description = "Load word right: Load from 1 to 4 bytes right-justified" +
                 " into \$t1, starting with effective memory byte address and " +
                 "continuing through the high-order byte of its word",
           format = Format.I,
@@ -1179,7 +1179,7 @@ data class Instruction private constructor(
           opcode = 48, // 0x30
           mnemonicRepresentation = "ll \$ra, 4(\$sp)",
           numericRepresentation = 0xC3BF0004,
-          description = "Load linked : Paired with Store Conditional (sc) " +
+          description = "Load linked: Paired with Store Conditional (sc) " +
                 "to perform atomic read-modify-write.",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1189,7 +1189,7 @@ data class Instruction private constructor(
           opcode = 40, // 0x28
           mnemonicRepresentation = "sb \$t1, 4(\$t2)",
           numericRepresentation = 0xA1490004,
-          description = "Store byte : Store the low-order 8 bits of \$t1 " +
+          description = "Store byte: Store the low-order 8 bits of \$t1 " +
                 "into the effective memory byte address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1199,7 +1199,7 @@ data class Instruction private constructor(
           opcode = 41, // 0x29
           mnemonicRepresentation = "sh \$t1, 4(\$t2)",
           numericRepresentation = 0xA5490004,
-          description = "Store halfword : Store the low-order 16 bits of \$t1 " +
+          description = "Store halfword: Store the low-order 16 bits of \$t1 " +
                 "into the effective memory halfword address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1218,7 +1218,7 @@ data class Instruction private constructor(
           opcode = 57, // 0x39
           mnemonicRepresentation = "swc1 \$t1, 4(\$sp)",
           numericRepresentation = 0xE7A90004,
-          description = "Store word from Coprocesor 1 (FPU) : Store 32 bit value " +
+          description = "Store word from Coprocesor 1 (FPU): Store 32 bit value " +
                 "in \$t1 to effective memory word address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1228,7 +1228,7 @@ data class Instruction private constructor(
           opcode = 58, // 0x3a
           mnemonicRepresentation = "swc2 \$t1, 4(\$sp)",
           numericRepresentation = 0xEBA90004,
-          description = "Store word from Coprocesor 2 (FPU) : Store 32 bit value " +
+          description = "Store word from Coprocesor 2 (FPU): Store 32 bit value " +
                 "in \$t1 to effective memory word address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1238,7 +1238,7 @@ data class Instruction private constructor(
           opcode = 61, // 0x3d
           mnemonicRepresentation = "sdc1 \$t1, 4(\$sp)",
           numericRepresentation = 0xF7A90004,
-          description = "Store double word from Coprocessor 1 (FPU)) : " +
+          description = "Store double word from Coprocessor 1 (FPU)): " +
                 "Store 64 bit value in \$t1 to effective memory doubleword address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1248,7 +1248,7 @@ data class Instruction private constructor(
           opcode = 62, // 0x3e
           mnemonicRepresentation = "sdc2 \$t1, 4(\$sp)",
           numericRepresentation = 0xFBA90004,
-          description = "Store double word from Coprocessor 2 (FPU)) : " +
+          description = "Store double word from Coprocessor 2 (FPU)): " +
                 "Store 64 bit value in \$t1 to effective memory doubleword address",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1258,7 +1258,7 @@ data class Instruction private constructor(
           opcode = 42, // 0x2a
           mnemonicRepresentation = "swl \$t1, 4(\$t2)",
           numericRepresentation = 0xa9490004,
-          description = "Store word left : Store high-order 1 to 4 bytes of " +
+          description = "Store word left: Store high-order 1 to 4 bytes of " +
                 "\$t1 into memory, starting with effective byte address and " +
                 "continuing through the low-order byte of its word",
           format = Format.I,
@@ -1278,7 +1278,7 @@ data class Instruction private constructor(
           opcode = 56, // 0x38
           mnemonicRepresentation = "sc \$t1, 4(\$sp)",
           numericRepresentation = 0xE3A90004,
-          description = "Store conditional : Paired with Load Linked (ll) to " +
+          description = "Store conditional: Paired with Load Linked (ll) to " +
                 "perform atomic read-modify-write.  Stores \$t1 value into " +
                 "effective address, then sets \$t1 to 1 for success.",
           format = Format.I,
@@ -1290,7 +1290,7 @@ data class Instruction private constructor(
           funct = 16,
           mnemonicRepresentation = "mfhi \$t1",
           numericRepresentation = 0x00004810,
-          description = "Move from HI register : Set \$t1 to contents of " +
+          description = "Move from HI register: Set \$t1 to contents of " +
                 "HI (see multiply and divide operations)",
           format = Format.R,
           pattern = INAME_RD)
@@ -1301,7 +1301,7 @@ data class Instruction private constructor(
           funct = 18,
           mnemonicRepresentation = "mflo \$t1",
           numericRepresentation = 0x00004812,
-          description = "Move from LO register : Set \$t1 to contents of " +
+          description = "Move from LO register: Set \$t1 to contents of " +
                 "LO (see multiply and divide operations)",
           format = Format.R,
           pattern = INAME_RD)
@@ -1312,7 +1312,7 @@ data class Instruction private constructor(
           funct = 17,
           mnemonicRepresentation = "mthi \$t1",
           numericRepresentation = 0x01200011,
-          description = "Move to HI register : Set HI to contents of " +
+          description = "Move to HI register: Set HI to contents of " +
                 "\$t1 (see multiply and divide operations)",
           format = Format.R,
           pattern = INAME_RS)
@@ -1323,7 +1323,7 @@ data class Instruction private constructor(
           funct = 19,
           mnemonicRepresentation = "mtlo \$t1",
           numericRepresentation = 0x01200013,
-          description = "Move to LO register : Set LO to contents of " +
+          description = "Move to LO register: Set LO to contents of " +
                 "\$t1 (see multiply and divide operations)",
           format = Format.R,
           pattern = INAME_RS)
@@ -1336,7 +1336,7 @@ data class Instruction private constructor(
           funct = 11,
           mnemonicRepresentation = "movn \$t1, \$t2, \$t3",
           numericRepresentation = 0x014b480b,
-          description = "Move conditional not zero : Set \$t1 to \$t2 " +
+          description = "Move conditional not zero: Set \$t1 to \$t2 " +
                 "if \$t3 is not zero",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
@@ -1347,7 +1347,7 @@ data class Instruction private constructor(
           funct = 10,
           mnemonicRepresentation = "movz \$t1, \$t2, \$t3",
           numericRepresentation = 0x014b480a,
-          description = "Move conditional zero : Set \$t1 to \$t2 if " +
+          description = "Move conditional zero: Set \$t1 to \$t2 if " +
                 "\$t3 is zero",
           format = Format.R,
           pattern = INAME_RD_RS_RT)
@@ -1359,7 +1359,7 @@ data class Instruction private constructor(
           opcode = 51, // 0x33
           mnemonicRepresentation = "pref 1, 2(\$sp)",
           numericRepresentation = 0xCFA10002,
-          description = "Load double word Coprocessor 1 (FPU)) : Set \$t1 to " +
+          description = "Load double word Coprocessor 1 (FPU)): Set \$t1 to " +
                 "64-bit value from effective memory doubleword address.",
           format = Format.I,
           pattern = INAME_HINT_ADDRESS)
@@ -1369,7 +1369,7 @@ data class Instruction private constructor(
           opcode = 53, // 0x35
           mnemonicRepresentation = "ldc1 \$t1, 4(\$sp)",
           numericRepresentation = 0xD7A90004,
-          description = "Load double word Coprocessor 1 (FPU)) : Set \$t1 to " +
+          description = "Load double word Coprocessor 1 (FPU)): Set \$t1 to " +
                 "64-bit value from effective memory doubleword address.",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1379,7 +1379,7 @@ data class Instruction private constructor(
           opcode = 54, // 0x36
           mnemonicRepresentation = "ldc2 \$t1, 4(\$sp)",
           numericRepresentation = 0xDBA90004,
-          description = "Load double word Coprocessor 2 (FPU)) : Set \$t1 to " +
+          description = "Load double word Coprocessor 2 (FPU)): Set \$t1 to " +
                 "64-bit value from effective memory doubleword address.",
           format = Format.I,
           pattern = INAME_RT_ADDRESS)
@@ -1500,7 +1500,7 @@ data class Instruction private constructor(
       return allExamples
     }
 
-    @JvmStatic fun formatFrom(opcode: Opcode) : Either<Format, String> {
+    @JvmStatic fun formatFrom(opcode: Opcode): Either<Format, String> {
       if (opcodeToFormatMap.containsKey(opcode)) {
         return Either.left(opcodeToFormatMap[opcode])
       } else {
