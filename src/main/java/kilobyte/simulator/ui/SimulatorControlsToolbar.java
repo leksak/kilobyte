@@ -8,6 +8,8 @@ import java.awt.*;
 
 import static kilobyte.simulator.ui.SimulatorControlsToolbar.ToolbarDisplayState.*;
 
+import kilobyte.simulator.ui.SimulatorControlsToolbar.ToolbarDisplayState.Action;
+
 /**
  * Presents all the required control operations required by the
  * assignment specification,

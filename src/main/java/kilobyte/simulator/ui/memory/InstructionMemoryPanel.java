@@ -2,15 +2,13 @@ package kilobyte.simulator.ui.memory;
 
 import kilobyte.common.annotations.InstantiateOnEDT;
 import kilobyte.common.annotations.InvokeLaterNotNecessary;
-import lombok.extern.java.Log;
 import kilobyte.simulator.hardware.InstructionMemory;
 import kilobyte.simulator.ui.ChangeRadixDisplayCapable;
 import kilobyte.simulator.ui.utils.Radix;
+import lombok.extern.java.Log;
 
 import javax.swing.*;
 import java.awt.*;
-
-import static java.lang.String.format;
 
 @InstantiateOnEDT
 @Log

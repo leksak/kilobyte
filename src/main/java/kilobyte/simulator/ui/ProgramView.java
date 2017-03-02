@@ -4,11 +4,11 @@ import kilobyte.common.annotations.CallOnEDT;
 import kilobyte.common.annotations.InstantiateOnEDT;
 import kilobyte.common.annotations.InvokeLaterNotNecessary;
 import kilobyte.common.instruction.Instruction;
+import kilobyte.simulator.program.Program;
+import kilobyte.simulator.ui.utils.EmptyIcon;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-import kilobyte.simulator.program.Program;
-import kilobyte.simulator.ui.utils.EmptyIcon;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

@@ -1,12 +1,12 @@
 package kilobyte.simulator.ui.menu;
 
 import kilobyte.common.annotations.InstantiateOnEDT;
+import kilobyte.simulator.ui.ChangeRadixDisplayCapable;
+import kilobyte.simulator.ui.utils.ButtonGroupFactory;
+import kilobyte.simulator.ui.utils.Radix;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-import kilobyte.simulator.ui.ChangeRadixDisplayCapable;
-import kilobyte.simulator.ui.utils.Radix;
-import kilobyte.simulator.ui.utils.ButtonGroupFactory;
 
 import javax.swing.*;
 

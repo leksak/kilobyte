@@ -1,7 +1,6 @@
 package kilobyte.simulator.ui;
 
 import kilobyte.common.annotations.InstantiateOnEDT;
-import lombok.Value;
 import kilobyte.simulator.hardware.Control;
 
 import javax.swing.*;

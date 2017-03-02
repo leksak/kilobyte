@@ -6,7 +6,7 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 @Value
 @Log

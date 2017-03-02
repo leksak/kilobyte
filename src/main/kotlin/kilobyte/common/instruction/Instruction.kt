@@ -1,13 +1,12 @@
 package kilobyte.common.instruction
 
-import kilobyte.common.hardware.Register
+import io.atlassian.fugue.Either
 import kilobyte.common.instruction.decomposedrepresentation.DecomposedRepresentation
 import kilobyte.common.instruction.exceptions.NoSuchInstructionException
 import kilobyte.common.instruction.mnemonic.iname
 import kilobyte.common.instruction.mnemonic.mnemonicEquals
 import kilobyte.common.instruction.parametrizedroutines.*
 import kilobyte.common.machinecode.*
-import io.atlassian.fugue.Either
 import java.util.*
 
 /**

@@ -1,17 +1,14 @@
 package kilobyte.simulator;
 
 import kilobyte.common.instruction.Instruction;
+import kilobyte.simulator.hardware.Control;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import kilobyte.simulator.hardware.Control;
 
-import static kilobyte.common.instruction.Instruction.BEQ;
-import static kilobyte.common.instruction.Instruction.LW;
-import static kilobyte.common.instruction.Instruction.SW;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static kilobyte.common.instruction.Instruction.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by jwestin on 2017-01-02.

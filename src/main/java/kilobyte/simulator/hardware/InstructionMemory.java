@@ -2,12 +2,12 @@ package kilobyte.simulator.hardware;
 
 import kilobyte.common.instruction.Format;
 import kilobyte.common.instruction.Instruction;
+import kilobyte.simulator.ui.utils.Radix;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
-import kilobyte.simulator.ui.utils.Radix;
 
 import java.util.List;
 

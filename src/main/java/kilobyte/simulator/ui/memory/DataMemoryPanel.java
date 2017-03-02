@@ -2,10 +2,10 @@ package kilobyte.simulator.ui.memory;
 
 import kilobyte.common.annotations.InstantiateOnEDT;
 import kilobyte.common.machinecode.OperationsKt;
-import lombok.experimental.NonFinal;
 import kilobyte.simulator.hardware.DataMemory;
 import kilobyte.simulator.ui.ChangeRadixDisplayCapable;
 import kilobyte.simulator.ui.utils.Radix;
+import lombok.experimental.NonFinal;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

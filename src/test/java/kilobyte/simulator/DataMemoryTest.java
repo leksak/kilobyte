@@ -1,9 +1,9 @@
 package kilobyte.simulator;
 
 import kilobyte.common.machinecode.OperationsKt;
+import kilobyte.simulator.hardware.DataMemory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import kilobyte.simulator.hardware.DataMemory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

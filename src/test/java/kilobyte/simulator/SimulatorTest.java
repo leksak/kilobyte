@@ -1,16 +1,14 @@
 package kilobyte.simulator;
 
-import kilobyte.common.hardware.Register;
-import kilobyte.common.hardware.RegisterFile;
 import kilobyte.common.instruction.Instruction;
+import kilobyte.simulator.program.Program;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-import kilobyte.simulator.program.Program;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SimulatorTest {
   //ADD

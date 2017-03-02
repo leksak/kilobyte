@@ -8,21 +8,22 @@ import kilobyte.common.instruction.Format;
 import kilobyte.common.instruction.Instruction;
 import kilobyte.common.instruction.Type;
 import kilobyte.common.machinecode.OperationsKt;
+import kilobyte.simulator.hardware.*;
+import kilobyte.simulator.program.Program;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
-import kilobyte.simulator.hardware.*;
-import kilobyte.simulator.program.Program;
 
 import java.io.File;
 import java.io.IOException;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static kilobyte.common.instruction.Instruction.*;
-import static kilobyte.common.machinecode.OperationsKt.*;
 import static java.lang.String.format;
+import static kilobyte.common.instruction.Instruction.*;
+import static kilobyte.common.machinecode.OperationsKt.funct;
+import static kilobyte.common.machinecode.OperationsKt.offset;
 
 @Value
 @Log

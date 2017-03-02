@@ -1,10 +1,10 @@
 package kilobyte.simulator.ui;
 
 import kilobyte.common.annotations.InstantiateOnEDT;
-import lombok.val;
 import kilobyte.simulator.ui.memory.DataMemoryPanel;
 import kilobyte.simulator.ui.memory.InstructionMemoryPanel;
 import kilobyte.simulator.ui.menu.RadixMenu;
+import lombok.val;
 
 import javax.swing.*;
 

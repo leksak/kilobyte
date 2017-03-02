@@ -1,13 +1,12 @@
 package kilobyte.simulator.hardware;
 
+import kilobyte.simulator.ui.utils.Radix;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.java.Log;
-import kilobyte.simulator.ui.utils.Radix;
 
 import java.nio.ByteBuffer;
-import static java.lang.String.format;
 
 @Value
 @Log

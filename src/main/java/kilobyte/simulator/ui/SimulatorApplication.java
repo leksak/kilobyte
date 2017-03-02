@@ -1,9 +1,6 @@
 package kilobyte.simulator.ui;
 
 import kilobyte.common.annotations.InstantiateOnEDT;
-import lombok.Value;
-import lombok.experimental.NonFinal;
-import lombok.extern.java.Log;
 import kilobyte.simulator.Simulator;
 import kilobyte.simulator.program.Program;
 import kilobyte.simulator.ui.memory.DataMemoryPanel;
@@ -12,6 +9,9 @@ import kilobyte.simulator.ui.memory.TabbedMemoryPane;
 import kilobyte.simulator.ui.menu.FileMenu;
 import kilobyte.simulator.ui.menu.HelpMenu;
 import kilobyte.simulator.ui.menu.SimulatorMenuBar;
+import lombok.Value;
+import lombok.experimental.NonFinal;
+import lombok.extern.java.Log;
 
 import javax.swing.*;
 import java.awt.*;

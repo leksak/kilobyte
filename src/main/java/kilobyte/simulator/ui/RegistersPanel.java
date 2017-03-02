@@ -1,20 +1,19 @@
 package kilobyte.simulator.ui;
 
-import com.google.common.base.Verify;
 import kilobyte.common.annotations.InstantiateOnEDT;
 import kilobyte.common.hardware.Register;
 import kilobyte.common.hardware.RegisterFile;
+import kilobyte.simulator.ui.utils.Radix;
 import lombok.experimental.NonFinal;
 import lombok.val;
-import kilobyte.simulator.ui.utils.Radix;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.function.Supplier;
 
-import static com.google.common.base.Verify.*;
-import static java.lang.String.*;
+import static com.google.common.base.Verify.verify;
+import static java.lang.String.format;
+import static java.lang.String.valueOf;
 
 @InstantiateOnEDT
 class RegistersPanel extends JPanel implements ChangeRadixDisplayCapable {
