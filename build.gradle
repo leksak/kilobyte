@@ -1,15 +1,19 @@
 group 'kilobyte'
 version '1.0-SNAPSHOT'
 
+// Lists all the places where gradle will attempt to find listed dependencies
 repositories {
     mavenCentral()
     maven {
-        // Required for kotlin_version 1.1-M04
         // Required both here and in the buildscript!
         url 'https://bintray.com/kotlin/kotlin-eap-1.1'
     }
 }
 
+// The buildscript is for the build.gradle file itself.
+// That is why it contains dependencies for running the actual tasks
+// in this gradle file, i.e. we cannot use the gradle plugins without
+// this block. I guess you could call it a meta-dependencies block.
 buildscript {
     ext.kotlin_version = '1.1.0'
     ext.dokka_version = '0.9.11'
@@ -19,7 +23,6 @@ buildscript {
         mavenCentral()
         jcenter() // Required for Dokka
         maven {
-            // Required for kotlin_version 1.1-M04
             url 'https://bintray.com/kotlin/kotlin-eap-1.1'
         }
     }
