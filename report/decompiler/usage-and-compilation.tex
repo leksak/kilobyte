@@ -29,14 +29,8 @@ Navigate to the root directory of the project.
 Whilst there execute the following command to compile the program:
 
 \begin{lstlisting}[style=plain]
-$ gradle fatJar
+$ ./gradlew fatJar
 \end{lstlisting}
-
-You will require Gradle 3.2.1, which is available for
-\href{http://gradle.org/gradle-download/}{download here}, or
-executable through
-\tt{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}filip/bin/gradle}
-on the institution's network.
 
 In the \tt{build/libs} directory you will now find a file named
 \tt{kilobyte-all-1.0-SNAPSHOT.jar} which you can run using \tt{java -jar
@@ -49,29 +43,28 @@ Navigate to the root directory and hilst there execute the following
 command to compile and run the tests:
 
 \begin{lstlisting}[style=plain]
-$ gradle test
+$ ./gradlew test
 \end{lstlisting}
 
 In Figure.~\ref{fig:tests} the output yielded by the tests is shown.
 
 \begin{figure}[htpb]
 \begin{lstlisting}[style=plain]
-$ ~filip/bin/gradle test             
-[...removed output...]
-Test run finished after 258 ms
-[        11 containers found      ]
+$ ./gradlew test             
+  [...removed output...]
+Test run finished after 1163 ms
+[        14 containers found      ]
 [         0 containers skipped    ]
-[        11 containers started    ]
+[        14 containers started    ]
 [         0 containers aborted    ]
-[        11 containers successful ]
+[        14 containers successful ]
 [         0 containers failed     ]
-[        26 tests found           ]
+[        61 tests found           ]
 [         1 tests skipped         ]
-[        25 tests started         ]
+[        60 tests started         ]
 [         0 tests aborted         ]
-[        25 tests successful      ]
+[        60 tests successful      ]
 [         0 tests failed          ]
-[...removed output...]
 \end{lstlisting}
 \caption{Test results}
 \label{fig:tests}
@@ -86,12 +79,14 @@ the program with 0 arguments or the \tt{-h} flag we can get the
 user guide supplied with the software
 
 \begin{lstlisting}[style=plain]
-$ usage: Decompiler [OPTION] [file|number]...
-    --examples       prints an example for each supported instructions
+$ java -jar build/libs/kilobyte-all-1.0-SNAPSHOT.jar -h
+usage: CommandLineDecompiler[OPTION] [file|number]...
+    --examples       prints an example for each supported instructions.
  -h,--help           print this message
  -n,--number <arg>   disassemble 32-bit word(s) from stdin
  -S,--suppress       suppress the table header
     --supported      prints all supported instructions
+If no argument is given then numbers are read from stdin
 \end{lstlisting}
 
 \subsubsection{Decompiling source code from files}
